@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Foster.Framework.Graphics;
 using System;
 
 namespace Monocle

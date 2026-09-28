@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
+﻿using Foster.Framework;
+using Foster.Framework.Input;
 using System;
 using System.Collections.Generic;
 
@@ -93,7 +93,7 @@ namespace Monocle
             internal void Update()
             {
                 PreviousState = CurrentState;
-                CurrentState = Microsoft.Xna.Framework.Input.Keyboard.GetState();
+                CurrentState = Foster.Framework.Input.Keyboard.GetState();
             }
 
             internal void UpdateNull()
@@ -217,7 +217,7 @@ namespace Monocle
             internal void Update()
             {
                 PreviousState = CurrentState;
-                CurrentState = Microsoft.Xna.Framework.Input.Mouse.GetState();
+                CurrentState = Foster.Framework.Input.Mouse.GetState();
             }
 
             internal void UpdateNull()
@@ -322,7 +322,7 @@ namespace Monocle
                 set
                 {
                     var vector = Vector2.Transform(value, Engine.ScreenMatrix);
-                    Microsoft.Xna.Framework.Input.Mouse.SetPosition((int)Math.Round(vector.X), (int)Math.Round(vector.Y));
+                    Foster.Framework.Input.Mouse.SetPosition((int)Math.Round(vector.X), (int)Math.Round(vector.Y));
                 }
             }
 
@@ -351,7 +351,7 @@ namespace Monocle
             public void Update()
             {
                 PreviousState = CurrentState;
-                CurrentState = Microsoft.Xna.Framework.Input.GamePad.GetState(PlayerIndex);
+                CurrentState = Foster.Framework.Input.GamePad.GetState(PlayerIndex);
                 Attached = CurrentState.IsConnected;
 
                 if (rumbleTime > 0)
@@ -366,7 +366,7 @@ namespace Monocle
             {
                 PreviousState = CurrentState;
                 CurrentState = new GamePadState();
-                Attached = Microsoft.Xna.Framework.Input.GamePad.GetState(PlayerIndex).IsConnected;
+                Attached = Foster.Framework.Input.GamePad.GetState(PlayerIndex).IsConnected;
 
                 if (rumbleTime > 0)
                     rumbleTime -= Engine.DeltaTime;

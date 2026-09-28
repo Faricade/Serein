@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Foster.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;

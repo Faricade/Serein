@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Foster/Framework/Foster.Framework.csproj" />
+  <Project Path="Serein/Serein.csproj" />
+</Solution>

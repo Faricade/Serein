@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Foster.Framework;
+using Foster.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.IO;

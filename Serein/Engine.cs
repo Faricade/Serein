@@ -1,5 +1,5 @@
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using Foster.Framework;
+using Foster.Framework.Graphics;
 using System;
 using System.IO;
 using System.Reflection;
@@ -202,7 +202,7 @@ namespace Monocle
             MInput.Update();
 
 #if !CONSOLE
-            if (ExitOnEscapeKeypress && MInput.Keyboard.Pressed(Microsoft.Xna.Framework.Input.Keys.Escape))
+            if (ExitOnEscapeKeypress && MInput.Keyboard.Pressed(Foster.Framework.Input.Keys.Escape))
             {
                 Exit();
                 return;

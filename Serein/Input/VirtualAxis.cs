@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework.Input;
+﻿using Foster.Framework.Input;
 using System.Collections.Generic;
 using System;
 
