@@ -1,34 +1,33 @@
 ﻿using Foster.Framework;
 
-namespace Monocle
+namespace Serein;
+
+public class SpecEntity<T> : Entity where T : Scene
 {
-    public class SpecEntity<T> : Entity where T : Scene
+    public T SpecScene { get; private set; }
+
+    public SpecEntity(Vector2 position)
+        : base(position)
     {
-        public T SpecScene { get; private set; }
 
-        public SpecEntity(Vector2 position)
-            : base(position)
-        {
+    }
 
-        }
+    public SpecEntity()
+        : base()
+    {
 
-        public SpecEntity()
-            : base()
-        {
+    }
 
-        }
+    public override void Added(Scene scene)
+    {
+        base.Added(scene);
+        if (Scene is T)
+            SpecScene = Scene as T;
+    }
 
-        public override void Added(Scene scene)
-        {
-            base.Added(scene);
-            if (Scene is T)
-                SpecScene = Scene as T;
-        }
-
-        public override void Removed(Scene scene)
-        {
-            SpecScene = null;
-            base.Removed(scene);
-        }
+    public override void Removed(Scene scene)
+    {
+        SpecScene = null;
+        base.Removed(scene);
     }
 }

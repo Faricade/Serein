@@ -2,130 +2,129 @@
 using System;
 using System.Collections.Generic;
 
-namespace Monocle
+namespace Serein;
+
+public class Wiggler : Component
 {
-    public class Wiggler : Component
+    private static Stack<Wiggler> cache = new Stack<Wiggler>();
+
+    public float Counter { get; private set; }
+    public float Value { get; private set; }
+    public bool StartZero;
+    public bool UseRawDeltaTime;
+
+    private float sineCounter;
+
+    private float increment;
+    private float sineAdd;
+    private Action<float> onChange;
+    private bool removeSelfOnFinish;
+
+    public static Wiggler Create(float duration, float frequency,  Action<float> onChange = null, bool start = false, bool removeSelfOnFinish = false)
     {
-        private static Stack<Wiggler> cache = new Stack<Wiggler>();
+        Wiggler wiggler;
 
-        public float Counter { get; private set; }
-        public float Value { get; private set; }
-        public bool StartZero;
-        public bool UseRawDeltaTime;
+        if (cache.Count > 0)
+            wiggler = cache.Pop();
+        else
+            wiggler = new Wiggler();
+        wiggler.Init(duration, frequency, onChange, start, removeSelfOnFinish);
 
-        private float sineCounter;
+        return wiggler;
+    }
 
-        private float increment;
-        private float sineAdd;
-        private Action<float> onChange;
-        private bool removeSelfOnFinish;
+    private Wiggler()
+        : base(false, false)
+    {
 
-        public static Wiggler Create(float duration, float frequency,  Action<float> onChange = null, bool start = false, bool removeSelfOnFinish = false)
-        {
-            Wiggler wiggler;
+    }
 
-            if (cache.Count > 0)
-                wiggler = cache.Pop();
-            else
-                wiggler = new Wiggler();
-            wiggler.Init(duration, frequency, onChange, start, removeSelfOnFinish);
+    private void Init(float duration, float frequency, Action<float> onChange, bool start, bool removeSelfOnFinish)
+    {
+        Counter = sineCounter = 0;
+        UseRawDeltaTime = false;
 
-            return wiggler;
-        }
+        increment = 1f / duration;
+        sineAdd = (Foster.Framework.Calc.PI * 2) * frequency;
+        this.onChange = onChange;
+        this.removeSelfOnFinish = removeSelfOnFinish;
 
-        private Wiggler()
-            : base(false, false)
-        {
-
-        }
-
-        private void Init(float duration, float frequency, Action<float> onChange, bool start, bool removeSelfOnFinish)
-        {
-            Counter = sineCounter = 0;
-            UseRawDeltaTime = false;
-
-            increment = 1f / duration;
-            sineAdd = (Foster.Framework.Calc.PI * 2) * frequency;
-            this.onChange = onChange;
-            this.removeSelfOnFinish = removeSelfOnFinish;
-
-            if (start)
-                Start();
-            else
-                Active = false;
-        }
-
-        public override void Removed(Entity entity)
-        {
-            base.Removed(entity);
-            cache.Push(this);
-        }
-
-        public void Start()
-        {
-            Counter = 1f;
-
-            if (StartZero)
-            {
-                sineCounter = Foster.Framework.Calc.HalfPI;
-                Value = 0;
-                if (onChange != null)
-                    onChange(0);
-            }
-            else
-            {
-                sineCounter = 0;
-                Value = 1f;
-                if (onChange != null)
-                    onChange(1f);
-            }
-
-            Active = true;
-        }
-
-        public void Start(float duration, float frequency)
-        {
-            increment = 1f / duration;
-            sineAdd = (Foster.Framework.Calc.PI * 2) * frequency;
+        if (start)
             Start();
-        }
-
-        public void Stop()
-        {
+        else
             Active = false;
-        }
+    }
 
-        public void StopAndClear()
+    public override void Removed(Entity entity)
+    {
+        base.Removed(entity);
+        cache.Push(this);
+    }
+
+    public void Start()
+    {
+        Counter = 1f;
+
+        if (StartZero)
         {
-            Stop();
+            sineCounter = Foster.Framework.Calc.HalfPI;
             Value = 0;
-        }
-
-        public override void Update()
-        {
-            if (UseRawDeltaTime)
-            {
-                sineCounter += sineAdd * Engine.RawDeltaTime;
-                Counter -= increment * Engine.RawDeltaTime;
-            }
-            else
-            {
-                sineCounter += sineAdd * Engine.DeltaTime;
-                Counter -= increment * Engine.DeltaTime;
-            }
-
-            if (Counter <= 0)
-            {
-                Counter = 0;
-                Active = false;
-                if (removeSelfOnFinish)
-                    RemoveSelf();
-            }
-
-            Value = (float)Math.Cos(sineCounter) * Counter;
-
             if (onChange != null)
-                onChange(Value);
+                onChange(0);
         }
+        else
+        {
+            sineCounter = 0;
+            Value = 1f;
+            if (onChange != null)
+                onChange(1f);
+        }
+
+        Active = true;
+    }
+
+    public void Start(float duration, float frequency)
+    {
+        increment = 1f / duration;
+        sineAdd = (Foster.Framework.Calc.PI * 2) * frequency;
+        Start();
+    }
+
+    public void Stop()
+    {
+        Active = false;
+    }
+
+    public void StopAndClear()
+    {
+        Stop();
+        Value = 0;
+    }
+
+    public override void Update()
+    {
+        if (UseRawDeltaTime)
+        {
+            sineCounter += sineAdd * Engine.RawDeltaTime;
+            Counter -= increment * Engine.RawDeltaTime;
+        }
+        else
+        {
+            sineCounter += sineAdd * Engine.DeltaTime;
+            Counter -= increment * Engine.DeltaTime;
+        }
+
+        if (Counter <= 0)
+        {
+            Counter = 0;
+            Active = false;
+            if (removeSelfOnFinish)
+                RemoveSelf();
+        }
+
+        Value = (float)Math.Cos(sineCounter) * Counter;
+
+        if (onChange != null)
+            onChange(Value);
     }
 }

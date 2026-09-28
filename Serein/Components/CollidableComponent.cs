@@ -5,320 +5,319 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Monocle
+namespace Serein;
+
+public class CollidableComponent : Component
 {
-    public class CollidableComponent : Component
+    public bool Collidable;
+
+    private Collider collider;
+
+    public CollidableComponent(bool active, bool visible, bool colllidable)
+        : base(active, visible)
     {
-        public bool Collidable;
+        Collidable = colllidable;
+    }
 
-        private Collider collider;
+    public override void Added(Entity entity)
+    {
+        base.Added(entity);
+        if (collider != null)
+            collider.Entity = entity;
+    }
 
-        public CollidableComponent(bool active, bool visible, bool colllidable)
-            : base(active, visible)
+    public override void Removed(Entity entity)
+    {
+        if (collider != null)
+            collider.Entity = null;
+        base.Removed(entity);
+    }
+
+    public Collider Collider
+    {
+        get
         {
-            Collidable = colllidable;
+            if (collider == null)
+                return Entity.Collider;
+            else
+                return collider;
         }
 
-        public override void Added(Entity entity)
+        set
         {
-            base.Added(entity);
-            if (collider != null)
-                collider.Entity = entity;
-        }
-
-        public override void Removed(Entity entity)
-        {
-            if (collider != null)
-                collider.Entity = null;
-            base.Removed(entity);
-        }
-
-        public Collider Collider
-        {
-            get
-            {
-                if (collider == null)
-                    return Entity.Collider;
-                else
-                    return collider;
-            }
-
-            set
-            {
-                if (value == collider)
-                    return;
+            if (value == collider)
+                return;
 #if DEBUG
-                if (value.Entity != null)
-                    throw new Exception("Setting an Entity's Collider to a Collider already in use by another object");
+            if (value.Entity != null)
+                throw new Exception("Setting an Entity's Collider to a Collider already in use by another object");
 #endif
-                if (collider != null)
-                    collider.Removed();
-                collider = value;
-                if (collider != null)
-                    collider.Added(this);
-            }
+            if (collider != null)
+                collider.Removed();
+            collider = value;
+            if (collider != null)
+                collider.Added(this);
+        }
+    }
+
+    public float Width
+    {
+        get
+        {
+            if (collider == null)
+                return Entity.Width;
+            else
+                return collider.Width;
+        }
+    }
+
+    public float Height
+    {
+        get
+        {
+            if (collider == null)
+                return Entity.Height;
+            else
+                return collider.Height;
+        }
+    }
+
+    public float Left
+    {
+        get
+        {
+            if (collider == null)
+                return Entity.Left;
+            else
+                return Entity.X + collider.Left;
         }
 
-        public float Width
+        set
         {
-            get
-            {
-                if (collider == null)
-                    return Entity.Width;
-                else
-                    return collider.Width;
-            }
+            if (collider == null)
+                Entity.Left = value;
+            else
+                Entity.X = value - collider.Left;
+        }
+    }
+
+    public float Right
+    {
+        get
+        {
+            if (collider == null)
+                return Entity.Right;
+            else
+                return Entity.X + collider.Right;
         }
 
-        public float Height
+        set
         {
-            get
-            {
-                if (collider == null)
-                    return Entity.Height;
-                else
-                    return collider.Height;
-            }
+            if (collider == null)
+                Entity.Right = value;
+            else
+                Entity.X = value - collider.Right;
+        }
+    }
+
+    public float Top
+    {
+        get
+        {
+            if (collider == null)
+                return Entity.Top;
+            else
+                return Entity.Y + collider.Top;
         }
 
-        public float Left
+        set
         {
-            get
-            {
-                if (collider == null)
-                    return Entity.Left;
-                else
-                    return Entity.X + collider.Left;
-            }
+            if (collider == null)
+                Entity.Top = value;
+            else
+                Entity.Y = value - collider.Top;
+        }
+    }
 
-            set
-            {
-                if (collider == null)
-                    Entity.Left = value;
-                else
-                    Entity.X = value - collider.Left;
-            }
+    public float Bottom
+    {
+        get
+        {
+            if (collider == null)
+                return Entity.Bottom;
+            else
+                return Entity.Y + collider.Bottom;
         }
 
-        public float Right
+        set
         {
-            get
-            {
-                if (collider == null)
-                    return Entity.Right;
-                else
-                    return Entity.X + collider.Right;
-            }
+            if (collider == null)
+                Entity.Bottom = value;
+            else
+                Entity.Y = value - collider.Bottom;
+        }
+    }
 
-            set
-            {
-                if (collider == null)
-                    Entity.Right = value;
-                else
-                    Entity.X = value - collider.Right;
-            }
+    public float CenterX
+    {
+        get
+        {
+            if (collider == null)
+                return Entity.CenterX;
+            else
+                return Entity.X + collider.CenterX;
         }
 
-        public float Top
+        set
         {
-            get
-            {
-                if (collider == null)
-                    return Entity.Top;
-                else
-                    return Entity.Y + collider.Top;
-            }
+            if (collider == null)
+                Entity.CenterX = value;
+            else
+                Entity.X = value - collider.CenterX;
+        }
+    }
 
-            set
-            {
-                if (collider == null)
-                    Entity.Top = value;
-                else
-                    Entity.Y = value - collider.Top;
-            }
+    public float CenterY
+    {
+        get
+        {
+            if (collider == null)
+                return Entity.CenterY;
+            else
+                return Entity.Y + collider.CenterY;
         }
 
-        public float Bottom
+        set
         {
-            get
-            {
-                if (collider == null)
-                    return Entity.Bottom;
-                else
-                    return Entity.Y + collider.Bottom;
-            }
+            if (collider == null)
+                Entity.CenterY = value;
+            else
+                Entity.Y = value - collider.CenterY;
+        }
+    }
 
-            set
-            {
-                if (collider == null)
-                    Entity.Bottom = value;
-                else
-                    Entity.Y = value - collider.Bottom;
-            }
+    public Vector2 TopLeft
+    {
+        get
+        {
+            return new Vector2(Left, Top);
         }
 
-        public float CenterX
+        set
         {
-            get
-            {
-                if (collider == null)
-                    return Entity.CenterX;
-                else
-                    return Entity.X + collider.CenterX;
-            }
+            Left = value.X;
+            Top = value.Y;
+        }
+    }
 
-            set
-            {
-                if (collider == null)
-                    Entity.CenterX = value;
-                else
-                    Entity.X = value - collider.CenterX;
-            }
+    public Vector2 TopRight
+    {
+        get
+        {
+            return new Vector2(Right, Top);
         }
 
-        public float CenterY
+        set
         {
-            get
-            {
-                if (collider == null)
-                    return Entity.CenterY;
-                else
-                    return Entity.Y + collider.CenterY;
-            }
+            Right = value.X;
+            Top = value.Y;
+        }
+    }
 
-            set
-            {
-                if (collider == null)
-                    Entity.CenterY = value;
-                else
-                    Entity.Y = value - collider.CenterY;
-            }
+    public Vector2 BottomLeft
+    {
+        get
+        {
+            return new Vector2(Left, Bottom);
         }
 
-        public Vector2 TopLeft
+        set
         {
-            get
-            {
-                return new Vector2(Left, Top);
-            }
+            Left = value.X;
+            Bottom = value.Y;
+        }
+    }
 
-            set
-            {
-                Left = value.X;
-                Top = value.Y;
-            }
+    public Vector2 BottomRight
+    {
+        get
+        {
+            return new Vector2(Right, Bottom);
         }
 
-        public Vector2 TopRight
+        set
         {
-            get
-            {
-                return new Vector2(Right, Top);
-            }
+            Right = value.X;
+            Bottom = value.Y;
+        }
+    }
 
-            set
-            {
-                Right = value.X;
-                Top = value.Y;
-            }
+    public Vector2 Center
+    {
+        get
+        {
+            return new Vector2(CenterX, CenterY);
         }
 
-        public Vector2 BottomLeft
+        set
         {
-            get
-            {
-                return new Vector2(Left, Bottom);
-            }
+            CenterX = value.X;
+            CenterY = value.Y;
+        }
+    }
 
-            set
-            {
-                Left = value.X;
-                Bottom = value.Y;
-            }
+    public Vector2 CenterLeft
+    {
+        get
+        {
+            return new Vector2(Left, CenterY);
         }
 
-        public Vector2 BottomRight
+        set
         {
-            get
-            {
-                return new Vector2(Right, Bottom);
-            }
+            Left = value.X;
+            CenterY = value.Y;
+        }
+    }
 
-            set
-            {
-                Right = value.X;
-                Bottom = value.Y;
-            }
+    public Vector2 CenterRight
+    {
+        get
+        {
+            return new Vector2(Right, CenterY);
         }
 
-        public Vector2 Center
+        set
         {
-            get
-            {
-                return new Vector2(CenterX, CenterY);
-            }
+            Right = value.X;
+            CenterY = value.Y;
+        }
+    }
 
-            set
-            {
-                CenterX = value.X;
-                CenterY = value.Y;
-            }
+    public Vector2 TopCenter
+    {
+        get
+        {
+            return new Vector2(CenterX, Top);
         }
 
-        public Vector2 CenterLeft
+        set
         {
-            get
-            {
-                return new Vector2(Left, CenterY);
-            }
+            CenterX = value.X;
+            Top = value.Y;
+        }
+    }
 
-            set
-            {
-                Left = value.X;
-                CenterY = value.Y;
-            }
+    public Vector2 BottomCenter
+    {
+        get
+        {
+            return new Vector2(CenterX, Bottom);
         }
 
-        public Vector2 CenterRight
+        set
         {
-            get
-            {
-                return new Vector2(Right, CenterY);
-            }
-
-            set
-            {
-                Right = value.X;
-                CenterY = value.Y;
-            }
-        }
-
-        public Vector2 TopCenter
-        {
-            get
-            {
-                return new Vector2(CenterX, Top);
-            }
-
-            set
-            {
-                CenterX = value.X;
-                Top = value.Y;
-            }
-        }
-
-        public Vector2 BottomCenter
-        {
-            get
-            {
-                return new Vector2(CenterX, Bottom);
-            }
-
-            set
-            {
-                CenterX = value.X;
-                Bottom = value.Y;
-            }
+            CenterX = value.X;
+            Bottom = value.Y;
         }
     }
 }

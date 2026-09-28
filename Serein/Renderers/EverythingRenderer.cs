@@ -1,40 +1,39 @@
-﻿using Foster.Framework.Graphics;
+﻿
 
-namespace Monocle
+namespace Serein;
+
+public class EverythingRenderer : Renderer
 {
-    public class EverythingRenderer : Renderer
+    public BlendState BlendState;
+    public SamplerState SamplerState;
+    public Effect Effect;
+    public Camera Camera;
+
+    public EverythingRenderer()
     {
-        public BlendState BlendState;
-        public SamplerState SamplerState;
-        public Effect Effect;
-        public Camera Camera;
+        BlendState = BlendState.AlphaBlend;
+        SamplerState = SamplerState.LinearClamp;
+        Camera = new Camera();
+    }
 
-        public EverythingRenderer()
-        {
-            BlendState = BlendState.AlphaBlend;
-            SamplerState = SamplerState.LinearClamp;
-            Camera = new Camera();
-        }
+    public override void BeforeRender(Scene scene)
+    {
 
-        public override void BeforeRender(Scene scene)
-        {
+    }
 
-        }
+    public override void Render(Scene scene)
+    {
+        Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState, SamplerState, DepthStencilState.None, RasterizerState.CullNone, Effect, Camera.Matrix * Engine.ScreenMatrix);
 
-        public override void Render(Scene scene)
-        {
-            Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState, SamplerState, DepthStencilState.None, RasterizerState.CullNone, Effect, Camera.Matrix * Engine.ScreenMatrix);
+        scene.Entities.Render();
+        if (Engine.Commands.Open)
+            scene.Entities.DebugRender(Camera);
 
-            scene.Entities.Render();
-            if (Engine.Commands.Open)
-                scene.Entities.DebugRender(Camera);
+        Draw.SpriteBatch.End();
+    }
 
-            Draw.SpriteBatch.End();
-        }
+    public override void AfterRender(Scene scene)
+    {
 
-        public override void AfterRender(Scene scene)
-        {
-
-        }
     }
 }

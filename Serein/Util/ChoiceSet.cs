@@ -3,170 +3,169 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Monocle
+namespace Serein;
+
+public class ChoiceSet<T>
 {
-    public class ChoiceSet<T>
+    public int TotalWeight { get; private set; }
+    private Dictionary<T, int> choices;
+
+    public ChoiceSet()
     {
-        public int TotalWeight { get; private set; }
-        private Dictionary<T, int> choices;
+        choices = new Dictionary<T, int>();
+        TotalWeight = 0;
+    }
 
-        public ChoiceSet()
+    /// <summary>
+    /// Sets the weight of a choice
+    /// </summary>
+    /// <param name="choice"></param>
+    /// <param name="weight"></param>
+    public void Set(T choice, int weight)
+    {
+        int oldWeight = 0;
+        choices.TryGetValue(choice, out oldWeight);
+        TotalWeight -= oldWeight;
+
+        if (weight <= 0)
         {
-            choices = new Dictionary<T, int>();
-            TotalWeight = 0;
+            if (choices.ContainsKey(choice))
+                choices.Remove(choice);
+        }
+        else
+        {
+            TotalWeight += weight;
+            choices[choice] = weight;
+        }
+    }
+
+    /// <summary>
+    /// Sets the weight of a choice, or gets its weight
+    /// </summary>
+    /// <param name="choice"></param>
+    /// <returns></returns>
+    public int this[T choice]
+    {
+        get
+        {
+            int weight = 0;
+            choices.TryGetValue(choice, out weight);
+            return weight;
         }
 
-        /// <summary>
-        /// Sets the weight of a choice
-        /// </summary>
-        /// <param name="choice"></param>
-        /// <param name="weight"></param>
-        public void Set(T choice, int weight)
+        set
         {
-            int oldWeight = 0;
-            choices.TryGetValue(choice, out oldWeight);
-            TotalWeight -= oldWeight;
-
-            if (weight <= 0)
-            {
-                if (choices.ContainsKey(choice))
-                    choices.Remove(choice);
-            }
-            else
-            {
-                TotalWeight += weight;
-                choices[choice] = weight;
-            }
+            Set(choice, value);
         }
+    }
 
-        /// <summary>
-        /// Sets the weight of a choice, or gets its weight
-        /// </summary>
-        /// <param name="choice"></param>
-        /// <returns></returns>
-        public int this[T choice]
+    /// <summary>
+    /// Sets the chance of a choice. The chance is calculated based on the current state of ChoiceSet, so if
+    /// other choices are changed later the chance will not be guaranteed to remain the same
+    /// </summary>
+    /// <param name="choice"></param>
+    /// <param name="chance">A chance between 0 and 1.0f</param>
+    public void Set(T choice, float chance)
+    {
+        int oldWeight = 0;
+        choices.TryGetValue(choice, out oldWeight);
+        TotalWeight -= oldWeight;
+
+        int weight = (int)Math.Round(TotalWeight / (1f - chance));
+        if (weight <= 0 && chance > 0)
+            weight = 1;
+
+        if (weight <= 0)
         {
-            get
-            {
-                int weight = 0;
-                choices.TryGetValue(choice, out weight);
-                return weight;
-            }
-
-            set
-            {
-                Set(choice, value);
-            }
+            if (choices.ContainsKey(choice))
+                choices.Remove(choice);
         }
-
-        /// <summary>
-        /// Sets the chance of a choice. The chance is calculated based on the current state of ChoiceSet, so if
-        /// other choices are changed later the chance will not be guaranteed to remain the same
-        /// </summary>
-        /// <param name="choice"></param>
-        /// <param name="chance">A chance between 0 and 1.0f</param>
-        public void Set(T choice, float chance)
+        else
         {
-            int oldWeight = 0;
-            choices.TryGetValue(choice, out oldWeight);
-            TotalWeight -= oldWeight;
+            TotalWeight += weight;
+            choices[choice] = weight;
+        }
+    }
 
-            int weight = (int)Math.Round(TotalWeight / (1f - chance));
-            if (weight <= 0 && chance > 0)
+    /// <summary>
+    /// Sets the chance of many choices. Takes the chance of any of the given choices being picked, not the chance of
+    /// any individual choice. The chances are calculated based on the current state of ChoiceSet, so if
+    /// other choices are changed later the chances will not be guaranteed to remain the same
+    /// </summary>
+    /// <param name="totalChance"></param>
+    /// <param name="choices">A chance between 0 and 1.0f</param>
+    public void SetMany(float totalChance, params T[] choices)
+    {
+        if (choices.Length > 0)
+        {
+            float chance = totalChance / choices.Length;
+
+            int oldTotalWeight = 0;
+            foreach (var c in choices)
+            {
+                int oldWeight = 0;
+                this.choices.TryGetValue(c, out oldWeight);
+                oldTotalWeight += oldWeight;
+            }
+            TotalWeight -= oldTotalWeight;
+
+            int weight = (int)Math.Round((TotalWeight / (1f - totalChance)) / choices.Length);
+            if (weight <= 0 && totalChance > 0)
                 weight = 1;
 
             if (weight <= 0)
             {
-                if (choices.ContainsKey(choice))
-                    choices.Remove(choice);
+                foreach (var c in choices)
+                    if (this.choices.ContainsKey(c))
+                        this.choices.Remove(c);
             }
             else
             {
-                TotalWeight += weight;
-                choices[choice] = weight;
-            }
-        }
-
-        /// <summary>
-        /// Sets the chance of many choices. Takes the chance of any of the given choices being picked, not the chance of
-        /// any individual choice. The chances are calculated based on the current state of ChoiceSet, so if
-        /// other choices are changed later the chances will not be guaranteed to remain the same
-        /// </summary>
-        /// <param name="totalChance"></param>
-        /// <param name="choices">A chance between 0 and 1.0f</param>
-        public void SetMany(float totalChance, params T[] choices)
-        {
-            if (choices.Length > 0)
-            {
-                float chance = totalChance / choices.Length;
-
-                int oldTotalWeight = 0;
+                TotalWeight += weight * choices.Length;
                 foreach (var c in choices)
-                {
-                    int oldWeight = 0;
-                    this.choices.TryGetValue(c, out oldWeight);
-                    oldTotalWeight += oldWeight;
-                }
-                TotalWeight -= oldTotalWeight;
-
-                int weight = (int)Math.Round((TotalWeight / (1f - totalChance)) / choices.Length);
-                if (weight <= 0 && totalChance > 0)
-                    weight = 1;
-
-                if (weight <= 0)
-                {
-                    foreach (var c in choices)
-                        if (this.choices.ContainsKey(c))
-                            this.choices.Remove(c);
-                }
-                else
-                {
-                    TotalWeight += weight * choices.Length;
-                    foreach (var c in choices)
-                        this.choices[c] = weight;
-                }
+                    this.choices[c] = weight;
             }
         }
+    }
 
-        /// <summary>
-        /// Chooses a random choice in the set
-        /// </summary>
-        /// <param name="random"></param>
-        /// <returns></returns>
-        public T Get(Random random)
+    /// <summary>
+    /// Chooses a random choice in the set
+    /// </summary>
+    /// <param name="random"></param>
+    /// <returns></returns>
+    public T Get(Random random)
+    {
+        int at = random.Next(TotalWeight);
+
+        foreach (var kv in choices)
         {
-            int at = random.Next(TotalWeight);
-
-            foreach (var kv in choices)
-            {
-                if (at < kv.Value)
-                    return kv.Key;
-                else
-                    at -= kv.Value;
-            }
-
-            throw new Exception("Random choice error!");
+            if (at < kv.Value)
+                return kv.Key;
+            else
+                at -= kv.Value;
         }
 
-        /// <summary>
-        /// Chooses a random choice in the set, using Calc.Random to choose
-        /// </summary>
-        /// <returns></returns>
-        public T Get()
-        {
-            return Get(Calc.Random);
-        }
+        throw new Exception("Random choice error!");
+    }
 
-        private struct Choice
-        {
-            public T Data;
-            public int Weight;
+    /// <summary>
+    /// Chooses a random choice in the set, using Calc.Random to choose
+    /// </summary>
+    /// <returns></returns>
+    public T Get()
+    {
+        return Get(Calc.Random);
+    }
 
-            public Choice(T data, int weight)
-            {
-                Data = data;
-                Weight = weight;
-            }
+    private struct Choice
+    {
+        public T Data;
+        public int Weight;
+
+        public Choice(T data, int weight)
+        {
+            Data = data;
+            Weight = weight;
         }
     }
 }

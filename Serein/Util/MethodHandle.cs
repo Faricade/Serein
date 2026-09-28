@@ -4,20 +4,19 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace Monocle
+namespace Serein;
+
+public class MethodHandle<T> where T : Entity
 {
-    public class MethodHandle<T> where T : Entity
+    private MethodInfo info;
+
+    public MethodHandle(string methodName)
     {
-        private MethodInfo info;
+        info = typeof(T).GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic);
+    }
 
-        public MethodHandle(string methodName)
-        {
-            info = typeof(T).GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic);
-        }
-
-        public void Call(T instance)
-        {
-            info.Invoke(instance, null);
-        }
+    public void Call(T instance)
+    {
+        info.Invoke(instance, null);
     }
 }
