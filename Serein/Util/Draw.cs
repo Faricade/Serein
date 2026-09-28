@@ -36,7 +36,7 @@ namespace Monocle
         /// </summary>
         public static MTexture Pixel;
 
-        private static Rectangle rect;
+        private static Rect rect;
 
         internal static void Initialize(GraphicsDevice graphicsDevice)
         {
@@ -103,7 +103,7 @@ namespace Monocle
             Vector2 lastP = last.Perpendicular();
             for (int i = 1; i <= resolution; i++)
             {
-                Vector2 at = Calc.AngleToVector(i * MathHelper.PiOver2 / resolution, radius);
+                Vector2 at = Calc.AngleToVector(i * Foster.Framework.Calc.HalfPI / resolution, radius);
                 Vector2 atP = at.Perpendicular();
 
                 Draw.Line(position + last, position + at, color);
@@ -127,7 +127,7 @@ namespace Monocle
             Vector2 lastP = last.Perpendicular();
             for (int i = 1; i <= resolution; i++)
             {
-                Vector2 at = Calc.AngleToVector(i * MathHelper.PiOver2 / resolution, radius);
+                Vector2 at = Calc.AngleToVector(i * Foster.Framework.Calc.HalfPI / resolution, radius);
                 Vector2 atP = at.Perpendicular();
 
                 Draw.Line(position + last, position + at, color, thickness);
@@ -163,7 +163,7 @@ namespace Monocle
             Rect(position.X, position.Y, width, height, color);
         }
 
-        public static void Rect(Rectangle rect, Color color)
+        public static void Rect(Rect rect, Color color)
         {
             Draw.rect = rect;
             SpriteBatch.Draw(Pixel.Texture, rect, Pixel.ClipRect, color);
@@ -207,7 +207,7 @@ namespace Monocle
             HollowRect(position.X, position.Y, width, height, color);
         }
 
-        public static void HollowRect(Rectangle rect, Color color)
+        public static void HollowRect(Rect rect, Color color)
         {
             HollowRect(rect.X, rect.Y, rect.Width, rect.Height, color);
         }
@@ -327,10 +327,10 @@ namespace Monocle
 
         #region Weird Textures
 
-        public static void SineTextureH(MTexture tex, Vector2 position, Vector2 origin, Vector2 scale, float rotation, Color color, SpriteEffects effects, float sineCounter, float amplitude = 2, int sliceSize = 2, float sliceAdd = MathHelper.TwoPi / 8)
+        public static void SineTextureH(MTexture tex, Vector2 position, Vector2 origin, Vector2 scale, float rotation, Color color, SpriteEffects effects, float sineCounter, float amplitude = 2, int sliceSize = 2, float sliceAdd = (Foster.Framework.Calc.PI * 2) / 8)
         {
             position = Calc.Floor(position);
-            Rectangle clip = tex.ClipRect;
+            Rect clip = tex.ClipRect;
             clip.Width = sliceSize;
 
             int num = 0;
@@ -345,10 +345,10 @@ namespace Monocle
             }
         }
 
-        public static void SineTextureV(MTexture tex, Vector2 position, Vector2 origin, Vector2 scale, float rotation, Color color, SpriteEffects effects, float sineCounter, float amplitude = 2, int sliceSize = 2, float sliceAdd = MathHelper.TwoPi / 8)
+        public static void SineTextureV(MTexture tex, Vector2 position, Vector2 origin, Vector2 scale, float rotation, Color color, SpriteEffects effects, float sineCounter, float amplitude = 2, int sliceSize = 2, float sliceAdd = (Foster.Framework.Calc.PI * 2) / 8)
         {
             position = Calc.Floor(position);
-            Rectangle clip = tex.ClipRect;
+            Rect clip = tex.ClipRect;
             clip.Height = sliceSize;
 
             int num = 0;
@@ -363,17 +363,17 @@ namespace Monocle
             }
         }
 
-        public static void TextureBannerV(MTexture tex, Vector2 position, Vector2 origin, Vector2 scale, float rotation, Color color, SpriteEffects effects, float sineCounter, float amplitude = 2, int sliceSize = 2, float sliceAdd = MathHelper.TwoPi / 8)
+        public static void TextureBannerV(MTexture tex, Vector2 position, Vector2 origin, Vector2 scale, float rotation, Color color, SpriteEffects effects, float sineCounter, float amplitude = 2, int sliceSize = 2, float sliceAdd = (Foster.Framework.Calc.PI * 2) / 8)
         {
             position = Calc.Floor(position);
-            Rectangle clip = tex.ClipRect;
+            Rect clip = tex.ClipRect;
             clip.Height = sliceSize;
 
             int num = 0;
             while (clip.Y < tex.ClipRect.Y + tex.ClipRect.Height)
             {
                 float fade = (clip.Y - tex.ClipRect.Y) / (float)tex.ClipRect.Height;
-                clip.Height = (int)MathHelper.Lerp(sliceSize, 1, fade);
+                clip.Height = (int)Foster.Framework.Calc.Lerp(sliceSize, 1, fade);
                 clip.Height = Math.Min(sliceSize, tex.ClipRect.Y + tex.ClipRect.Height - clip.Y);
 
                 Vector2 add = new Vector2((float)Math.Round(Math.Sin(sineCounter + sliceAdd * num) * amplitude * fade), clip.Y - tex.ClipRect.Y);

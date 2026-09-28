@@ -6,8 +6,8 @@ namespace Monocle
 {
     public class Camera
     {
-        private Matrix matrix = Matrix.Identity;
-        private Matrix inverse = Matrix.Identity;
+        private Matrix4x4 matrix = Matrix4x4.Identity;
+        private Matrix4x4 inverse = Matrix4x4.Identity;
         private bool changed;
 
         private Vector2 position = Vector2.Zero;
@@ -44,13 +44,13 @@ namespace Monocle
 
         private void UpdateMatrices()
         {
-            matrix = Matrix.Identity *
-                    Matrix.CreateTranslation(new Vector3(-new Vector2((int)Math.Floor(position.X), (int)Math.Floor(position.Y)), 0)) *
-                    Matrix.CreateRotationZ(angle) *
-                    Matrix.CreateScale(new Vector3(zoom, 1)) *
-                    Matrix.CreateTranslation(new Vector3(new Vector2((int)Math.Floor(origin.X), (int)Math.Floor(origin.Y)), 0));
+            matrix = Matrix4x4.Identity *
+                    Matrix4x4.CreateTranslation(new Vector3(-new Vector2((int)Math.Floor(position.X), (int)Math.Floor(position.Y)), 0)) *
+                    Matrix4x4.CreateRotationZ(angle) *
+                    Matrix4x4.CreateScale(new Vector3(zoom, 1)) *
+                    Matrix4x4.CreateTranslation(new Vector3(new Vector2((int)Math.Floor(origin.X), (int)Math.Floor(origin.Y)), 0));
 
-            inverse = Matrix.Invert(matrix);
+            Matrix4x4.Invert(matrix, out inverse);
 
             changed = false;
         }
@@ -64,7 +64,7 @@ namespace Monocle
             changed = true;
         }
 
-        public Matrix Matrix
+        public Matrix4x4 Matrix
         {
             get
             {
@@ -74,7 +74,7 @@ namespace Monocle
             }
         }
 
-        public Matrix Inverse
+        public Matrix4x4 Inverse
         {
             get
             {

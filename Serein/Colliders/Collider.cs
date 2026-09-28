@@ -60,7 +60,7 @@ namespace Monocle
         }
 
         public abstract bool Collide(Vector2 point);
-        public abstract bool Collide(Rectangle rect);
+        public abstract bool Collide(Rect rect);
         public abstract bool Collide(Vector2 from, Vector2 to);
         public abstract bool Collide(Hitbox hitbox);
         public abstract bool Collide(Grid grid);
@@ -331,11 +331,11 @@ namespace Monocle
             }
         }
 
-        public Rectangle Bounds
+        public Rect Bounds
         {
             get
             {
-                return new Rectangle((int)AbsoluteLeft, (int)AbsoluteTop, (int)Width, (int)Height);
+                return new Rect((int)AbsoluteLeft, (int)AbsoluteTop, (int)Width, (int)Height);
             }
         }
     }

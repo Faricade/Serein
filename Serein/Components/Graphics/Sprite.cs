@@ -483,7 +483,7 @@ namespace Monocle
 
         #endregion
 
-        public void DrawSubrect(Vector2 offset, Rectangle rectangle)
+        public void DrawSubrect(Vector2 offset, RectInt rectangle)
         {
             if (Texture != null)
             {

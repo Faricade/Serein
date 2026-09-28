@@ -171,7 +171,7 @@ namespace Monocle
 
         #region Entity vs Rectangle
 
-        public static bool CheckRect(Entity a, Rectangle rect)
+        public static bool CheckRect(Entity a, Rect rect)
         {
             if (a.Collider == null)
                 return false;
@@ -179,7 +179,7 @@ namespace Monocle
                 return a.Collider.Collide(rect);
         }
 
-        public static bool CheckRect(Entity a, Rectangle rect, Vector2 at)
+        public static bool CheckRect(Entity a, Rect rect, Vector2 at)
         {
             Vector2 old = a.Position;
             a.Position = at;
@@ -259,7 +259,7 @@ namespace Monocle
             return RectToCircle(rX, rY, rW, rH, cPosition, cRadius);
         }
 
-        public static bool CircleToRect(Vector2 cPosition, float cRadius, Rectangle rect)
+        public static bool CircleToRect(Vector2 cPosition, float cRadius, Rect rect)
         {
             return RectToCircle(rect, cPosition, cRadius);
         }
@@ -314,7 +314,7 @@ namespace Monocle
             return false;
         }
 
-        public static bool RectToCircle(Rectangle rect, Vector2 cPosition, float cRadius)
+        public static bool RectToCircle(Rect rect, Vector2 cPosition, float cRadius)
         {
             return RectToCircle(rect.X, rect.Y, rect.Width, rect.Height, cPosition, cRadius);
         }
@@ -372,7 +372,7 @@ namespace Monocle
             return false;
         }
 
-        public static bool RectToLine(Rectangle rect, Vector2 lineFrom, Vector2 lineTo)
+        public static bool RectToLine(Rect rect, Vector2 lineFrom, Vector2 lineTo)
         {
             return RectToLine(rect.X, rect.Y, rect.Width, rect.Height, lineFrom, lineTo);
         }
@@ -382,7 +382,7 @@ namespace Monocle
             return point.X >= rX && point.Y >= rY && point.X < rX + rW && point.Y < rY + rH;
         }
 
-        public static bool RectToPoint(Rectangle rect, Vector2 point)
+        public static bool RectToPoint(Rect rect, Vector2 point)
         {
             return RectToPoint(rect.X, rect.Y, rect.Width, rect.Height, point);
         }
@@ -401,7 +401,7 @@ namespace Monocle
          *      0101  0100  0110
          */
 
-        public static PointSectors GetSector(Rectangle rect, Vector2 point)
+        public static PointSectors GetSector(Rect rect, Vector2 point)
         {
             PointSectors sector = PointSectors.Center;
 

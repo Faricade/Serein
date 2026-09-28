@@ -178,7 +178,7 @@ namespace Monocle
             return false;
         }
 
-        public bool CollideCheck(Rectangle rect, int tag)
+        public bool CollideCheck(Rect rect, int tag)
         {
             var list = TagLists[(int)tag];
 
@@ -188,7 +188,7 @@ namespace Monocle
             return false;
         }
 
-        public bool CollideCheck(Rectangle rect, Entity entity)
+        public bool CollideCheck(Rect rect, Entity entity)
         {
             return (entity.Collidable && entity.CollideRect(rect));
         }
@@ -213,7 +213,7 @@ namespace Monocle
             return null;
         }
 
-        public Entity CollideFirst(Rectangle rect, int tag)
+        public Entity CollideFirst(Rect rect, int tag)
         {
             var list = TagLists[(int)tag];
 
@@ -241,7 +241,7 @@ namespace Monocle
                     hits.Add(list[i]);
         }
 
-        public void CollideInto(Rectangle rect, int tag, List<Entity> hits)
+        public void CollideInto(Rect rect, int tag, List<Entity> hits)
         {
             var list = TagLists[(int)tag];
 
@@ -264,7 +264,7 @@ namespace Monocle
             return list;
         }
 
-        public List<Entity> CollideAll(Rectangle rect, int tag)
+        public List<Entity> CollideAll(Rect rect, int tag)
         {
             List<Entity> list = new List<Entity>();
             CollideInto(rect, tag, list);
@@ -289,7 +289,7 @@ namespace Monocle
                     action(list[i]);
         }
 
-        public void CollideDo(Rectangle rect, int tag, Action<Entity> action)
+        public void CollideDo(Rect rect, int tag, Action<Entity> action)
         {
             var list = TagLists[(int)tag];
 
@@ -301,7 +301,7 @@ namespace Monocle
         public Vector2 LineWalkCheck(Vector2 from, Vector2 to, int tag, float precision)
         {
             Vector2 add = to - from;
-            add.Normalize();
+            add = Vector2.Normalize(add);
             add *= precision;
 
             int amount = (int)Math.Floor((from - to).Length() / precision);
@@ -343,7 +343,7 @@ namespace Monocle
             return false;
         }
 
-        public bool CollideCheck<T>(Rectangle rect) where T : Entity
+        public bool CollideCheck<T>(Rect rect) where T : Entity
         {
             var list = Tracker.Entities[typeof(T)];
 
@@ -373,7 +373,7 @@ namespace Monocle
             return null;
         }
 
-        public T CollideFirst<T>(Rectangle rect) where T : Entity
+        public T CollideFirst<T>(Rect rect) where T : Entity
         {
             var list = Tracker.Entities[typeof(T)];
 
@@ -401,7 +401,7 @@ namespace Monocle
                     hits.Add(list[i]);
         }
 
-        public void CollideInto<T>(Rectangle rect, List<Entity> hits) where T : Entity
+        public void CollideInto<T>(Rect rect, List<Entity> hits) where T : Entity
         {
             var list = Tracker.Entities[typeof(T)];
 
@@ -428,7 +428,7 @@ namespace Monocle
                     hits.Add(list[i] as T);
         }
 
-        public void CollideInto<T>(Rectangle rect, List<T> hits) where T : Entity
+        public void CollideInto<T>(Rect rect, List<T> hits) where T : Entity
         {
             var list = Tracker.Entities[typeof(T)];
 
@@ -451,7 +451,7 @@ namespace Monocle
             return list;
         }
 
-        public List<T> CollideAll<T>(Rectangle rect) where T : Entity
+        public List<T> CollideAll<T>(Rect rect) where T : Entity
         {
             List<T> list = new List<T>();
             CollideInto<T>(rect, list);
@@ -476,7 +476,7 @@ namespace Monocle
                     action(list[i] as T);
         }
 
-        public void CollideDo<T>(Rectangle rect, Action<T> action) where T : Entity
+        public void CollideDo<T>(Rect rect, Action<T> action) where T : Entity
         {
             var list = Tracker.Entities[typeof(T)];
 
@@ -488,7 +488,7 @@ namespace Monocle
         public Vector2 LineWalkCheck<T>(Vector2 from, Vector2 to, float precision) where T : Entity
         {
             Vector2 add = to - from;
-            add.Normalize();
+            add = Vector2.Normalize(add);
             add *= precision;
 
             int amount = (int)Math.Floor((from - to).Length() / precision);
@@ -530,7 +530,7 @@ namespace Monocle
             return false;
         }
 
-        public bool CollideCheckByComponent<T>(Rectangle rect) where T : Component
+        public bool CollideCheckByComponent<T>(Rect rect) where T : Component
         {
             var list = Tracker.Components[typeof(T)];
 
@@ -560,7 +560,7 @@ namespace Monocle
             return null;
         }
 
-        public T CollideFirstByComponent<T>(Rectangle rect) where T : Component
+        public T CollideFirstByComponent<T>(Rect rect) where T : Component
         {
             var list = Tracker.Components[typeof(T)];
 
@@ -588,7 +588,7 @@ namespace Monocle
                     hits.Add(list[i]);
         }
 
-        public void CollideIntoByComponent<T>(Rectangle rect, List<Component> hits) where T : Component
+        public void CollideIntoByComponent<T>(Rect rect, List<Component> hits) where T : Component
         {
             var list = Tracker.Components[typeof(T)];
 
@@ -615,7 +615,7 @@ namespace Monocle
                     hits.Add(list[i] as T);
         }
 
-        public void CollideIntoByComponent<T>(Rectangle rect, List<T> hits) where T : Component
+        public void CollideIntoByComponent<T>(Rect rect, List<T> hits) where T : Component
         {
             var list = Tracker.Components[typeof(T)];
 
@@ -638,7 +638,7 @@ namespace Monocle
             return list;
         }
 
-        public List<T> CollideAllByComponent<T>(Rectangle rect) where T : Component
+        public List<T> CollideAllByComponent<T>(Rect rect) where T : Component
         {
             List<T> list = new List<T>();
             CollideIntoByComponent<T>(rect, list);
@@ -663,7 +663,7 @@ namespace Monocle
                     action(list[i] as T);
         }
 
-        public void CollideDoByComponent<T>(Rectangle rect, Action<T> action) where T : Component
+        public void CollideDoByComponent<T>(Rect rect, Action<T> action) where T : Component
         {
             var list = Tracker.Components[typeof(T)];
 
@@ -675,7 +675,7 @@ namespace Monocle
         public Vector2 LineWalkCheckByComponent<T>(Vector2 from, Vector2 to, float precision) where T : Component
         {
             Vector2 add = to - from;
-            add.Normalize();
+            add = Vector2.Normalize(add);
             add *= precision;
 
             int amount = (int)Math.Floor((from - to).Length() / precision);

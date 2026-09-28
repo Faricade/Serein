@@ -138,7 +138,7 @@ namespace Monocle
                     Tiles[tx, ty] = null;
         }
 
-        public Rectangle GetClippedRenderTiles()
+        public RectInt GetClippedRenderTiles()
         {
             var pos = Entity.Position + Position;
 
@@ -166,7 +166,7 @@ namespace Monocle
             right = Math.Min(right, TilesX);
             bottom = Math.Min(bottom, TilesY);
 
-            return new Rectangle(left, top, right - left, bottom - top);
+            return new RectInt(left, top, right - left, bottom - top);
         }
 
         public override void Render()

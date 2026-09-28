@@ -13,7 +13,7 @@ namespace Monocle
         {
             public Vector2 Offset;
             public PixelFontCharacter CharData;
-            public Rectangle Bounds;
+            public Rect Bounds;
         }
 
         private List<Char> characters = new List<Char>();

@@ -380,7 +380,7 @@ namespace Monocle
                 return false;
         }
 
-        public override bool Collide(Rectangle rect)
+        public override bool Collide(Rect rect)
         {
             if (rect.Intersects(Bounds))
             {

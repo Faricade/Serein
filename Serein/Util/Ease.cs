@@ -9,9 +9,9 @@ namespace Monocle
 
         public static readonly Easer Linear = (float t) => { return t; };
 
-        public static readonly Easer SineIn = (float t) => { return -(float)Math.Cos(MathHelper.PiOver2 * t) + 1; };
-        public static readonly Easer SineOut = (float t) => { return (float)Math.Sin(MathHelper.PiOver2 * t); };
-        public static readonly Easer SineInOut = (float t) => { return -(float)Math.Cos(MathHelper.Pi * t) / 2f + .5f; };
+        public static readonly Easer SineIn = (float t) => { return -(float)Math.Cos(Foster.Framework.Calc.HalfPI * t) + 1; };
+        public static readonly Easer SineOut = (float t) => { return (float)Math.Sin(Foster.Framework.Calc.HalfPI * t); };
+        public static readonly Easer SineInOut = (float t) => { return -(float)Math.Cos(Foster.Framework.Calc.PI * t) / 2f + .5f; };
 
         public static readonly Easer QuadIn = (float t) => { return t * t; };
         public static readonly Easer QuadOut = Invert(QuadIn);

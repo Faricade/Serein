@@ -12,7 +12,7 @@ namespace Monocle
         static public MTexture FromFile(string filename)
         {
             var fileStream = new FileStream(filename, FileMode.Open, FileAccess.Read);
-            var texture = Texture2D.FromStream(Engine.Instance.GraphicsDevice, fileStream);
+            var texture = Texture.FromStream(Engine.Instance.GraphicsDevice, fileStream);
             fileStream.Close();
 
             return new MTexture(texture);
@@ -20,11 +20,11 @@ namespace Monocle
 
         public MTexture() { }
 
-        public MTexture(Texture2D texture)
+        public MTexture(Texture texture)
         {
             Texture = texture;
             AtlasPath = null;
-            ClipRect = new Rectangle(0, 0, Texture.Width, Texture.Height);
+            ClipRect = new RectInt(0, 0, Texture.Width, Texture.Height);
             DrawOffset = Vector2.Zero;
             Width = ClipRect.Width;
             Height = ClipRect.Height;
@@ -43,13 +43,13 @@ namespace Monocle
             SetUtil();
         }
 
-        public MTexture(MTexture parent, Rectangle clipRect)
+        public MTexture(MTexture parent, RectInt clipRect)
             : this(parent, clipRect.X, clipRect.Y, clipRect.Width, clipRect.Height)
         {
 
         }
 
-        public MTexture(MTexture parent, string atlasPath, Rectangle clipRect, Vector2 drawOffset, int width, int height)
+        public MTexture(MTexture parent, string atlasPath, RectInt clipRect, Vector2 drawOffset, int width, int height)
         {
             Texture = parent.Texture;
             AtlasPath = atlasPath;
@@ -61,16 +61,16 @@ namespace Monocle
             SetUtil();
         }
 
-        public MTexture(MTexture parent, string atlasPath, Rectangle clipRect)
+        public MTexture(MTexture parent, string atlasPath, RectInt clipRect)
             : this(parent, clipRect)
         {
             AtlasPath = atlasPath;
         }
 
-        public MTexture(Texture2D texture, Vector2 drawOffset, int frameWidth, int frameHeight)
+        public MTexture(Texture texture, Vector2 drawOffset, int frameWidth, int frameHeight)
         {
             Texture = texture;
-            ClipRect = new Rectangle(0, 0, texture.Width, texture.Height);
+            ClipRect = new RectInt(0, 0, texture.Width, texture.Height);
             DrawOffset = drawOffset;
             Width = frameWidth;
             Height = frameHeight;
@@ -79,13 +79,13 @@ namespace Monocle
 
         public MTexture(int width, int height, Color color)
         {
-            Texture = new Texture2D(Engine.Instance.GraphicsDevice, width, height);
+            Texture = new Texture(Engine.Instance.GraphicsDevice, width, height);
             var colors = new Color[width * height];
             for (int i = 0; i < width * height; i++)
                 colors[i] = color;
             Texture.SetData<Color>(colors);
 
-            ClipRect = new Rectangle(0, 0, width, height);
+            ClipRect = new RectInt(0, 0, width, height);
             DrawOffset = Vector2.Zero;
             Width = width;
             Height = height;
@@ -126,7 +126,7 @@ namespace Monocle
             }
         }
 
-        public MTexture GetSubtexture(Rectangle rect)
+        public MTexture GetSubtexture(RectInt rect)
         {
             return new MTexture(this, rect);
         }
@@ -138,8 +138,8 @@ namespace Monocle
 
         #region Properties
 
-        public Texture2D Texture { get; private set; }
-        public Rectangle ClipRect { get; private set; }
+        public Texture Texture { get; private set; }
+        public RectInt ClipRect { get; private set; }
         public string AtlasPath { get; private set; }
         public Vector2 DrawOffset { get; private set; }
         public int Width { get; private set; }
@@ -162,22 +162,22 @@ namespace Monocle
                 return "MTexture [" + Texture.Width + " x " + Texture.Height + "]";
         }
 
-        public Rectangle GetRelativeRect(Rectangle rect)
+        public RectInt GetRelativeRect(RectInt rect)
         {
             return GetRelativeRect(rect.X, rect.Y, rect.Width, rect.Height);
         }
 
-        public Rectangle GetRelativeRect(int x, int y, int width, int height)
+        public RectInt GetRelativeRect(int x, int y, int width, int height)
         {
             int atX = (int)(ClipRect.X - DrawOffset.X + x);
             int atY = (int)(ClipRect.Y - DrawOffset.Y + y);
 
-            int rX = (int)MathHelper.Clamp(atX, ClipRect.Left, ClipRect.Right);
-            int rY = (int)MathHelper.Clamp(atY, ClipRect.Top, ClipRect.Bottom);
+            int rX = (int)Foster.Framework.Calc.Clamp(atX, ClipRect.Left, ClipRect.Right);
+            int rY = (int)Foster.Framework.Calc.Clamp(atY, ClipRect.Top, ClipRect.Bottom);
             int rW = Math.Max(0, Math.Min(atX + width, ClipRect.Right) - rX);
             int rH = Math.Max(0, Math.Min(atY + height, ClipRect.Bottom) - rY);
 
-            return new Rectangle(rX, rY, rW, rH);
+            return new RectInt(rX, rY, rW, rH);
         }
         
 
@@ -194,7 +194,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
             Monocle.Draw.SpriteBatch.Draw(Texture, position, ClipRect, Color.White, 0, -DrawOffset, 1f, SpriteEffects.None, 0);
         }
@@ -203,7 +203,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
             Monocle.Draw.SpriteBatch.Draw(Texture, position, ClipRect, Color.White, 0, origin - DrawOffset, 1f, SpriteEffects.None, 0);
         }
@@ -212,7 +212,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
             Monocle.Draw.SpriteBatch.Draw(Texture, position, ClipRect, color, 0, origin - DrawOffset, 1f, SpriteEffects.None, 0);
         }
@@ -221,7 +221,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
             Monocle.Draw.SpriteBatch.Draw(Texture, position, ClipRect, color, 0, origin - DrawOffset, scale, SpriteEffects.None, 0);
         }
@@ -230,7 +230,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
             Monocle.Draw.SpriteBatch.Draw(Texture, position, ClipRect, color, rotation, origin - DrawOffset, scale, SpriteEffects.None, 0);
         }
@@ -239,7 +239,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
             Monocle.Draw.SpriteBatch.Draw(Texture, position, ClipRect, color, rotation, origin - DrawOffset, scale, flip, 0);
         }
@@ -248,7 +248,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
             Monocle.Draw.SpriteBatch.Draw(Texture, position, ClipRect, color, 0, origin - DrawOffset, scale, SpriteEffects.None, 0);
         }
@@ -257,7 +257,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
             Monocle.Draw.SpriteBatch.Draw(Texture, position, ClipRect, color, rotation, origin - DrawOffset, scale, SpriteEffects.None, 0);
         }
@@ -266,16 +266,16 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
             Monocle.Draw.SpriteBatch.Draw(Texture, position, ClipRect, color, rotation, origin - DrawOffset, scale, flip, 0);
         }
 
-        public void Draw(Vector2 position, Vector2 origin, Color color, Vector2 scale, float rotation, Rectangle clip)
+        public void Draw(Vector2 position, Vector2 origin, Color color, Vector2 scale, float rotation, RectInt clip)
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
             Monocle.Draw.SpriteBatch.Draw(Texture, position, GetRelativeRect(clip), color, rotation, origin - DrawOffset, scale, SpriteEffects.None, 0);
         }
@@ -288,7 +288,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
             Monocle.Draw.SpriteBatch.Draw(Texture, position, ClipRect, Color.White, 0, Center - DrawOffset, 1f, SpriteEffects.None, 0);
         }
@@ -297,7 +297,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
             Monocle.Draw.SpriteBatch.Draw(Texture, position, ClipRect, color, 0, Center - DrawOffset, 1f, SpriteEffects.None, 0);
         }
@@ -306,7 +306,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
             Monocle.Draw.SpriteBatch.Draw(Texture, position, ClipRect, color, 0, Center - DrawOffset, scale, SpriteEffects.None, 0);
         }
@@ -315,7 +315,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
             Monocle.Draw.SpriteBatch.Draw(Texture, position, ClipRect, color, rotation, Center - DrawOffset, scale, SpriteEffects.None, 0);
         }
@@ -324,7 +324,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
             Monocle.Draw.SpriteBatch.Draw(Texture, position, ClipRect, color, rotation, Center - DrawOffset, scale, flip, 0);
         }
@@ -333,7 +333,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
             Monocle.Draw.SpriteBatch.Draw(Texture, position, ClipRect, color, 0, Center - DrawOffset, scale, SpriteEffects.None, 0);
         }
@@ -342,7 +342,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
             Monocle.Draw.SpriteBatch.Draw(Texture, position, ClipRect, color, rotation, Center - DrawOffset, scale, SpriteEffects.None, 0);
         }
@@ -351,7 +351,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
             Monocle.Draw.SpriteBatch.Draw(Texture, position, ClipRect, color, rotation, Center - DrawOffset, scale, flip, 0);
         }
@@ -364,7 +364,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
             Monocle.Draw.SpriteBatch.Draw(Texture, position, ClipRect, Color.White, 0, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, 1f, SpriteEffects.None, 0);
         }
@@ -373,7 +373,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
             Monocle.Draw.SpriteBatch.Draw(Texture, position, ClipRect, color, 0, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, 1f, SpriteEffects.None, 0);
         }
@@ -382,7 +382,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
             Monocle.Draw.SpriteBatch.Draw(Texture, position, ClipRect, color, 0, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, SpriteEffects.None, 0);
         }
@@ -391,7 +391,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
             Monocle.Draw.SpriteBatch.Draw(Texture, position, ClipRect, color, rotation, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, SpriteEffects.None, 0);
         }
@@ -400,7 +400,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
             Monocle.Draw.SpriteBatch.Draw(Texture, position, ClipRect, color, rotation, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, flip, 0);
         }
@@ -409,7 +409,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
             Monocle.Draw.SpriteBatch.Draw(Texture, position, ClipRect, color, 0, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, SpriteEffects.None, 0);
         }
@@ -418,7 +418,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
             Monocle.Draw.SpriteBatch.Draw(Texture, position, ClipRect, color, rotation, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, SpriteEffects.None, 0);
         }
@@ -427,7 +427,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
             Monocle.Draw.SpriteBatch.Draw(Texture, position, ClipRect, color, rotation, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, flip, 0);
         }
@@ -440,7 +440,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
 
             for (var i = -1; i <= 1; i++)
@@ -455,7 +455,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
 
             for (var i = -1; i <= 1; i++)
@@ -470,7 +470,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
 
             for (var i = -1; i <= 1; i++)
@@ -485,7 +485,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
 
             for (var i = -1; i <= 1; i++)
@@ -500,7 +500,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
 
             for (var i = -1; i <= 1; i++)
@@ -515,7 +515,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
 
             for (var i = -1; i <= 1; i++)
@@ -530,7 +530,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
 
             for (var i = -1; i <= 1; i++)
@@ -545,7 +545,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
 
             for (var i = -1; i <= 1; i++)
@@ -560,7 +560,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
 
             for (var i = -1; i <= 1; i++)
@@ -579,7 +579,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
 
             for (var i = -1; i <= 1; i++)
@@ -594,7 +594,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
 
             for (var i = -1; i <= 1; i++)
@@ -609,7 +609,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
 
             for (var i = -1; i <= 1; i++)
@@ -624,7 +624,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
 
             for (var i = -1; i <= 1; i++)
@@ -639,7 +639,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
 
             for (var i = -1; i <= 1; i++)
@@ -654,7 +654,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
 
             for (var i = -1; i <= 1; i++)
@@ -669,7 +669,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
 
             for (var i = -1; i <= 1; i++)
@@ -684,7 +684,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
 
             for (var i = -1; i <= 1; i++)
@@ -703,7 +703,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
 
             for (var i = -1; i <= 1; i++)
@@ -718,7 +718,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
 
             for (var i = -1; i <= 1; i++)
@@ -733,7 +733,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
 
             for (var i = -1; i <= 1; i++)
@@ -748,7 +748,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
 
             for (var i = -1; i <= 1; i++)
@@ -763,7 +763,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
 
             for (var i = -1; i <= 1; i++)
@@ -778,7 +778,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
 
             for (var i = -1; i <= 1; i++)
@@ -793,7 +793,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
 
             for (var i = -1; i <= 1; i++)
@@ -808,7 +808,7 @@ namespace Monocle
         {
 #if DEBUG
             if (Texture.IsDisposed)
-                throw new Exception("Texture2D Is Disposed");
+                throw new Exception("Texture Is Disposed");
 #endif
 
             for (var i = -1; i <= 1; i++)

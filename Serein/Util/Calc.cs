@@ -416,7 +416,7 @@ namespace Monocle
 
         public static float NextAngle(this Random random)
         {
-            return random.NextFloat() * MathHelper.TwoPi;
+            return random.NextFloat() * (Foster.Framework.Calc.PI * 2);
         }
 
         private static int[] shakeVectorOffsets = new int[] { -1, -1, 0, 1, 1 };
@@ -602,21 +602,21 @@ namespace Monocle
         #region Math
 
         public const float Right = 0;
-        public const float Up = -MathHelper.PiOver2;
-        public const float Left = MathHelper.Pi;
-        public const float Down = MathHelper.PiOver2;
-        public const float UpRight = -MathHelper.PiOver4;
-        public const float UpLeft = -MathHelper.PiOver4 - MathHelper.PiOver2;
-        public const float DownRight = MathHelper.PiOver4;
-        public const float DownLeft = MathHelper.PiOver4 + MathHelper.PiOver2;
-        public const float DegToRad = MathHelper.Pi / 180f;
-        public const float RadToDeg = 180f / MathHelper.Pi;
+        public const float Up = -Foster.Framework.Calc.HalfPI;
+        public const float Left = Foster.Framework.Calc.PI;
+        public const float Down = Foster.Framework.Calc.HalfPI;
+        public const float UpRight = -(Foster.Framework.Calc.HalfPI / 2);
+        public const float UpLeft = -(Foster.Framework.Calc.HalfPI / 2) - Foster.Framework.Calc.HalfPI;
+        public const float DownRight = (Foster.Framework.Calc.HalfPI / 2);
+        public const float DownLeft = (Foster.Framework.Calc.HalfPI / 2) + Foster.Framework.Calc.HalfPI;
+        public const float DegToRad = Foster.Framework.Calc.PI / 180f;
+        public const float RadToDeg = 180f / Foster.Framework.Calc.PI;
         public const float DtR = DegToRad;
         public const float RtD = RadToDeg;
-        public const float Circle = MathHelper.TwoPi;
-        public const float HalfCircle = MathHelper.Pi;
-        public const float QuarterCircle = MathHelper.PiOver2;
-        public const float EighthCircle = MathHelper.PiOver4;
+        public const float Circle = (Foster.Framework.Calc.PI * 2);
+        public const float HalfCircle = Foster.Framework.Calc.PI;
+        public const float QuarterCircle = Foster.Framework.Calc.HalfPI;
+        public const float EighthCircle = (Foster.Framework.Calc.HalfPI / 2);
         private const string Hex = "0123456789ABCDEF";
 
         public static int Digits(this int num)
@@ -640,7 +640,7 @@ namespace Monocle
 
         public static float Percent(float num, float zeroAt, float oneAt)
         {
-            return MathHelper.Clamp((num - zeroAt) / oneAt, 0, 1);
+            return Foster.Framework.Calc.Clamp((num - zeroAt) / oneAt, 0, 1);
         }
 
         public static float SignThreshold(float value, float threshold)
@@ -722,12 +722,12 @@ namespace Monocle
 
         public static float ClampedMap(float val, float min, float max, float newMin = 0, float newMax = 1)
         {
-            return MathHelper.Clamp((val - min) / (max - min), 0, 1) * (newMax - newMin) + newMin;
+            return Foster.Framework.Calc.Clamp((val - min) / (max - min), 0, 1) * (newMax - newMin) + newMin;
         }
 
         public static float LerpSnap(float value1, float value2, float amount, float snapThreshold = .1f)
         {
-            float ret = MathHelper.Lerp(value1, value2, amount);
+            float ret = Foster.Framework.Calc.Lerp(value1, value2, amount);
             if (Math.Abs(ret - value2) < snapThreshold)
                 return value2;
             else
@@ -736,7 +736,7 @@ namespace Monocle
 
         public static float LerpClamp(float value1, float value2, float lerp)
         {
-            return MathHelper.Lerp(value1, value2, MathHelper.Clamp(lerp, 0, 1));
+            return Foster.Framework.Calc.Lerp(value1, value2, Foster.Framework.Calc.Clamp(lerp, 0, 1));
         }
 
         public static Vector2 LerpSnap(Vector2 value1, Vector2 value2, float amount, float snapThresholdSq = .1f)
@@ -770,7 +770,7 @@ namespace Monocle
                 return ifZero;
             else
             {
-                vec.Normalize();
+                vec = Vector2.Normalize(vec);
                 return vec;
             }
         }
@@ -781,7 +781,7 @@ namespace Monocle
                 return ifZero * length;
             else
             {
-                vec.Normalize();
+                vec = Vector2.Normalize(vec);
                 return vec * length;
             }
         }
@@ -801,7 +801,7 @@ namespace Monocle
             Vector2 v = lineB - lineA;
             Vector2 w = closestTo - lineA;
             float t = Vector2.Dot(w, v) / Vector2.Dot(v, v);
-            t = MathHelper.Clamp(t, 0, 1);
+            t = Foster.Framework.Calc.Clamp(t, 0, 1);
 
             return lineA + v * t;
         }
@@ -828,7 +828,7 @@ namespace Monocle
 
         public static float WrapAngle(float angleRadians)
         {
-            return (((angleRadians * Math.Sign(angleRadians) + MathHelper.Pi) % (MathHelper.Pi * 2)) - MathHelper.Pi) * Math.Sign(angleRadians);
+            return (((angleRadians * Math.Sign(angleRadians) + Foster.Framework.Calc.PI) % (Foster.Framework.Calc.PI * 2)) - Foster.Framework.Calc.PI) * Math.Sign(angleRadians);
         }
 
         public static Vector2 AngleToVector(float angleRadians, float length)
@@ -841,7 +841,7 @@ namespace Monocle
             var diff = AngleDiff(val, target);
             if (Math.Abs(diff) < maxMove)
                 return target;
-            return val + MathHelper.Clamp(diff, -maxMove, maxMove);
+            return val + Foster.Framework.Calc.Clamp(diff, -maxMove, maxMove);
         }
 
         public static float AngleLerp(float startAngle, float endAngle, float percent)
@@ -858,8 +858,8 @@ namespace Monocle
         {
             float diff = radiansB - radiansA;
 
-            while (diff > MathHelper.Pi) { diff -= MathHelper.TwoPi; }
-            while (diff <= -MathHelper.Pi) { diff += MathHelper.TwoPi; }
+            while (diff > Foster.Framework.Calc.PI) { diff -= (Foster.Framework.Calc.PI * 2); }
+            while (diff <= -Foster.Framework.Calc.PI) { diff += (Foster.Framework.Calc.PI * 2); }
 
             return diff;
         }
@@ -981,7 +981,7 @@ namespace Monocle
 
         public static Vector2 Clamp(this Vector2 val, float minX, float minY, float maxX, float maxY)
         {
-            return new Vector2(MathHelper.Clamp(val.X, minX, maxX), MathHelper.Clamp(val.Y, minY, maxY));
+            return new Vector2(Foster.Framework.Calc.Clamp(val.X, minX, maxX), Foster.Framework.Calc.Clamp(val.Y, minY, maxY));
         }
 
         public static Vector2 Floor(this Vector2 val)
@@ -1011,7 +1011,7 @@ namespace Monocle
                 return target;
             else
             {
-                diff.Normalize();
+                diff = Vector2.Normalize(diff);
                 return val + diff * maxMove;
             }
         }
@@ -1022,7 +1022,7 @@ namespace Monocle
                 return Vector2.Zero;
 
             float angle = vec.Angle();
-            angle = (float)Math.Floor((angle + MathHelper.PiOver2 / 2f) / MathHelper.PiOver2) * MathHelper.PiOver2;
+            angle = (float)Math.Floor((angle + Foster.Framework.Calc.HalfPI / 2f) / Foster.Framework.Calc.HalfPI) * Foster.Framework.Calc.HalfPI;
 
             vec = AngleToVector(angle, 1f);
             if (Math.Abs(vec.X) < .5f)
@@ -1044,7 +1044,7 @@ namespace Monocle
                 return Vector2.Zero;
             
             float angle = vec.Angle();
-            angle = (float)Math.Floor((angle + MathHelper.PiOver4 / 2f) / MathHelper.PiOver4) * MathHelper.PiOver4;
+            angle = (float)Math.Floor((angle + (Foster.Framework.Calc.HalfPI / 2) / 2f) / (Foster.Framework.Calc.HalfPI / 2)) * (Foster.Framework.Calc.HalfPI / 2);
 
             vec = AngleToVector(angle, 1f);
             if (Math.Abs(vec.X) < .5f)
@@ -1057,7 +1057,7 @@ namespace Monocle
 
         public static Vector2 SnappedNormal(this Vector2 vec, float slices)
         {
-            float divider = MathHelper.TwoPi / slices;
+            float divider = (Foster.Framework.Calc.PI * 2) / slices;
 
             float angle = vec.Angle();
             angle = (float)Math.Floor((angle + divider / 2f) / divider) * divider;
@@ -1066,7 +1066,7 @@ namespace Monocle
 
         public static Vector2 Snapped(this Vector2 vec, float slices)
         {
-            float divider = MathHelper.TwoPi / slices;
+            float divider = (Foster.Framework.Calc.PI * 2) / slices;
 
             float angle = vec.Angle();
             angle = (float)Math.Floor((angle + divider / 2f) / divider) * divider;
@@ -1123,7 +1123,7 @@ namespace Monocle
             if (q.Length() <= maxRotationRadians)
                 return target;
 
-            q.Normalize();
+            q = Quaternion.Normalize(q);
             q *= maxRotationRadians;
 
             return Vector3.Transform(from, q);
@@ -1662,9 +1662,9 @@ namespace Monocle
             return xml.AttrInt("height", defaultHeight);
         }
 
-        public static Rectangle Rect(this XmlElement xml)
+        public static RectInt Rect(this XmlElement xml)
         {
-            return new Rectangle(xml.X(), xml.Y(), xml.Width(), xml.Height());
+            return new RectInt(xml.X(), xml.Y(), xml.Width(), xml.Height());
         }
 
         public static int ID(this XmlElement xml)
@@ -2138,7 +2138,7 @@ namespace Monocle
             }
         }
 
-        public static Rectangle ClampTo(this Rectangle rect, Rectangle clamp)
+        public static Rect ClampTo(this Rect rect, Rect clamp)
         {
             if (rect.X < clamp.X)
             {
@@ -2166,33 +2166,33 @@ namespace Monocle
         public static Quaternion Conjugated(this Quaternion q)
         {
             var c = q;
-            c.Conjugate();
+            c = Quaternion.Conjugate(c);
             return c;
         }
 
         public static Quaternion LookAt(this Quaternion q, Vector3 from, Vector3 to, Vector3 up)
         {
-            return Quaternion.CreateFromRotationMatrix(Matrix.CreateLookAt(from, to, up));
+            return Quaternion.CreateFromRotationMatrix(Matrix4x4.CreateLookAt(from, to, up));
         }
 
         public static Quaternion LookAt(this Quaternion q, Vector3 direction, Vector3 up)
         {
-            return Quaternion.CreateFromRotationMatrix(Matrix.CreateLookAt(Vector3.Zero, direction, up));
+            return Quaternion.CreateFromRotationMatrix(Matrix4x4.CreateLookAt(Vector3.Zero, direction, up));
         }
 
         public static Vector3 Forward(this Quaternion q)
         {
-            return Vector3.Transform(Vector3.Forward, q.Conjugated());
+            return Vector3.Transform(-Vector3.UnitZ, q.Conjugated());
         }
 
         public static Vector3 Left(this Quaternion q)
         {
-            return Vector3.Transform(Vector3.Left, q.Conjugated());
+            return Vector3.Transform(-Vector3.UnitX, q.Conjugated());
         }
 
         public static Vector3 Up(this Quaternion q)
         {
-            return Vector3.Transform(Vector3.Up, q.Conjugated());
+            return Vector3.Transform(Vector3.UnitY, q.Conjugated());
         }
     }
 }

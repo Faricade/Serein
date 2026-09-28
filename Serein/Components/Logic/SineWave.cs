@@ -56,7 +56,7 @@ namespace Monocle
 
         public override void Update()
         {
-            Counter += MathHelper.TwoPi * Frequency * Rate * (UseRawDeltaTime ? Engine.RawDeltaTime : Engine.DeltaTime);
+            Counter += (Foster.Framework.Calc.PI * 2) * Frequency * Rate * (UseRawDeltaTime ? Engine.RawDeltaTime : Engine.DeltaTime);
             if (OnUpdate != null)
                 OnUpdate(Value);
         }
@@ -68,7 +68,7 @@ namespace Monocle
 
         public SineWave Randomize()
         {
-            Counter = Calc.Random.NextFloat() * MathHelper.TwoPi * 2;
+            Counter = Calc.Random.NextFloat() * (Foster.Framework.Calc.PI * 2) * 2;
             return this;
         }
 
@@ -79,12 +79,12 @@ namespace Monocle
 
         public void StartUp()
         {
-            Counter = MathHelper.PiOver2;
+            Counter = Foster.Framework.Calc.HalfPI;
         }
 
         public void StartDown()
         {
-            Counter = MathHelper.PiOver2 * 3f;
+            Counter = Foster.Framework.Calc.HalfPI * 3f;
         }
 
         public float Counter
@@ -96,7 +96,7 @@ namespace Monocle
 
             set
             {
-                counter = (value + MathHelper.TwoPi * 4) % (MathHelper.TwoPi * 4);
+                counter = (value + (Foster.Framework.Calc.PI * 2) * 4) % ((Foster.Framework.Calc.PI * 2) * 4);
 
                 Value = (float)Math.Sin(counter);
                 ValueOverTwo = (float)Math.Sin(counter / 2);

@@ -69,7 +69,7 @@ namespace Monocle
             return Monocle.Collide.CircleToPoint(AbsolutePosition, Radius, point);
         }
 
-        public override bool Collide(Rectangle rect)
+        public override bool Collide(Rect rect)
         {
             return Monocle.Collide.RectToCircle(rect, AbsolutePosition, Radius);
         }

@@ -47,7 +47,7 @@ namespace Monocle
                         if (SnapSlices.HasValue)
                             value = value.SnappedNormal(SnapSlices.Value);
                         else
-                            value.Normalize();
+                            value = Vector2.Normalize(value);
                     }
                     else if (SnapSlices.HasValue)
                         value = value.Snapped(SnapSlices.Value);

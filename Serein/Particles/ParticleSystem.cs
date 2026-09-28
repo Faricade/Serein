@@ -21,7 +21,7 @@ namespace Monocle
                 particles[i].Active = false;
         }
 
-        public void ClearRect(Rectangle rect, bool inside)
+        public void ClearRect(Rect rect, bool inside)
         {
             for (int i = 0; i < particles.Length; i ++)
             {

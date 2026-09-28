@@ -73,7 +73,7 @@ namespace Monocle
             Draw.HollowRect(AbsoluteX, AbsoluteY, Width, Height, color);
         }
 
-        public void SetFromRectangle(Rectangle rect)
+        public void SetFromRectangle(Rect rect)
         {
             Position = new Vector2(rect.X, rect.Y);
             Width = rect.Width;
@@ -128,7 +128,7 @@ namespace Monocle
             return Monocle.Collide.RectToPoint(AbsoluteLeft, AbsoluteTop, Width, Height, point);
         }
 
-        public override bool Collide(Rectangle rect)
+        public override bool Collide(Rect rect)
         {
             return AbsoluteRight > rect.Left && AbsoluteBottom > rect.Top && AbsoluteLeft < rect.Right && AbsoluteTop < rect.Bottom;
         }

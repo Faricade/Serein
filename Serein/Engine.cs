@@ -335,7 +335,7 @@ namespace Monocle
         #region Screen
 
         public static Viewport Viewport { get; private set; }
-        public static Matrix ScreenMatrix;
+        public static Matrix4x4 ScreenMatrix;
 
         public static void SetWindowed(int width, int height)
         {

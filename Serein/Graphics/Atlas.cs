@@ -12,7 +12,7 @@ namespace Monocle
 {
     public class Atlas
     {
-        public List<Texture2D> Sources;
+        public List<Texture> Sources;
         private Dictionary<string, MTexture> textures = new Dictionary<string, MTexture>(StringComparer.OrdinalIgnoreCase);
         private Dictionary<string, List<MTexture>> orderedTexturesCache = new Dictionary<string, List<MTexture>>();
 
@@ -30,7 +30,7 @@ namespace Monocle
         public static Atlas FromAtlas(string path, AtlasDataFormat format)
         {
             var atlas = new Atlas();
-            atlas.Sources = new List<Texture2D>();
+            atlas.Sources = new List<Texture>();
             ReadAtlasData(atlas, path, format);
             return atlas;
         }
@@ -46,7 +46,7 @@ namespace Monocle
 
                         var texturePath = at.Attr("imagePath", "");
                         var fileStream = new FileStream(Path.Combine(Path.GetDirectoryName(path), texturePath), FileMode.Open, FileAccess.Read);
-                        var texture = Texture2D.FromStream(Engine.Instance.GraphicsDevice, fileStream);
+                        var texture = Texture.FromStream(Engine.Instance.GraphicsDevice, fileStream);
                         fileStream.Close();
 
                         var mTexture = new MTexture(texture);
@@ -74,7 +74,7 @@ namespace Monocle
                         {
                             var texturePath = tex.Attr("n", "");
                             var fileStream = new FileStream(Path.Combine(Path.GetDirectoryName(path), texturePath + ".png"), FileMode.Open, FileAccess.Read);
-                            var texture = Texture2D.FromStream(Engine.Instance.GraphicsDevice, fileStream);
+                            var texture = Texture.FromStream(Engine.Instance.GraphicsDevice, fileStream);
                             fileStream.Close();
 
                             var mTexture = new MTexture(texture);
@@ -83,7 +83,7 @@ namespace Monocle
                             foreach (XmlElement sub in tex)
                             {
                                 var name = sub.Attr("n");
-                                var clipRect = new Rectangle(sub.AttrInt("x"), sub.AttrInt("y"), sub.AttrInt("w"), sub.AttrInt("h"));
+                                var clipRect = new RectInt(sub.AttrInt("x"), sub.AttrInt("y"), sub.AttrInt("w"), sub.AttrInt("h"));
                                 if (sub.HasAttr("fx"))
                                     atlas.textures[name] = new MTexture(mTexture, name, clipRect, new Vector2(-sub.AttrInt("fx"), -sub.AttrInt("fy")), sub.AttrInt("fw"), sub.AttrInt("fh"));
                                 else
@@ -104,7 +104,7 @@ namespace Monocle
                             var textureName = reader.ReadNullTerminatedString();
                             var texturePath = Path.Combine(Path.GetDirectoryName(path), textureName + ".png");
                             var fileStream = new FileStream(texturePath, FileMode.Open, FileAccess.Read);
-                            var texture = Texture2D.FromStream(Engine.Instance.GraphicsDevice, fileStream);
+                            var texture = Texture.FromStream(Engine.Instance.GraphicsDevice, fileStream);
                             fileStream.Close();
 
                             atlas.Sources.Add(texture);
@@ -123,7 +123,7 @@ namespace Monocle
                                 var fw = reader.ReadInt16();
                                 var fh = reader.ReadInt16();
                                 
-                                atlas.textures[name] = new MTexture(mTexture, name, new Rectangle(x, y, w, h), new Vector2(-fx, -fy), fw, fh);
+                                atlas.textures[name] = new MTexture(mTexture, name, new RectInt(x, y, w, h), new Vector2(-fx, -fy), fw, fh);
                             }
                         }
                     }
@@ -154,7 +154,7 @@ namespace Monocle
                                 var fh = reader.ReadInt16();
 
                                 var fileStream = new FileStream(Path.Combine(folderPath, name + ".png"), FileMode.Open, FileAccess.Read);
-                                var texture = Texture2D.FromStream(Engine.Instance.GraphicsDevice, fileStream);
+                                var texture = Texture.FromStream(Engine.Instance.GraphicsDevice, fileStream);
                                 fileStream.Close();
 
                                 atlas.Sources.Add(texture);
@@ -179,7 +179,7 @@ namespace Monocle
                             var textureName = reader.ReadString();
                             var texturePath = Path.Combine(Path.GetDirectoryName(path), textureName + ".data");
                             var fileStream = new FileStream(texturePath, FileMode.Open, FileAccess.Read);
-                            var texture = Texture2D.FromStream(Engine.Instance.GraphicsDevice, fileStream);
+                            var texture = Texture.FromStream(Engine.Instance.GraphicsDevice, fileStream);
                             fileStream.Close();
 
                             atlas.Sources.Add(texture);
@@ -198,7 +198,7 @@ namespace Monocle
                                 var fw = reader.ReadInt16();
                                 var fh = reader.ReadInt16();
 
-                                atlas.textures[name] = new MTexture(mTexture, name, new Rectangle(x, y, w, h), new Vector2(-fx, -fy), fw, fh);
+                                atlas.textures[name] = new MTexture(mTexture, name, new RectInt(x, y, w, h), new Vector2(-fx, -fy), fw, fh);
                             }
                         }
                     }
@@ -233,7 +233,7 @@ namespace Monocle
                                 var fh = reader.ReadInt16();
 
                                 var fileStream = new FileStream(Path.Combine(folderPath, name + ".data"), FileMode.Open, FileAccess.Read);
-                                var texture = Texture2D.FromStream(Engine.Instance.GraphicsDevice, fileStream);
+                                var texture = Texture.FromStream(Engine.Instance.GraphicsDevice, fileStream);
                                 fileStream.Close();
 
                                 atlas.Sources.Add(texture);
@@ -261,7 +261,7 @@ namespace Monocle
         public static Atlas FromMultiAtlas(string rootPath, string[] dataPath, AtlasDataFormat format)
         {
             var atlas = new Atlas();
-            atlas.Sources = new List<Texture2D>();
+            atlas.Sources = new List<Texture>();
             
             for (int i = 0; i < dataPath.Length; i ++)
                 ReadAtlasData(atlas, Path.Combine(rootPath, dataPath[i]), format);
@@ -272,7 +272,7 @@ namespace Monocle
         public static Atlas FromMultiAtlas(string rootPath, string filename, AtlasDataFormat format)
         {
             var atlas = new Atlas();
-            atlas.Sources = new List<Texture2D>();
+            atlas.Sources = new List<Texture>();
 
             var index = 0;
             while (true)
@@ -292,7 +292,7 @@ namespace Monocle
         public static Atlas FromDirectory(string path)
         {
             var atlas = new Atlas();
-            atlas.Sources = new List<Texture2D>();
+            atlas.Sources = new List<Texture>();
 
             var contentDirectory = Engine.ContentDirectory;
             var contentDirectoryLength = contentDirectory.Length;
@@ -307,7 +307,7 @@ namespace Monocle
 
                 // get path and load
                 var fileStream = new FileStream(file.Substring(contentDirectoryLength + 1), FileMode.Open, FileAccess.Read);
-                var texture = Texture2D.FromStream(Engine.Instance.GraphicsDevice, fileStream);
+                var texture = Texture.FromStream(Engine.Instance.GraphicsDevice, fileStream);
                 fileStream.Close();
 
                 atlas.Sources.Add(texture);

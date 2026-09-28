@@ -1038,12 +1038,12 @@ namespace Monocle
             return Collide.CheckLine(this, from, to, at);
         }
 
-        public bool CollideRect(Rectangle rect)
+        public bool CollideRect(Rect rect)
         {
             return Collide.CheckRect(this, rect);
         }
 
-        public bool CollideRect(Rectangle rect, Vector2 at)
+        public bool CollideRect(Rect rect, Vector2 at)
         {
             return Collide.CheckRect(this, rect, at);
         }

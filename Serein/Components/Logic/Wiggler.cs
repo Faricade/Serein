@@ -45,7 +45,7 @@ namespace Monocle
             UseRawDeltaTime = false;
 
             increment = 1f / duration;
-            sineAdd = MathHelper.TwoPi * frequency;
+            sineAdd = (Foster.Framework.Calc.PI * 2) * frequency;
             this.onChange = onChange;
             this.removeSelfOnFinish = removeSelfOnFinish;
 
@@ -67,7 +67,7 @@ namespace Monocle
 
             if (StartZero)
             {
-                sineCounter = MathHelper.PiOver2;
+                sineCounter = Foster.Framework.Calc.HalfPI;
                 Value = 0;
                 if (onChange != null)
                     onChange(0);
@@ -86,7 +86,7 @@ namespace Monocle
         public void Start(float duration, float frequency)
         {
             increment = 1f / duration;
-            sineAdd = MathHelper.TwoPi * frequency;
+            sineAdd = (Foster.Framework.Calc.PI * 2) * frequency;
             Start();
         }
 

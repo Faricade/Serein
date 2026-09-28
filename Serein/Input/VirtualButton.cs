@@ -1,4 +1,5 @@
-﻿using Foster.Framework.Input;
+﻿using Foster.Framework;
+using Foster.Framework.Input;
 using System.Collections.Generic;
 
 namespace Monocle
