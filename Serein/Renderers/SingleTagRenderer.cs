@@ -1,45 +1,19 @@
-﻿
+﻿namespace Serein;
 
-namespace Serein;
-
-public class SingleTagRenderer : Renderer
+public class SingleTagRenderer(BitTag tag) : Renderer
 {
-    public BitTag Tag;
-    public BlendState BlendState;
-    public SamplerState SamplerState;
-    public Effect Effect;
-    public Camera Camera;
-
-    public SingleTagRenderer(BitTag tag)
-    {
-        Tag = tag;
-        BlendState = BlendState.AlphaBlend;
-        SamplerState = SamplerState.LinearClamp;
-        Camera = new Camera();
-    }
-
-    public override void BeforeRender(Scene scene)
-    {
-
-    }
+    public BitTag Tag = tag;
 
     public override void Render(Scene scene)
     {
-        Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState, SamplerState, DepthStencilState.None, RasterizerState.CullNone, Effect, Camera.Matrix * Engine.ScreenMatrix);
-
-        foreach (var entity in scene[Tag])
+        PushState();
+        foreach (Entity entity in scene[Tag])
             if (entity.Visible)
                 entity.Render();
 
         if (Engine.Commands.Open)
-            foreach (var entity in scene[Tag])
+            foreach (Entity entity in scene[Tag])
                 entity.DebugRender(Camera);
-
-        Draw.SpriteBatch.End();
-    }
-
-    public override void AfterRender(Scene scene)
-    {
-
+        PopState();
     }
 }

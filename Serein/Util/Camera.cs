@@ -1,13 +1,11 @@
 ﻿using Foster.Framework;
 
-using System;
-
 namespace Serein;
 
 public class Camera
 {
-    private Matrix4x4 matrix = Matrix4x4.Identity;
-    private Matrix4x4 inverse = Matrix4x4.Identity;
+    private Matrix3x2 matrix = Matrix3x2.Identity;
+    private Matrix3x2 inverse = Matrix3x2.Identity;
     private bool changed;
 
     private Vector2 position = Vector2.Zero;
@@ -15,21 +13,17 @@ public class Camera
     private Vector2 origin = Vector2.Zero;
     private float angle = 0;
 
-    public Viewport Viewport;
+    public RectInt Viewport;
 
     public Camera()
     {
-        Viewport = new Viewport();
-        Viewport.Width = Engine.Width;
-        Viewport.Height = Engine.Height;
+        Viewport = new(Engine.GameWidth, Engine.GameHeight);
         UpdateMatrices();
     }
 
     public Camera(int width, int height)
     {
-        Viewport = new Viewport();
-        Viewport.Width = width;
-        Viewport.Height = height;
+        Viewport = new(width, height);
         UpdateMatrices();
     }
 
@@ -44,13 +38,12 @@ public class Camera
 
     private void UpdateMatrices()
     {
-        matrix = Matrix4x4.Identity *
-                Matrix4x4.CreateTranslation(new Vector3(-new Vector2((int)Math.Floor(position.X), (int)Math.Floor(position.Y)), 0)) *
-                Matrix4x4.CreateRotationZ(angle) *
-                Matrix4x4.CreateScale(new Vector3(zoom, 1)) *
-                Matrix4x4.CreateTranslation(new Vector3(new Vector2((int)Math.Floor(origin.X), (int)Math.Floor(origin.Y)), 0));
+        matrix = Matrix3x2.CreateTranslation(-MathF.Floor(position.X), -MathF.Floor(position.Y))
+               * Matrix3x2.CreateRotation(angle)
+               * Matrix3x2.CreateScale(zoom)
+               * Matrix3x2.CreateTranslation(MathF.Floor(origin.X), MathF.Floor(origin.Y));
 
-        Matrix4x4.Invert(matrix, out inverse);
+        Matrix3x2.Invert(matrix, out inverse);
 
         changed = false;
     }
@@ -64,7 +57,7 @@ public class Camera
         changed = true;
     }
 
-    public Matrix4x4 Matrix
+    public Matrix3x2 Matrix
     {
         get
         {
@@ -74,7 +67,7 @@ public class Camera
         }
     }
 
-    public Matrix4x4 Inverse
+    public Matrix3x2 Inverse
     {
         get
         {

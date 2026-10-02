@@ -217,7 +217,7 @@ public static class MInput
         internal void Update()
         {
             PreviousState = CurrentState;
-            CurrentState = Foster.Framework.Input.Mouse.GetState();
+            CurrentState = Input.Mouse.GetState();
         }
 
         internal void UpdateNull()
@@ -316,14 +316,14 @@ public static class MInput
         {
             get
             {
-                Matrix4x4.Invert(Engine.ScreenMatrix, out Matrix4x4 result);
+                Matrix3x2.Invert(Engine.ScreenMatrix, out Matrix3x2 result);
                 return Vector2.Transform(new Vector2(CurrentState.X, CurrentState.Y), result);
             }
 
             set
             {
                 var vector = Vector2.Transform(value, Engine.ScreenMatrix);
-                Foster.Framework.Input.Mouse.SetPosition((int)Math.Round(vector.X), (int)Math.Round(vector.Y));
+                Input.Mouse.SetPosition((int)Math.Round(vector.X), (int)Math.Round(vector.Y));
             }
         }
 

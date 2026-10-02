@@ -17,7 +17,7 @@ public class Scene : IEnumerable<Entity>, IEnumerable
     public Entity HelperEntity { get; private set; }
     public Tracker Tracker { get; private set; }
 
-    private Dictionary<int, double> actualDepthLookup;
+    private readonly Dictionary<int, double> actualDepthLookup;
 
     public event Action OnEndOfFrame;
 
@@ -90,16 +90,6 @@ public class Scene : IEnumerable<Entity>, IEnumerable
     public virtual void AfterRender()
     {
         RendererList.AfterRender();
-    }
-
-    public virtual void HandleGraphicsReset()
-    {
-        Entities.HandleGraphicsReset();
-    }
-
-    public virtual void HandleGraphicsCreate()
-    {
-        Entities.HandleGraphicsCreate();
     }
 
     public virtual void GainFocus()

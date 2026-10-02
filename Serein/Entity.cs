@@ -116,18 +116,6 @@ public class Entity : IEnumerable<Component>, IEnumerable
         Components.DebugRender(camera);
     }
 
-    /// <summary>
-    /// Called when the graphics device resets. When this happens, any RenderTargets or other contents of VRAM will be wiped and need to be regenerated
-    /// </summary>
-    public virtual void HandleGraphicsReset()
-    {
-        Components.HandleGraphicsReset();
-    }
-
-    public virtual void HandleGraphicsCreate()
-    {
-        Components.HandleGraphicsCreate();
-    }
 
     public void RemoveSelf()
     {

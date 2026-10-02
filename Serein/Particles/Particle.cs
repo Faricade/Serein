@@ -124,7 +124,7 @@ public struct Particle
         if (Track != null)
             renderAt += Track.Position;
 
-        Draw.SpriteBatch.Draw(Source.Texture, renderAt, Source.ClipRect, Color, Rotation, Source.Center, Size, SpriteEffects.None, 0);
+        Draw.Batcher.Draw(Source.Texture, renderAt, Source.ClipRect, Color, Rotation, Source.Center, Size, SpriteEffects.None, 0);
     }
 
     public void Render(float alpha)
@@ -133,6 +133,6 @@ public struct Particle
         if (Track != null)
             renderAt += Track.Position;
         
-        Draw.SpriteBatch.Draw(Source.Texture, renderAt, Source.ClipRect, Color * alpha, Rotation, Source.Center, Size, SpriteEffects.None, 0);
+        Draw.Batcher.Draw(Source.Texture, renderAt, Source.ClipRect, Color * alpha, Rotation, Source.Center, Size, SpriteEffects.None, 0);
     }
 }

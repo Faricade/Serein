@@ -54,7 +54,7 @@ public class NumberText : GraphicsComponent
 
     public override void Render()
     {
-        Draw.SpriteBatch.DrawString(font, drawString, RenderPosition, Color, Rotation, Origin, Scale, Effects, 0);
+        Draw.Batcher.DrawString(font, drawString, RenderPosition, Color, Rotation, Origin, Scale, Effects, 0);
     }
 
     public float Width

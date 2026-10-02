@@ -420,26 +420,22 @@ public class Commands
 
     internal void Render()
     {
-        int screenWidth = Engine.ViewWidth;
-        int screenHeight = Engine.ViewHeight;
-
-        Draw.SpriteBatch.Begin();
+        int screenWidth = Engine.Instance.Window.WidthInPixels;
+        int screenHeight = Engine.Instance.Window.HeightInPixels;
 
         Draw.Rect(10, screenHeight - 50, screenWidth - 20, 40, Color.Black * OPACITY);
         if (underscore)
-            Draw.SpriteBatch.DrawString(Draw.DefaultFont, ">" + currentText + "_", new Vector2(20, screenHeight - 42), Color.White);
+            Draw.Batcher.DrawString(Draw.DefaultFont, ">" + currentText + "_", new Vector2(20, screenHeight - 42), Color.White);
         else
-            Draw.SpriteBatch.DrawString(Draw.DefaultFont, ">" + currentText, new Vector2(20, screenHeight - 42), Color.White);
+            Draw.Batcher.DrawString(Draw.DefaultFont, ">" + currentText, new Vector2(20, screenHeight - 42), Color.White);
 
         if (drawCommands.Count > 0)
         {
             int height = 10 + (30 * drawCommands.Count);
             Draw.Rect(10, screenHeight - height - 60, screenWidth - 20, height, Color.Black * OPACITY);
             for (int i = 0; i < drawCommands.Count; i++)
-                Draw.SpriteBatch.DrawString(Draw.DefaultFont, drawCommands[i].Text, new Vector2(20, screenHeight - 92 - (30 * i)), drawCommands[i].Color);
+                Draw.Batcher.DrawString(Draw.DefaultFont, drawCommands[i].Text, new Vector2(20, screenHeight - 92 - (30 * i)), drawCommands[i].Color);
         }
-
-        Draw.SpriteBatch.End();
     }
 
     #endregion

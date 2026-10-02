@@ -1,6 +1,5 @@
 ﻿using Foster.Framework;
-
-using System;
+using Monocle;
 
 namespace Serein;
 
@@ -12,9 +11,9 @@ public static class Draw
     public static Renderer Renderer { get; internal set; }
 
     /// <summary>
-    /// All 2D rendering is done through this SpriteBatch instance
+    /// All 2D rendering is done through this Batcher instance
     /// </summary>
-    public static SpriteBatch SpriteBatch { get; private set; }
+    public static Batcher Batcher { get; private set; }
 
     /// <summary>
     /// The default Monocle font (Consolas 12). Loaded automatically by Monocle at startup
@@ -40,8 +39,8 @@ public static class Draw
 
     internal static void Initialize(GraphicsDevice graphicsDevice)
     {
-        SpriteBatch = new SpriteBatch(graphicsDevice);
-        DefaultFont = Engine.Instance.Content.Load<SpriteFont>(@"Monocle\MonocleDefault");
+        Batcher = new(graphicsDevice);
+        DefaultFont = Engine.Instance.GraphicsDevice.Defaults.SpriteFont;
         UseDebugPixelTexture();
     }
 
@@ -54,7 +53,7 @@ public static class Draw
 
     public static void Point(Vector2 at, Color color)
     {
-        SpriteBatch.Draw(Pixel.Texture, at, Pixel.ClipRect, color, 0, Vector2.Zero, 1f, SpriteEffects.None, 0);
+        Batcher.Draw(Pixel.Texture, at, Pixel.ClipRect, color, 0, Vector2.Zero, 1f, SpriteEffects.None, 0);
     }
 
     #region Line
@@ -80,12 +79,12 @@ public static class Draw
 
     public static void LineAngle(Vector2 start, float angle, float length, Color color)
     {
-        SpriteBatch.Draw(Pixel.Texture, start, Pixel.ClipRect, color, angle, Vector2.Zero, new Vector2(length, 1), SpriteEffects.None, 0);
+        Batcher.Draw(Pixel.Texture, start, Pixel.ClipRect, color, angle, Vector2.Zero, new Vector2(length, 1), SpriteEffects.None, 0);
     }
 
     public static void LineAngle(Vector2 start, float angle, float length, Color color, float thickness)
     {
-        SpriteBatch.Draw(Pixel.Texture, start, Pixel.ClipRect, color, angle, new Vector2(0, .5f), new Vector2(length, thickness), SpriteEffects.None, 0);
+        Batcher.Draw(Pixel.Texture, start, Pixel.ClipRect, color, angle, new Vector2(0, .5f), new Vector2(length, thickness), SpriteEffects.None, 0);
     }
 
     public static void LineAngle(float startX, float startY, float angle, float length, Color color)
@@ -155,7 +154,7 @@ public static class Draw
         rect.Y = (int)y;
         rect.Width = (int)width;
         rect.Height = (int)height;
-        SpriteBatch.Draw(Pixel.Texture, rect, Pixel.ClipRect, color);
+        Batcher.Draw(Pixel.Texture, rect, Pixel.ClipRect, color);
     }
 
     public static void Rect(Vector2 position, float width, float height, Color color)
@@ -166,7 +165,7 @@ public static class Draw
     public static void Rect(Rect rect, Color color)
     {
         Draw.rect = rect;
-        SpriteBatch.Draw(Pixel.Texture, rect, Pixel.ClipRect, color);
+        Batcher.Draw(Pixel.Texture, rect, Pixel.ClipRect, color);
     }
 
     public static void Rect(Collider collider, Color color)
@@ -185,21 +184,21 @@ public static class Draw
         rect.Width = (int)width;
         rect.Height = 1;
 
-        SpriteBatch.Draw(Pixel.Texture, rect, Pixel.ClipRect, color);
+        Batcher.Draw(Pixel.Texture, rect, Pixel.ClipRect, color);
 
         rect.Y += (int)height - 1;
 
-        SpriteBatch.Draw(Pixel.Texture, rect, Pixel.ClipRect, color);
+        Batcher.Draw(Pixel.Texture, rect, Pixel.ClipRect, color);
 
         rect.Y -= (int)height - 1;
         rect.Width = 1;
         rect.Height = (int)height;
 
-        SpriteBatch.Draw(Pixel.Texture, rect, Pixel.ClipRect, color);
+        Batcher.Draw(Pixel.Texture, rect, Pixel.ClipRect, color);
 
         rect.X += (int)width - 1;
 
-        SpriteBatch.Draw(Pixel.Texture, rect, Pixel.ClipRect, color);
+        Batcher.Draw(Pixel.Texture, rect, Pixel.ClipRect, color);
     }
 
     public static void HollowRect(Vector2 position, float width, float height, Color color)
@@ -223,12 +222,12 @@ public static class Draw
 
     public static void Text(SpriteFont font, string text, Vector2 position, Color color)
     {
-        Draw.SpriteBatch.DrawString(font, text, Calc.Floor(position), color);
+        Draw.Batcher.DrawString(font, text, Calc.Floor(position), color);
     }
 
     public static void Text(SpriteFont font, string text, Vector2 position, Color color, Vector2 origin, Vector2 scale, float rotation)
     {
-        Draw.SpriteBatch.DrawString(font, text, Calc.Floor(position), color, rotation, origin, scale, SpriteEffects.None, 0);
+        Draw.Batcher.DrawString(font, text, Calc.Floor(position), color, rotation, origin, scale, SpriteEffects.None, 0);
     }
 
     public static void TextJustified(SpriteFont font, string text, Vector2 position, Color color, Vector2 justify)
@@ -237,7 +236,7 @@ public static class Draw
         origin.X *= justify.X;
         origin.Y *= justify.Y;
 
-        Draw.SpriteBatch.DrawString(font, text, Calc.Floor(position), color, 0, origin, 1, SpriteEffects.None, 0);
+        Draw.Batcher.DrawString(font, text, Calc.Floor(position), color, 0, origin, 1, SpriteEffects.None, 0);
     }
 
     public static void TextJustified(SpriteFont font, string text, Vector2 position, Color color, float scale, Vector2 justify)
@@ -245,7 +244,7 @@ public static class Draw
         Vector2 origin = font.MeasureString(text);
         origin.X *= justify.X;
         origin.Y *= justify.Y;
-        Draw.SpriteBatch.DrawString(font, text, Calc.Floor(position), color, 0, origin, scale, SpriteEffects.None, 0);
+        Draw.Batcher.DrawString(font, text, Calc.Floor(position), color, 0, origin, scale, SpriteEffects.None, 0);
     }
 
     public static void TextCentered(SpriteFont font, string text, Vector2 position)
@@ -275,8 +274,8 @@ public static class Draw
         for (int i = -1; i < 2; i++)
             for (int j = -1; j < 2; j++)
                 if (i != 0 || j != 0)
-                    Draw.SpriteBatch.DrawString(font, text, Calc.Floor(position) + new Vector2(i, j), Color.Black, 0, origin, scale, SpriteEffects.None, 0);
-        Draw.SpriteBatch.DrawString(font, text, Calc.Floor(position), color, 0, origin, scale, SpriteEffects.None, 0);
+                    Draw.Batcher.DrawString(font, text, Calc.Floor(position) + new Vector2(i, j), Color.Black, 0, origin, scale, SpriteEffects.None, 0);
+        Draw.Batcher.DrawString(font, text, Calc.Floor(position), color, 0, origin, scale, SpriteEffects.None, 0);
     }
 
     public static void OutlineTextCentered(SpriteFont font, string text, Vector2 position, Color color, Color outlineColor)
@@ -286,8 +285,8 @@ public static class Draw
         for (int i = -1; i < 2; i++)
             for (int j = -1; j < 2; j++)
                 if (i != 0 || j != 0)
-                    Draw.SpriteBatch.DrawString(font, text, Calc.Floor(position) + new Vector2(i, j), outlineColor, 0, origin, 1, SpriteEffects.None, 0);
-        Draw.SpriteBatch.DrawString(font, text, Calc.Floor(position), color, 0, origin, 1, SpriteEffects.None, 0);
+                    Draw.Batcher.DrawString(font, text, Calc.Floor(position) + new Vector2(i, j), outlineColor, 0, origin, 1, SpriteEffects.None, 0);
+        Draw.Batcher.DrawString(font, text, Calc.Floor(position), color, 0, origin, 1, SpriteEffects.None, 0);
     }
 
     public static void OutlineTextCentered(SpriteFont font, string text, Vector2 position, Color color, Color outlineColor, float scale)
@@ -297,8 +296,8 @@ public static class Draw
         for (int i = -1; i < 2; i++)
             for (int j = -1; j < 2; j++)
                 if (i != 0 || j != 0)
-                    Draw.SpriteBatch.DrawString(font, text, Calc.Floor(position) + new Vector2(i, j), outlineColor, 0, origin, scale, SpriteEffects.None, 0);
-        Draw.SpriteBatch.DrawString(font, text, Calc.Floor(position), color, 0, origin, scale, SpriteEffects.None, 0);
+                    Draw.Batcher.DrawString(font, text, Calc.Floor(position) + new Vector2(i, j), outlineColor, 0, origin, scale, SpriteEffects.None, 0);
+        Draw.Batcher.DrawString(font, text, Calc.Floor(position), color, 0, origin, scale, SpriteEffects.None, 0);
     }
 
     public static void OutlineTextJustify(SpriteFont font, string text, Vector2 position, Color color, Color outlineColor, Vector2 justify)
@@ -308,8 +307,8 @@ public static class Draw
         for (int i = -1; i < 2; i++)
             for (int j = -1; j < 2; j++)
                 if (i != 0 || j != 0)
-                    Draw.SpriteBatch.DrawString(font, text, Calc.Floor(position) + new Vector2(i, j), outlineColor, 0, origin, 1, SpriteEffects.None, 0);
-        Draw.SpriteBatch.DrawString(font, text, Calc.Floor(position), color, 0, origin, 1, SpriteEffects.None, 0);
+                    Draw.Batcher.DrawString(font, text, Calc.Floor(position) + new Vector2(i, j), outlineColor, 0, origin, 1, SpriteEffects.None, 0);
+        Draw.Batcher.DrawString(font, text, Calc.Floor(position), color, 0, origin, 1, SpriteEffects.None, 0);
     }
 
     public static void OutlineTextJustify(SpriteFont font, string text, Vector2 position, Color color, Color outlineColor, Vector2 justify, float scale)
@@ -319,8 +318,8 @@ public static class Draw
         for (int i = -1; i < 2; i++)
             for (int j = -1; j < 2; j++)
                 if (i != 0 || j != 0)
-                    Draw.SpriteBatch.DrawString(font, text, Calc.Floor(position) + new Vector2(i, j), outlineColor, 0, origin, scale, SpriteEffects.None, 0);
-        Draw.SpriteBatch.DrawString(font, text, Calc.Floor(position), color, 0, origin, scale, SpriteEffects.None, 0);
+                    Draw.Batcher.DrawString(font, text, Calc.Floor(position) + new Vector2(i, j), outlineColor, 0, origin, scale, SpriteEffects.None, 0);
+        Draw.Batcher.DrawString(font, text, Calc.Floor(position), color, 0, origin, scale, SpriteEffects.None, 0);
     }
 
     #endregion
@@ -337,7 +336,7 @@ public static class Draw
         while (clip.X < tex.ClipRect.X + tex.ClipRect.Width)
         {
             Vector2 add = new Vector2(sliceSize * num, (float)Math.Round(Math.Sin(sineCounter + sliceAdd * num) * amplitude));
-            Draw.SpriteBatch.Draw(tex.Texture, position, clip, color, rotation, origin - add, scale, effects, 0);
+            Draw.Batcher.Draw(tex.Texture, position, clip, color, rotation, origin - add, scale, effects, 0);
 
             num++;
             clip.X += sliceSize;
@@ -355,7 +354,7 @@ public static class Draw
         while (clip.Y < tex.ClipRect.Y + tex.ClipRect.Height)
         {
             Vector2 add = new Vector2((float)Math.Round(Math.Sin(sineCounter + sliceAdd * num) * amplitude), sliceSize * num);
-            Draw.SpriteBatch.Draw(tex.Texture, position, clip, color, rotation, origin - add, scale, effects, 0);
+            Draw.Batcher.Draw(tex.Texture, position, clip, color, rotation, origin - add, scale, effects, 0);
 
             num++;
             clip.Y += sliceSize;
@@ -377,7 +376,7 @@ public static class Draw
             clip.Height = Math.Min(sliceSize, tex.ClipRect.Y + tex.ClipRect.Height - clip.Y);
 
             Vector2 add = new Vector2((float)Math.Round(Math.Sin(sineCounter + sliceAdd * num) * amplitude * fade), clip.Y - tex.ClipRect.Y);
-            Draw.SpriteBatch.Draw(tex.Texture, position, clip, color, rotation, origin - add, scale, effects, 0);
+            Draw.Batcher.Draw(tex.Texture, position, clip, color, rotation, origin - add, scale, effects, 0);
 
             num++;
             clip.Y += clip.Height;

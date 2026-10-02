@@ -268,17 +268,5 @@ public class EntityList : IEnumerable<Entity>, IEnumerable
             entity.DebugRender(camera);
     }
 
-    internal void HandleGraphicsReset()
-    {
-        foreach (var entity in entities)
-            entity.HandleGraphicsReset();
-    }
-
-    internal void HandleGraphicsCreate()
-    {
-        foreach (var entity in entities)
-            entity.HandleGraphicsCreate();
-    }
-
     public static Comparison<Entity> CompareDepth = (a, b) => { return Math.Sign(b.actualDepth - a.actualDepth); };
 }

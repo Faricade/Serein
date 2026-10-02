@@ -109,6 +109,6 @@ public class Text : GraphicsComponent
 
     public override void Render()
     {
-        Draw.SpriteBatch.DrawString(font, text, RenderPosition, Color, Rotation, Origin, Scale, Effects, 0);
+        Draw.Batcher.DrawString(font, text, RenderPosition, Color, Rotation, Origin, Scale, Effects, 0);
     }
 }
