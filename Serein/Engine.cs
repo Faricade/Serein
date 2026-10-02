@@ -107,9 +107,9 @@ public class Engine : App
         }
 
         //Debug Console
-        if (Commands.Open)
+        if (Commands is not null && Commands.Open)
             Commands.UpdateOpen();
-        else if (Commands.Enabled)
+        else if (Commands is not null && Commands.Enabled)
             Commands.UpdateClosed();
 
         //Changing scenes
@@ -127,7 +127,7 @@ public class Engine : App
     {
         RenderCore();
 
-        if (Commands.Open)
+        if (Commands is not null && Commands.Open)
             Commands.Render();
 
         Window.Clear(ClearColor);
@@ -159,7 +159,7 @@ public class Engine : App
 
     /// <summary>
     /// Override if you want to change the core rendering functionality of Serein Engine.
-    /// By default, this simply sets the render target to null, clears the screen, and renders the current Scene
+    /// By default, this simply clears the screen, and queues render of the current Scene
     /// </summary>
     protected virtual void RenderCore()
     {
@@ -192,7 +192,7 @@ public class Engine : App
     /// <summary>
     /// Called after a Scene ends, before the next Scene begins
     /// </summary>
-    protected virtual void OnSceneTransition(Scene from, Scene to)
+    protected virtual void OnSceneTransition(Scene? from, Scene? to)
     {
         GC.Collect();
         GC.WaitForPendingFinalizers();
@@ -201,10 +201,10 @@ public class Engine : App
     /// <summary>
     /// The currently active Scene. Note that if set, the Scene will not actually change until the end of the Update
     /// </summary>
-    public static Scene Scene
+    public static Scene? Scene
     {
-        get { return Instance.scene; }
-        set { Instance.nextScene = value; }
+        get { return Instance?.scene; }
+        set { Instance?.nextScene = value; }
     }
 
     private void UpdateView()
