@@ -82,7 +82,7 @@ public class TimerText : GraphicsComponent
 
     public override void Render()
     {
-        Draw.Batcher.DrawString(font, Text, RenderPosition, Color, Rotation, Origin, Scale, Effects, 0);
+        Draw.Batcher.Text(font, Text, RenderPosition, Color, Rotation, Origin, Scale, Effects, 0);
     }
 
     public SpriteFont Font

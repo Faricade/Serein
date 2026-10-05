@@ -14,6 +14,7 @@
     <ProjectReference Include="..\Foster\Framework\Foster.Framework.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Using Include="Foster.Framework" />
     <Using Include="System.Numerics" />
   </ItemGroup>
 </Project>

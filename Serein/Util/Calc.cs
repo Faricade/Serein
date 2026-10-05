@@ -88,7 +88,7 @@ public static class Calc
 
             foreach (string word in forcedLine.Split(' '))
             {
-                if (font.MeasureString(line + " " + word).X > maxLineWidth)
+                if (font.SizeOf(line + " " + word).X > maxLineWidth)
                 {
                     lines.Add(line);
                     line = word;

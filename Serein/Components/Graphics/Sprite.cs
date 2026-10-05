@@ -69,7 +69,7 @@ public class Sprite : Image
         {
             //Timer
             if (UseRawDeltaTime)
-                animationTimer += Engine.RawDeltaTime * Rate;
+                animationTimer += Engine.Instance.Time.Delta * Rate;
             else
                 animationTimer += Engine.Instance!.Time.Delta * Rate;
 

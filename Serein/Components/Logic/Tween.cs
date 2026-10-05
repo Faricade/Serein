@@ -98,7 +98,7 @@ public class Tween : Component
 
     public override void Update()
     {
-        TimeLeft -= (UseRawDeltaTime ? Engine.RawDeltaTime : Engine.Instance!.Time.Delta);
+        TimeLeft -= (UseRawDeltaTime ? Engine.Instance.Time.Delta : Engine.Instance!.Time.Delta);
         
         //Update the percentage and eased percentage
         Percent = Math.Max(0, TimeLeft) / (float)Duration;

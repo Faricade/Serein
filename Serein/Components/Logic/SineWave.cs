@@ -56,7 +56,7 @@ public class SineWave : Component
 
     public override void Update()
     {
-        Counter += (Foster.Framework.Calc.PI * 2) * Frequency * Rate * (UseRawDeltaTime ? Engine.RawDeltaTime : Engine.Instance!.Time.Delta);
+        Counter += (Foster.Framework.Calc.PI * 2) * Frequency * Rate * (UseRawDeltaTime ? Engine.Instance.Time.Delta : Engine.Instance!.Time.Delta);
         if (OnUpdate != null)
             OnUpdate(Value);
     }

@@ -221,12 +221,12 @@ public static class Draw
 
     public static void Text(SpriteFont font, string text, Vector2 position, Color color)
     {
-        Draw.Batcher.DrawString(font, text, Calc.Floor(position), color);
+        Draw.Batcher.Text(font, text, Calc.Floor(position), color);
     }
 
     public static void Text(SpriteFont font, string text, Vector2 position, Color color, Vector2 origin, Vector2 scale, float rotation)
     {
-        Draw.Batcher.DrawString(font, text, Calc.Floor(position), color, rotation, origin, scale, SpriteEffects.None, 0);
+        Draw.Batcher.Text(font, text, Calc.Floor(position), color, rotation, origin, scale, SpriteEffects.None, 0);
     }
 
     public static void TextJustified(SpriteFont font, string text, Vector2 position, Color color, Vector2 justify)
@@ -235,7 +235,7 @@ public static class Draw
         origin.X *= justify.X;
         origin.Y *= justify.Y;
 
-        Draw.Batcher.DrawString(font, text, Calc.Floor(position), color, 0, origin, 1, SpriteEffects.None, 0);
+        Draw.Batcher.Text(font, text, Calc.Floor(position), color, 0, origin, 1, SpriteEffects.None, 0);
     }
 
     public static void TextJustified(SpriteFont font, string text, Vector2 position, Color color, float scale, Vector2 justify)
@@ -243,7 +243,7 @@ public static class Draw
         Vector2 origin = font.SizeOf(text);
         origin.X *= justify.X;
         origin.Y *= justify.Y;
-        Draw.Batcher.DrawString(font, text, Calc.Floor(position), color, 0, origin, scale, SpriteEffects.None, 0);
+        Draw.Batcher.Text(font, text, Calc.Floor(position), color, 0, origin, scale, SpriteEffects.None, 0);
     }
 
     public static void TextCentered(SpriteFont font, string text, Vector2 position)
@@ -273,8 +273,8 @@ public static class Draw
         for (int i = -1; i < 2; i++)
             for (int j = -1; j < 2; j++)
                 if (i != 0 || j != 0)
-                    Draw.Batcher.DrawString(font, text, Calc.Floor(position) + new Vector2(i, j), Color.Black, 0, origin, scale, SpriteEffects.None, 0);
-        Draw.Batcher.DrawString(font, text, Calc.Floor(position), color, 0, origin, scale, SpriteEffects.None, 0);
+                    Draw.Batcher.Text(font, text, Calc.Floor(position) + new Vector2(i, j), Color.Black, 0, origin, scale, SpriteEffects.None, 0);
+        Draw.Batcher.Text(font, text, Calc.Floor(position), color, 0, origin, scale, SpriteEffects.None, 0);
     }
 
     public static void OutlineTextCentered(SpriteFont font, string text, Vector2 position, Color color, Color outlineColor)
@@ -284,8 +284,8 @@ public static class Draw
         for (int i = -1; i < 2; i++)
             for (int j = -1; j < 2; j++)
                 if (i != 0 || j != 0)
-                    Draw.Batcher.DrawString(font, text, Calc.Floor(position) + new Vector2(i, j), outlineColor, 0, origin, 1, SpriteEffects.None, 0);
-        Draw.Batcher.DrawString(font, text, Calc.Floor(position), color, 0, origin, 1, SpriteEffects.None, 0);
+                    Draw.Batcher.Text(font, text, Calc.Floor(position) + new Vector2(i, j), outlineColor, 0, origin, 1, SpriteEffects.None, 0);
+        Draw.Batcher.Text(font, text, Calc.Floor(position), color, 0, origin, 1, SpriteEffects.None, 0);
     }
 
     public static void OutlineTextCentered(SpriteFont font, string text, Vector2 position, Color color, Color outlineColor, float scale)
@@ -295,8 +295,8 @@ public static class Draw
         for (int i = -1; i < 2; i++)
             for (int j = -1; j < 2; j++)
                 if (i != 0 || j != 0)
-                    Draw.Batcher.DrawString(font, text, Calc.Floor(position) + new Vector2(i, j), outlineColor, 0, origin, scale, SpriteEffects.None, 0);
-        Draw.Batcher.DrawString(font, text, Calc.Floor(position), color, 0, origin, scale, SpriteEffects.None, 0);
+                    Draw.Batcher.Text(font, text, Calc.Floor(position) + new Vector2(i, j), outlineColor, 0, origin, scale, SpriteEffects.None, 0);
+        Draw.Batcher.Text(font, text, Calc.Floor(position), color, 0, origin, scale, SpriteEffects.None, 0);
     }
 
     public static void OutlineTextJustify(SpriteFont font, string text, Vector2 position, Color color, Color outlineColor, Vector2 justify)
@@ -306,8 +306,8 @@ public static class Draw
         for (int i = -1; i < 2; i++)
             for (int j = -1; j < 2; j++)
                 if (i != 0 || j != 0)
-                    Draw.Batcher.DrawString(font, text, Calc.Floor(position) + new Vector2(i, j), outlineColor, 0, origin, 1, SpriteEffects.None, 0);
-        Draw.Batcher.DrawString(font, text, Calc.Floor(position), color, 0, origin, 1, SpriteEffects.None, 0);
+                    Draw.Batcher.Text(font, text, Calc.Floor(position) + new Vector2(i, j), outlineColor, 0, origin, 1, SpriteEffects.None, 0);
+        Draw.Batcher.Text(font, text, Calc.Floor(position), color, 0, origin, 1, SpriteEffects.None, 0);
     }
 
     public static void OutlineTextJustify(SpriteFont font, string text, Vector2 position, Color color, Color outlineColor, Vector2 justify, float scale)
@@ -317,8 +317,8 @@ public static class Draw
         for (int i = -1; i < 2; i++)
             for (int j = -1; j < 2; j++)
                 if (i != 0 || j != 0)
-                    Draw.Batcher.DrawString(font, text, Calc.Floor(position) + new Vector2(i, j), outlineColor, 0, origin, scale, SpriteEffects.None, 0);
-        Draw.Batcher.DrawString(font, text, Calc.Floor(position), color, 0, origin, scale, SpriteEffects.None, 0);
+                    Draw.Batcher.Text(font, text, Calc.Floor(position) + new Vector2(i, j), outlineColor, 0, origin, scale, SpriteEffects.None, 0);
+        Draw.Batcher.Text(font, text, Calc.Floor(position), color, 0, origin, scale, SpriteEffects.None, 0);
     }
 
     #endregion

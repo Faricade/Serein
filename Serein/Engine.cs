@@ -8,9 +8,9 @@ public class Engine : App
     public Version? Version;
 
     // references
-    public static Engine? Instance { get; private set; }
-    public static Commands? Commands { get; private set; }
-    public static Pooler? Pooler { get; private set; }
+    public static Engine Instance { get; private set; } = null!;
+    public static Commands Commands { get; private set; } = null!;
+    public static Pooler Pooler { get; private set; } = null!;
     public static Action? OverloadGameLoop { get; set; }
 
     // screen size

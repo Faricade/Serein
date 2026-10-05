@@ -52,7 +52,7 @@ public class Scene : IEnumerable<Entity>, IEnumerable
     {
         if (!Paused)
             TimeActive += Engine.Instance!.Time.Delta;
-        RawTimeActive += Engine.RawDeltaTime;
+        RawTimeActive += Engine.Instance.Time.Delta;
 
         Entities.UpdateLists();
         TagLists.UpdateLists();
@@ -131,12 +131,12 @@ public class Scene : IEnumerable<Entity>, IEnumerable
 
     public bool OnRawInterval(float interval)
     {
-        return (int)((RawTimeActive - Engine.RawDeltaTime) / interval) < (int)(RawTimeActive / interval);
+        return (int)((RawTimeActive - Engine.Instance.Time.Delta) / interval) < (int)(RawTimeActive / interval);
     }
 
     public bool OnRawInterval(float interval, float offset)
     {
-        return Math.Floor((RawTimeActive - offset - Engine.RawDeltaTime) / interval) < Math.Floor((RawTimeActive - offset) / interval);
+        return Math.Floor((RawTimeActive - offset - Engine.Instance.Time.Delta) / interval) < Math.Floor((RawTimeActive - offset) / interval);
     }
 
     public bool BetweenRawInterval(float interval)

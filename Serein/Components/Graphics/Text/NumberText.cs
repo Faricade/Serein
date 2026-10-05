@@ -1,6 +1,3 @@
-
-using System;
-
 namespace Serein;
 
 public class NumberText : GraphicsComponent
@@ -54,7 +51,7 @@ public class NumberText : GraphicsComponent
 
     public override void Render()
     {
-        Draw.Batcher.DrawString(font, drawString, RenderPosition, Color, Rotation, Origin, Scale, Effects, 0);
+        Draw.Batcher.Text(font, drawString, RenderPosition, Color, Rotation, Origin, Scale, Effects, 0);
     }
 
     public float Width

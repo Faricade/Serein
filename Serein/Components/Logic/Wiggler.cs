@@ -105,8 +105,8 @@ public class Wiggler : Component
     {
         if (UseRawDeltaTime)
         {
-            sineCounter += sineAdd * Engine.RawDeltaTime;
-            Counter -= increment * Engine.RawDeltaTime;
+            sineCounter += sineAdd * Engine.Instance.Time.Delta;
+            Counter -= increment * Engine.Instance.Time.Delta;
         }
         else
         {

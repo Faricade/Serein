@@ -33,7 +33,7 @@ public class Coroutine : Component
         ended = false;
         
         if (waitTimer > 0)
-            waitTimer -= (UseRawDeltaTime ? Engine.RawDeltaTime : Engine.Instance!.Time.Delta);
+            waitTimer -= (UseRawDeltaTime ? Engine.Instance.Time.Delta : Engine.Instance!.Time.Delta);
         else if (enumerators.Count > 0)
         {
             IEnumerator now = enumerators.Peek();
