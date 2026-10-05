@@ -1,4 +1,4 @@
-﻿using Foster.Framework;
+using Foster.Framework;
 using System;
 
 namespace Serein;
@@ -382,7 +382,7 @@ public class Grid : Collider
 
     public override bool Collide(Rect rect)
     {
-        if (rect.Intersects(Bounds))
+        if (rect.Overlaps(Bounds))
         {
             int x = (int)((rect.Left - AbsoluteLeft) / CellWidth);
             int y = (int)((rect.Top - AbsoluteTop) / CellHeight);

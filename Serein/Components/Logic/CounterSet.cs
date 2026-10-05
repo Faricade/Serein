@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -44,6 +44,6 @@ public class CounterSet<T> : Component
 
     public override void Update()
     {
-        timer += Engine.DeltaTime;
+        timer += Engine.Instance!.Time.Delta;
     }
 }

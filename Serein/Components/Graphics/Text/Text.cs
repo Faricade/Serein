@@ -1,4 +1,4 @@
-﻿using Foster.Framework;
+using Foster.Framework;
 
 
 namespace Serein;
@@ -84,7 +84,7 @@ public class Text : GraphicsComponent
 
     private void UpdateSize()
     {
-        size = font.MeasureString(text);
+        size = font.SizeOf(text);
         UpdateCentering();
     }
 

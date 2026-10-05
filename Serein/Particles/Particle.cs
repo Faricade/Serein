@@ -1,4 +1,4 @@
-﻿using Foster.Framework;
+using Foster.Framework;
 
 using System;
 
@@ -48,7 +48,7 @@ public struct Particle
         if (delta.HasValue)
             dt = delta.Value;
         else
-            dt = (Type.UseActualDeltaTime ? Engine.RawDeltaTime : Engine.DeltaTime);
+            dt = (Type.UseActualDeltaTime ? Engine.RawDeltaTime : Engine.Instance!.Time.Delta);
 
         var ease = Life / StartLife;
 

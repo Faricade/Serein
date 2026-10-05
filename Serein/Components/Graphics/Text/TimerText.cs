@@ -1,4 +1,4 @@
-﻿using Foster.Framework;
+using Foster.Framework;
 
 using System;
 
@@ -53,7 +53,7 @@ public class TimerText : GraphicsComponent
 
     private void CalculateOrigin()
     {
-        Origin = (font.MeasureString(Text) * justify).Floor();
+        Origin = (font.SizeOf(Text) * justify).Floor();
     }
 
     public override void Update()
@@ -125,11 +125,11 @@ public class TimerText : GraphicsComponent
 
     public float Width
     {
-        get { return font.MeasureString(Text).X; }
+        get { return font.SizeOf(Text).X; }
     }
 
     public float Height
     {
-        get { return font.MeasureString(Text).Y; }
+        get { return font.SizeOf(Text).Y; }
     }
 }

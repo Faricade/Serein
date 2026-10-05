@@ -1,5 +1,4 @@
-﻿using Foster.Framework;
-using Monocle;
+using Foster.Framework;
 
 namespace Serein;
 
@@ -232,7 +231,7 @@ public static class Draw
 
     public static void TextJustified(SpriteFont font, string text, Vector2 position, Color color, Vector2 justify)
     {
-        Vector2 origin = font.MeasureString(text);
+        Vector2 origin = font.SizeOf(text);
         origin.X *= justify.X;
         origin.Y *= justify.Y;
 
@@ -241,7 +240,7 @@ public static class Draw
 
     public static void TextJustified(SpriteFont font, string text, Vector2 position, Color color, float scale, Vector2 justify)
     {
-        Vector2 origin = font.MeasureString(text);
+        Vector2 origin = font.SizeOf(text);
         origin.X *= justify.X;
         origin.Y *= justify.Y;
         Draw.Batcher.DrawString(font, text, Calc.Floor(position), color, 0, origin, scale, SpriteEffects.None, 0);
@@ -249,27 +248,27 @@ public static class Draw
 
     public static void TextCentered(SpriteFont font, string text, Vector2 position)
     {
-        Text(font, text, position - font.MeasureString(text) * .5f, Color.White);
+        Text(font, text, position - font.SizeOf(text) * .5f, Color.White);
     }
 
     public static void TextCentered(SpriteFont font, string text, Vector2 position, Color color)
     {
-        Text(font, text, position - font.MeasureString(text) * .5f, color);
+        Text(font, text, position - font.SizeOf(text) * .5f, color);
     }
 
     public static void TextCentered(SpriteFont font, string text, Vector2 position, Color color, float scale)
     {
-        Text(font, text, position, color, font.MeasureString(text) * .5f, Vector2.One * scale, 0);
+        Text(font, text, position, color, font.SizeOf(text) * .5f, Vector2.One * scale, 0);
     }
 
     public static void TextCentered(SpriteFont font, string text, Vector2 position, Color color, float scale, float rotation)
     {
-        Text(font, text, position, color, font.MeasureString(text) * .5f, Vector2.One * scale, rotation);
+        Text(font, text, position, color, font.SizeOf(text) * .5f, Vector2.One * scale, rotation);
     }
 
     public static void OutlineTextCentered(SpriteFont font, string text, Vector2 position, Color color, float scale)
     {
-        Vector2 origin = font.MeasureString(text) / 2;
+        Vector2 origin = font.SizeOf(text) / 2;
 
         for (int i = -1; i < 2; i++)
             for (int j = -1; j < 2; j++)
@@ -280,7 +279,7 @@ public static class Draw
 
     public static void OutlineTextCentered(SpriteFont font, string text, Vector2 position, Color color, Color outlineColor)
     {
-        Vector2 origin = font.MeasureString(text) / 2;
+        Vector2 origin = font.SizeOf(text) / 2;
 
         for (int i = -1; i < 2; i++)
             for (int j = -1; j < 2; j++)
@@ -291,7 +290,7 @@ public static class Draw
 
     public static void OutlineTextCentered(SpriteFont font, string text, Vector2 position, Color color, Color outlineColor, float scale)
     {
-        Vector2 origin = font.MeasureString(text) / 2;
+        Vector2 origin = font.SizeOf(text) / 2;
 
         for (int i = -1; i < 2; i++)
             for (int j = -1; j < 2; j++)
@@ -302,7 +301,7 @@ public static class Draw
 
     public static void OutlineTextJustify(SpriteFont font, string text, Vector2 position, Color color, Color outlineColor, Vector2 justify)
     {
-        Vector2 origin = font.MeasureString(text) * justify;
+        Vector2 origin = font.SizeOf(text) * justify;
 
         for (int i = -1; i < 2; i++)
             for (int j = -1; j < 2; j++)
@@ -313,7 +312,7 @@ public static class Draw
 
     public static void OutlineTextJustify(SpriteFont font, string text, Vector2 position, Color color, Color outlineColor, Vector2 justify, float scale)
     {
-        Vector2 origin = font.MeasureString(text) * justify;
+        Vector2 origin = font.SizeOf(text) * justify;
 
         for (int i = -1; i < 2; i++)
             for (int j = -1; j < 2; j++)

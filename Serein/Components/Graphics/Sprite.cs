@@ -1,4 +1,4 @@
-﻿using Foster.Framework;
+using Foster.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -71,7 +71,7 @@ public class Sprite : Image
             if (UseRawDeltaTime)
                 animationTimer += Engine.RawDeltaTime * Rate;
             else
-                animationTimer += Engine.DeltaTime * Rate;
+                animationTimer += Engine.Instance!.Time.Delta * Rate;
 
             //Next Frame
             if (Math.Abs(animationTimer) >= currentAnimation.Delay)

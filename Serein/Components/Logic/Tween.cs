@@ -1,4 +1,4 @@
-﻿using Foster.Framework;
+using Foster.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -98,7 +98,7 @@ public class Tween : Component
 
     public override void Update()
     {
-        TimeLeft -= (UseRawDeltaTime ? Engine.RawDeltaTime : Engine.DeltaTime);
+        TimeLeft -= (UseRawDeltaTime ? Engine.RawDeltaTime : Engine.Instance!.Time.Delta);
         
         //Update the percentage and eased percentage
         Percent = Math.Max(0, TimeLeft) / (float)Duration;

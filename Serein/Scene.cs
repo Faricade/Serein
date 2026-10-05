@@ -1,4 +1,4 @@
-﻿using Foster.Framework;
+using Foster.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -51,7 +51,7 @@ public class Scene : IEnumerable<Entity>, IEnumerable
     public virtual void BeforeUpdate()
     {
         if (!Paused)
-            TimeActive += Engine.DeltaTime;
+            TimeActive += Engine.Instance!.Time.Delta;
         RawTimeActive += Engine.RawDeltaTime;
 
         Entities.UpdateLists();
@@ -111,7 +111,7 @@ public class Scene : IEnumerable<Entity>, IEnumerable
     /// <returns></returns>
     public bool OnInterval(float interval)
     {
-        return (int)((TimeActive - Engine.DeltaTime) / interval) < (int)(TimeActive / interval);
+        return (int)((TimeActive - Engine.Instance!.Time.Delta) / interval) < (int)(TimeActive / interval);
     }
 
     /// <summary>
@@ -121,7 +121,7 @@ public class Scene : IEnumerable<Entity>, IEnumerable
     /// <returns></returns>
     public bool OnInterval(float interval, float offset)
     {
-        return Math.Floor((TimeActive - offset - Engine.DeltaTime) / interval) < Math.Floor((TimeActive - offset) / interval);
+        return Math.Floor((TimeActive - offset - Engine.Instance!.Time.Delta) / interval) < Math.Floor((TimeActive - offset) / interval);
     }
 
     public bool BetweenInterval(float interval)

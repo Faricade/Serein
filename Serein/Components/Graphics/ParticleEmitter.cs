@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -84,7 +84,7 @@ public class ParticleEmitter : Component
 
     public override void Update()
     {
-        timer -= Engine.DeltaTime;
+        timer -= Engine.Instance!.Time.Delta;
         if (timer <= 0)
         {
             timer = Interval;

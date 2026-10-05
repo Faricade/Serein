@@ -1,4 +1,4 @@
-﻿using Foster.Framework;
+using Foster.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,7 +66,7 @@ public class Shaker : Component
     {
         if (on && Timer > 0)
         {
-            Timer -= Engine.DeltaTime;
+            Timer -= Engine.Instance!.Time.Delta;
             if (Timer <= 0)
             {
                 on = false;

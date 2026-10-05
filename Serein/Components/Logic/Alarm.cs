@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace Serein;
@@ -63,7 +63,7 @@ public class Alarm : Component
 
     public override void Update()
     {
-        TimeLeft -= Engine.DeltaTime;
+        TimeLeft -= Engine.Instance!.Time.Delta;
         if (TimeLeft <= 0)
         {
             TimeLeft = 0;

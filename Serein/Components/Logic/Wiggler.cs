@@ -1,4 +1,4 @@
-﻿using Foster.Framework;
+using Foster.Framework;
 using System;
 using System.Collections.Generic;
 
@@ -110,8 +110,8 @@ public class Wiggler : Component
         }
         else
         {
-            sineCounter += sineAdd * Engine.DeltaTime;
-            Counter -= increment * Engine.DeltaTime;
+            sineCounter += sineAdd * Engine.Instance!.Time.Delta;
+            Counter -= increment * Engine.Instance!.Time.Delta;
         }
 
         if (Counter <= 0)

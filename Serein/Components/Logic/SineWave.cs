@@ -1,4 +1,4 @@
-﻿using Foster.Framework;
+using Foster.Framework;
 using System;
 
 namespace Serein;
@@ -56,7 +56,7 @@ public class SineWave : Component
 
     public override void Update()
     {
-        Counter += (Foster.Framework.Calc.PI * 2) * Frequency * Rate * (UseRawDeltaTime ? Engine.RawDeltaTime : Engine.DeltaTime);
+        Counter += (Foster.Framework.Calc.PI * 2) * Frequency * Rate * (UseRawDeltaTime ? Engine.RawDeltaTime : Engine.Instance!.Time.Delta);
         if (OnUpdate != null)
             OnUpdate(Value);
     }

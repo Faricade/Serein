@@ -1,4 +1,4 @@
-﻿
+
 using System;
 
 namespace Serein;
@@ -49,7 +49,7 @@ public class NumberText : GraphicsComponent
         drawString = prefix + value.ToString();
 
         if (centered)
-            Origin = Calc.Floor(font.MeasureString(drawString) / 2);
+            Origin = Calc.Floor(font.SizeOf(drawString) / 2);
     }
 
     public override void Render()
@@ -59,11 +59,11 @@ public class NumberText : GraphicsComponent
 
     public float Width
     {
-        get { return font.MeasureString(drawString).X; }
+        get { return font.SizeOf(drawString).X; }
     }
 
     public float Height
     {
-        get { return font.MeasureString(drawString).Y; }
+        get { return font.SizeOf(drawString).Y; }
     }
 }

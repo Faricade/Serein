@@ -38,12 +38,6 @@ public class Engine : App
     private TimeSpan counterElapsed;
     private int fpsCounter = 0;
 
-    // TODO: Resolve the missing contetn loader.
-    //public static string ContentDirectory
-    //{
-    //    get { return Path.Combine(field); }
-    //} = AppContext.BaseDirectory;
-
     // scene
     private Scene? scene;
     private Scene? nextScene;

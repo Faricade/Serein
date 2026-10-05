@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Serein;
@@ -33,7 +33,7 @@ public class Coroutine : Component
         ended = false;
         
         if (waitTimer > 0)
-            waitTimer -= (UseRawDeltaTime ? Engine.RawDeltaTime : Engine.DeltaTime);
+            waitTimer -= (UseRawDeltaTime ? Engine.RawDeltaTime : Engine.Instance!.Time.Delta);
         else if (enumerators.Count > 0)
         {
             IEnumerator now = enumerators.Peek();
