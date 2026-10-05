@@ -1,841 +1,143 @@
-﻿using Foster.Framework;
-
-using System;
-using System.Collections.Generic;
-
-namespace Serein;
+﻿namespace Serein;
 
 public static class MInput
 {
-    public static KeyboardData Keyboard { get; private set; }
-    public static MouseData Mouse { get; private set; }
-    public static GamePadData[] GamePads { get; private set; }
+    public static Input GameInput { get; private set; } = null!;
 
-    internal static List<VirtualInput> VirtualInputs;
+    public static KeyboardState Keyboard => GameInput.Keyboard;
+    public static MouseState Mouse => GameInput.Mouse;
+    public static ControllerState[] GamePads => GameInput.Controllers;
 
-    public static bool Active = true;
+    /// <summary>
+    /// Set to true to suppress all game input (in addition to the automatic suppression while the window is inactive or the console is open).
+    /// Foster keeps tracking the real devices underneath, so inputs still held when this is turned off again are immediately seen as held.
+    /// </summary>
     public static bool Disabled = false;
 
-    internal static void Initialize()
+    /// <summary>
+    /// True while game input is being suppressed (inactive window, open console, <see cref="Disabled"/>)
+    /// </summary>
+    public static bool IsSuppressed { get; private set; }
+
+    /// <summary>
+    /// The Mouse position in game/screen space in Pixel Coordinates.
+    /// This is the live position and is not affected by suppression.
+    /// </summary>
+    public static Vector2 MousePosition
     {
-        //Init devices
-        Keyboard = new KeyboardData();
-        Mouse = new MouseData();
-        GamePads = new GamePadData[4];
-        for (int i = 0; i < 4; i++)
-            GamePads[i] = new GamePadData((PlayerIndex)i);
-        VirtualInputs = new List<VirtualInput>();
+        get
+        {
+            if (!Matrix3x2.Invert(Engine.ScreenMatrix, out var inverse))
+                return Vector2.Zero;
+            return Vector2.Transform(source.Mouse.Position, inverse);
+        }
+    }
+
+    private static Input source = null!;
+    private static readonly float[] rumbleStrength = new float[InputState.MaxControllers];
+    private static readonly float[] rumbleTime = new float[InputState.MaxControllers];
+
+    /// <param name="input">Foster's main Input module (the one the application receives events on)</param>
+    internal static void Initialize(Input input)
+    {
+        source = input;
+        GameInput = input.CreateEcho();
+        IsSuppressed = false;
+        Array.Clear(rumbleStrength);
+        Array.Clear(rumbleTime);
     }
 
     internal static void Shutdown()
     {
-        foreach (var gamepad in GamePads)
-            gamepad.StopRumble();
+        if (GameInput == null)
+            return;
+
+        for (int i = 0; i < rumbleTime.Length; i++)
+            StopRumble(i);
     }
 
     internal static void Update()
-    {
-        if (Engine.Instance.IsActive && Active)
-        {
-            if (Engine.Commands.Open)
-            {
-                Keyboard.UpdateNull();
-                Mouse.UpdateNull();
-            }
-            else
-            {
-                Keyboard.Update();
-                Mouse.Update();
-            }
+        => Apply(Disabled || Engine.Instance.Windows.All(x => !x.Focused) || Engine.Commands.Open);
 
-            for (int i = 0; i < 4; i++)
-                GamePads[i].Update();
-        }
-        else
-        {
-            Keyboard.UpdateNull();
-            Mouse.UpdateNull();
-            for (int i = 0; i < 4; i++)
-                GamePads[i].UpdateNull();
-        }
-
-        UpdateVirtualInputs();
-    }
-
+    /// <summary>
+    /// Use to suppress game input for this frame
+    /// </summary>
     public static void UpdateNull()
+        => Apply(true);
+
+    private static void Apply(bool suppress)
     {
-        Keyboard.UpdateNull();
-        Mouse.UpdateNull();
-        for (int i = 0; i < 4; i++)
-            GamePads[i].UpdateNull();
+        IsSuppressed = suppress;
 
-        UpdateVirtualInputs();
-    }
-
-    private static void UpdateVirtualInputs()
-    {
-        foreach (var virtualInput in VirtualInputs)
-            virtualInput.Update();
-    }
-
-    #region Keyboard
-
-    public class KeyboardData
-    {
-        public KeyboardState PreviousState;
-        public KeyboardState CurrentState;
-
-        internal KeyboardData()
-        {
-
-        }
-
-        internal void Update()
-        {
-            PreviousState = CurrentState;
-            CurrentState = Foster.Framework.Input.Keyboard.GetState();
-        }
-
-        internal void UpdateNull()
-        {
-            PreviousState = CurrentState;
-            CurrentState = new KeyboardState();
-        }
-
-        #region Basic Checks
-
-        public bool Check(Keys key)
-        {
-            if (Disabled)
-                return false;
-
-            return CurrentState.IsKeyDown(key);
-        }
-
-        public bool Pressed(Keys key)
-        {
-            if (Disabled)
-                return false;
-
-            return CurrentState.IsKeyDown(key) && !PreviousState.IsKeyDown(key);
-        }
-
-        public bool Released(Keys key)
-        {
-            if (Disabled)
-                return false;
-
-            return !CurrentState.IsKeyDown(key) && PreviousState.IsKeyDown(key);
-        }
-
-        #endregion
-
-        #region Convenience Checks
-
-        public bool Check(Keys keyA, Keys keyB)
-        {
-            return Check(keyA) || Check(keyB);
-        }
-
-        public bool Pressed(Keys keyA, Keys keyB)
-        {
-            return Pressed(keyA) || Pressed(keyB);
-        }
-
-        public bool Released(Keys keyA, Keys keyB)
-        {
-            return Released(keyA) || Released(keyB);
-        }
-
-        public bool Check(Keys keyA, Keys keyB, Keys keyC)
-        {
-            return Check(keyA) || Check(keyB) || Check(keyC);
-        }
-
-        public bool Pressed(Keys keyA, Keys keyB, Keys keyC)
-        {
-            return Pressed(keyA) || Pressed(keyB) || Pressed(keyC);
-        }
-
-        public bool Released(Keys keyA, Keys keyB, Keys keyC)
-        {
-            return Released(keyA) || Released(keyB) || Released(keyC);
-        }
-
-        #endregion
-
-        #region Axis
-
-        public int AxisCheck(Keys negative, Keys positive)
-        {
-            if (Check(negative))
+        for (int i = 0; i < rumbleTime.Length; i++)
+            if (rumbleTime[i] > 0)
             {
-                if (Check(positive))
-                    return 0;
+                if (suppress)
+                    StopRumble(i);
                 else
-                    return -1;
+                    rumbleTime[i] -= Engine.Instance.Time.Delta;
             }
-            else if (Check(positive))
-                return 1;
-            else
-                return 0;
-        }
 
-        public int AxisCheck(Keys negative, Keys positive, int both)
+        if (!suppress)
+            return;
+
+        // Only the stepped State is cleared. Foster keeps tracking the real devices underneath, so
+        // anything still held when suppression ends shows up as held again (but not as a new press).
+        GameInput.State.Clear();
+
+        // Virtual inputs were already updated by Foster's step, from the state we just cleared
+        var virtualInputs = GameInput.VirtualInputs;
+        for (int i = 0; i < virtualInputs.Count; i++)
         {
-            if (Check(negative))
-            {
-                if (Check(positive))
-                    return both;
-                else
-                    return -1;
-            }
-            else if (Check(positive))
-                return 1;
-            else
-                return 0;
-        }
+            if (!virtualInputs[i].TryGetTarget(out var virtualInput))
+                continue;
 
-        #endregion
+            switch (virtualInput)
+            {
+                case VirtualAction action: action.Clear(); break;
+                case VirtualAxis axis: axis.Clear(); break;
+                case VirtualStick stick: stick.Clear(); break;
+            }
+        }
     }
 
-    #endregion
+    #region Rumble
 
-    #region Mouse
-
-    public class MouseData
+    /// <summary>
+    /// Rumbles the controller in the given slot. Foster handles the duration; this adds Monocle's priority rule:
+    /// a new rumble only replaces the current one if that has finished, or the new one is stronger (or equal and longer).
+    /// </summary>
+    public static void Rumble(int gamepadIndex, float strength, float time)
     {
-        public MouseState PreviousState;
-        public MouseState CurrentState;
+        if (IsSuppressed || (uint)gamepadIndex >= (uint)rumbleTime.Length)
+            return;
 
-        internal MouseData()
+        if (rumbleTime[gamepadIndex] <= 0 ||
+            strength > rumbleStrength[gamepadIndex] ||
+            (strength == rumbleStrength[gamepadIndex] && time > rumbleTime[gamepadIndex]))
         {
-            PreviousState = new MouseState();
-            CurrentState = new MouseState();
+            GameInput.Rumble(gamepadIndex, strength, time);
+            rumbleStrength[gamepadIndex] = strength;
+            rumbleTime[gamepadIndex] = time;
         }
-
-        internal void Update()
-        {
-            PreviousState = CurrentState;
-            CurrentState = Input.Mouse.GetState();
-        }
-
-        internal void UpdateNull()
-        {
-            PreviousState = CurrentState;
-            CurrentState = new MouseState();
-        }
-
-        #region Buttons
-
-        public bool CheckLeftButton
-        {
-            get { return CurrentState.LeftButton == ButtonState.Pressed; }
-        }
-
-        public bool CheckRightButton
-        {
-            get { return CurrentState.RightButton == ButtonState.Pressed; }
-        }
-
-        public bool CheckMiddleButton
-        {
-            get { return CurrentState.MiddleButton == ButtonState.Pressed; }
-        }
-
-        public bool PressedLeftButton
-        {
-            get { return CurrentState.LeftButton == ButtonState.Pressed && PreviousState.LeftButton == ButtonState.Released; }
-        }
-
-        public bool PressedRightButton
-        {
-            get { return CurrentState.RightButton == ButtonState.Pressed && PreviousState.RightButton == ButtonState.Released; }
-        }
-
-        public bool PressedMiddleButton
-        {
-            get { return CurrentState.MiddleButton == ButtonState.Pressed && PreviousState.MiddleButton == ButtonState.Released; }
-        }
-
-        public bool ReleasedLeftButton
-        {
-            get { return CurrentState.LeftButton == ButtonState.Released && PreviousState.LeftButton == ButtonState.Pressed; }
-        }
-
-        public bool ReleasedRightButton
-        {
-            get { return CurrentState.RightButton == ButtonState.Released && PreviousState.RightButton == ButtonState.Pressed; }
-        }
-
-        public bool ReleasedMiddleButton
-        {
-            get { return CurrentState.MiddleButton == ButtonState.Released && PreviousState.MiddleButton == ButtonState.Pressed; }
-        }
-
-        #endregion
-
-        #region Wheel
-
-        public int Wheel
-        {
-            get { return CurrentState.ScrollWheelValue; }
-        }
-
-        public int WheelDelta
-        {
-            get { return CurrentState.ScrollWheelValue - PreviousState.ScrollWheelValue; }
-        }
-
-        #endregion
-
-        #region Position
-
-        public bool WasMoved
-        {
-            get
-            {
-                return CurrentState.X != PreviousState.X
-                    || CurrentState.Y != PreviousState.Y;
-            }
-        }
-
-        public float X
-        {
-            get { return Position.X; }
-            set { Position = new Vector2(value, Position.Y); }
-        }
-
-        public float Y
-        {
-            get { return Position.Y; }
-            set { Position = new Vector2(Position.X, value); }
-        }
-
-        public Vector2 Position
-        {
-            get
-            {
-                Matrix3x2.Invert(Engine.ScreenMatrix, out Matrix3x2 result);
-                return Vector2.Transform(new Vector2(CurrentState.X, CurrentState.Y), result);
-            }
-
-            set
-            {
-                var vector = Vector2.Transform(value, Engine.ScreenMatrix);
-                Input.Mouse.SetPosition((int)Math.Round(vector.X), (int)Math.Round(vector.Y));
-            }
-        }
-
-        #endregion
     }
 
-    #endregion
+    public static void RumbleFirst(float strength, float time)
+        => Rumble(0, strength, time);
 
-    #region GamePads
-
-    public class GamePadData
+    public static void StopRumble(int gamepadIndex)
     {
-        public PlayerIndex PlayerIndex { get; private set; }
-        public GamePadState PreviousState;
-        public GamePadState CurrentState;
-        public bool Attached;
-
-        private float rumbleStrength;
-        private float rumbleTime;
-
-        internal GamePadData(PlayerIndex playerIndex)
-        {
-            PlayerIndex = playerIndex;
-        }
-
-        public void Update()
-        {
-            PreviousState = CurrentState;
-            CurrentState = Foster.Framework.Input.GamePad.GetState(PlayerIndex);
-            Attached = CurrentState.IsConnected;
-
-            if (rumbleTime > 0)
-            {
-                rumbleTime -= Engine.DeltaTime;
-                if (rumbleTime <= 0)
-                    GamePad.SetVibration(PlayerIndex, 0, 0);
-            }
-        }
-
-        public void UpdateNull()
-        {
-            PreviousState = CurrentState;
-            CurrentState = new GamePadState();
-            Attached = Foster.Framework.Input.GamePad.GetState(PlayerIndex).IsConnected;
-
-            if (rumbleTime > 0)
-                rumbleTime -= Engine.DeltaTime;
-
-            GamePad.SetVibration(PlayerIndex, 0, 0);
-        }
-
-        public void Rumble(float strength, float time)
-        {
-            if (rumbleTime <= 0 || strength > rumbleStrength || (strength == rumbleStrength && time > rumbleTime))
-            {
-                GamePad.SetVibration(PlayerIndex, strength, strength);
-                rumbleStrength = strength;
-                rumbleTime = time;
-            }
-        }
-
-        public void StopRumble()
-        {
-            GamePad.SetVibration(PlayerIndex, 0, 0);
-            rumbleTime = 0;
-        }
-
-        #region Buttons
-
-        public bool Check(Buttons button)
-        {
-            if (Disabled)
-                return false;
-
-            return CurrentState.IsButtonDown(button);
-        }
-
-        public bool Pressed(Buttons button)
-        {
-            if (Disabled)
-                return false;
-
-            return CurrentState.IsButtonDown(button) && PreviousState.IsButtonUp(button);
-        }
-
-        public bool Released(Buttons button)
-        {
-            if (Disabled)
-                return false;
-
-            return CurrentState.IsButtonUp(button) && PreviousState.IsButtonDown(button);
-        }
-
-        public bool Check(Buttons buttonA, Buttons buttonB)
-        {
-            return Check(buttonA) || Check(buttonB);
-        }
-
-        public bool Pressed(Buttons buttonA, Buttons buttonB)
-        {
-            return Pressed(buttonA) || Pressed(buttonB);
-        }
-
-        public bool Released(Buttons buttonA, Buttons buttonB)
-        {
-            return Released(buttonA) || Released(buttonB);
-        }
-
-        public bool Check(Buttons buttonA, Buttons buttonB, Buttons buttonC)
-        {
-            return Check(buttonA) || Check(buttonB) || Check(buttonC);
-        }
-
-        public bool Pressed(Buttons buttonA, Buttons buttonB, Buttons buttonC)
-        {
-            return Pressed(buttonA) || Pressed(buttonB) || Check(buttonC);
-        }
-
-        public bool Released(Buttons buttonA, Buttons buttonB, Buttons buttonC)
-        {
-            return Released(buttonA) || Released(buttonB) || Check(buttonC);
-        }
-
-        #endregion
-
-        #region Sticks
-
-        public Vector2 GetLeftStick()
-        {
-            Vector2 ret = CurrentState.ThumbSticks.Left;
-            ret.Y = -ret.Y;
-            return ret;
-        }
-
-        public Vector2 GetLeftStick(float deadzone)
-        {
-            Vector2 ret = CurrentState.ThumbSticks.Left;
-            if (ret.LengthSquared() < deadzone * deadzone)
-                ret = Vector2.Zero;
-            else
-                ret.Y = -ret.Y;
-            return ret;
-        }
-
-        public Vector2 GetRightStick()
-        {
-            Vector2 ret = CurrentState.ThumbSticks.Right;
-            ret.Y = -ret.Y;
-            return ret;
-        }
-
-        public Vector2 GetRightStick(float deadzone)
-        {
-            Vector2 ret = CurrentState.ThumbSticks.Right;
-            if (ret.LengthSquared() < deadzone * deadzone)
-                ret = Vector2.Zero;
-            else
-                ret.Y = -ret.Y;
-            return ret;
-        }
-
-        #region Left Stick Directions
-
-        public bool LeftStickLeftCheck(float deadzone)
-        {
-            return CurrentState.ThumbSticks.Left.X <= -deadzone;
-        }
-
-        public bool LeftStickLeftPressed(float deadzone)
-        {
-            return CurrentState.ThumbSticks.Left.X <= -deadzone && PreviousState.ThumbSticks.Left.X > -deadzone;
-        }
-
-        public bool LeftStickLeftReleased(float deadzone)
-        {
-            return CurrentState.ThumbSticks.Left.X > -deadzone && PreviousState.ThumbSticks.Left.X <= -deadzone;
-        }
-
-        public bool LeftStickRightCheck(float deadzone)
-        {
-            return CurrentState.ThumbSticks.Left.X >= deadzone;
-        }
-
-        public bool LeftStickRightPressed(float deadzone)
-        {
-            return CurrentState.ThumbSticks.Left.X >= deadzone && PreviousState.ThumbSticks.Left.X < deadzone;
-        }
-
-        public bool LeftStickRightReleased(float deadzone)
-        {
-            return CurrentState.ThumbSticks.Left.X < deadzone && PreviousState.ThumbSticks.Left.X >= deadzone;
-        }
-
-        public bool LeftStickDownCheck(float deadzone)
-        {
-            return CurrentState.ThumbSticks.Left.Y <= -deadzone;
-        }
-
-        public bool LeftStickDownPressed(float deadzone)
-        {
-            return CurrentState.ThumbSticks.Left.Y <= -deadzone && PreviousState.ThumbSticks.Left.Y > -deadzone;
-        }
-
-        public bool LeftStickDownReleased(float deadzone)
-        {
-            return CurrentState.ThumbSticks.Left.Y > -deadzone && PreviousState.ThumbSticks.Left.Y <= -deadzone;
-        }
-
-        public bool LeftStickUpCheck(float deadzone)
-        {
-            return CurrentState.ThumbSticks.Left.Y >= deadzone;
-        }
-
-        public bool LeftStickUpPressed(float deadzone)
-        {
-            return CurrentState.ThumbSticks.Left.Y >= deadzone && PreviousState.ThumbSticks.Left.Y < deadzone;
-        }
-
-        public bool LeftStickUpReleased(float deadzone)
-        {
-            return CurrentState.ThumbSticks.Left.Y < deadzone && PreviousState.ThumbSticks.Left.Y >= deadzone;
-        }
-
-        public float LeftStickHorizontal(float deadzone)
-        {
-            float h = CurrentState.ThumbSticks.Left.X;
-            if (Math.Abs(h) < deadzone)
-                return 0;
-            else
-                return h;
-        }
-
-        public float LeftStickVertical(float deadzone)
-        {
-            float v = CurrentState.ThumbSticks.Left.Y;
-            if (Math.Abs(v) < deadzone)
-                return 0;
-            else
-                return -v;
-        }
-
-        #endregion
-
-        #region Right Stick Directions
-
-        public bool RightStickLeftCheck(float deadzone)
-        {
-            return CurrentState.ThumbSticks.Right.X <= -deadzone;
-        }
-
-        public bool RightStickLeftPressed(float deadzone)
-        {
-            return CurrentState.ThumbSticks.Right.X <= -deadzone && PreviousState.ThumbSticks.Right.X > -deadzone;
-        }
-
-        public bool RightStickLeftReleased(float deadzone)
-        {
-            return CurrentState.ThumbSticks.Right.X > -deadzone && PreviousState.ThumbSticks.Right.X <= -deadzone;
-        }
-
-        public bool RightStickRightCheck(float deadzone)
-        {
-            return CurrentState.ThumbSticks.Right.X >= deadzone;
-        }
-
-        public bool RightStickRightPressed(float deadzone)
-        {
-            return CurrentState.ThumbSticks.Right.X >= deadzone && PreviousState.ThumbSticks.Right.X < deadzone;
-        }
-
-        public bool RightStickRightReleased(float deadzone)
-        {
-            return CurrentState.ThumbSticks.Right.X < deadzone && PreviousState.ThumbSticks.Right.X >= deadzone;
-        }
-
-        public bool RightStickUpCheck(float deadzone)
-        {
-            return CurrentState.ThumbSticks.Right.Y <= -deadzone;
-        }
-
-        public bool RightStickUpPressed(float deadzone)
-        {
-            return CurrentState.ThumbSticks.Right.Y <= -deadzone && PreviousState.ThumbSticks.Right.Y > -deadzone;
-        }
-
-        public bool RightStickUpReleased(float deadzone)
-        {
-            return CurrentState.ThumbSticks.Right.Y > -deadzone && PreviousState.ThumbSticks.Right.Y <= -deadzone;
-        }
-
-        public bool RightStickDownCheck(float deadzone)
-        {
-            return CurrentState.ThumbSticks.Right.Y >= deadzone;
-        }
-
-        public bool RightStickDownPressed(float deadzone)
-        {
-            return CurrentState.ThumbSticks.Right.Y >= deadzone && PreviousState.ThumbSticks.Right.Y < deadzone;
-        }
-
-        public bool RightStickDownReleased(float deadzone)
-        {
-            return CurrentState.ThumbSticks.Right.Y < deadzone && PreviousState.ThumbSticks.Right.Y >= deadzone;
-        }
-
-        public float RightStickHorizontal(float deadzone)
-        {
-            float h = CurrentState.ThumbSticks.Right.X;
-            if (Math.Abs(h) < deadzone)
-                return 0;
-            else
-                return h;
-        }
-
-        public float RightStickVertical(float deadzone)
-        {
-            float v = CurrentState.ThumbSticks.Right.Y;
-            if (Math.Abs(v) < deadzone)
-                return 0;
-            else
-                return -v;
-        }
-
-        #endregion
-
-        #endregion
-
-        #region DPad
-
-        public int DPadHorizontal
-        {
-            get
-            {
-                return CurrentState.DPad.Right == ButtonState.Pressed ? 1 : (CurrentState.DPad.Left == ButtonState.Pressed ? -1 : 0);
-            }
-        }
-
-        public int DPadVertical
-        {
-            get
-            {
-                return CurrentState.DPad.Down == ButtonState.Pressed ? 1 : (CurrentState.DPad.Up == ButtonState.Pressed ? -1 : 0);
-            }
-        }
-
-        public Vector2 DPad
-        {
-            get
-            {
-                return new Vector2(DPadHorizontal, DPadVertical);
-            }
-        }
-
-        public bool DPadLeftCheck
-        {
-            get
-            {
-                return CurrentState.DPad.Left == ButtonState.Pressed;
-            }
-        }
-
-        public bool DPadLeftPressed
-        {
-            get
-            {
-                return CurrentState.DPad.Left == ButtonState.Pressed && PreviousState.DPad.Left == ButtonState.Released;
-            }
-        }
-
-        public bool DPadLeftReleased
-        {
-            get
-            {
-                return CurrentState.DPad.Left == ButtonState.Released && PreviousState.DPad.Left == ButtonState.Pressed;
-            }
-        }
-
-        public bool DPadRightCheck
-        {
-            get
-            {
-                return CurrentState.DPad.Right == ButtonState.Pressed;
-            }
-        }
-
-        public bool DPadRightPressed
-        {
-            get
-            {
-                return CurrentState.DPad.Right == ButtonState.Pressed && PreviousState.DPad.Right == ButtonState.Released;
-            }
-        }
-
-        public bool DPadRightReleased
-        {
-            get
-            {
-                return CurrentState.DPad.Right == ButtonState.Released && PreviousState.DPad.Right == ButtonState.Pressed;
-            }
-        }
-
-        public bool DPadUpCheck
-        {
-            get
-            {
-                return CurrentState.DPad.Up == ButtonState.Pressed;
-            }
-        }
-
-        public bool DPadUpPressed
-        {
-            get
-            {
-                return CurrentState.DPad.Up == ButtonState.Pressed && PreviousState.DPad.Up == ButtonState.Released;
-            }
-        }
-
-        public bool DPadUpReleased
-        {
-            get
-            {
-                return CurrentState.DPad.Up == ButtonState.Released && PreviousState.DPad.Up == ButtonState.Pressed;
-            }
-        }
-
-        public bool DPadDownCheck
-        {
-            get
-            {
-                return CurrentState.DPad.Down == ButtonState.Pressed;
-            }
-        }
-
-        public bool DPadDownPressed
-        {
-            get
-            {
-                return CurrentState.DPad.Down == ButtonState.Pressed && PreviousState.DPad.Down == ButtonState.Released;
-            }
-        }
-
-        public bool DPadDownReleased
-        {
-            get
-            {
-                return CurrentState.DPad.Down == ButtonState.Released && PreviousState.DPad.Down == ButtonState.Pressed;
-            }
-        }
-
-        #endregion
-
-        #region Triggers
-
-        public bool LeftTriggerCheck(float threshold)
-        {
-            if (Disabled)
-                return false;
-
-            return CurrentState.Triggers.Left >= threshold;
-        }
-
-        public bool LeftTriggerPressed(float threshold)
-        {
-            if (Disabled)
-                return false;
-
-            return CurrentState.Triggers.Left >= threshold && PreviousState.Triggers.Left < threshold;
-        }
-
-        public bool LeftTriggerReleased(float threshold)
-        {
-            if (Disabled)
-                return false;
-
-            return CurrentState.Triggers.Left < threshold && PreviousState.Triggers.Left >= threshold;
-        }
-
-        public bool RightTriggerCheck(float threshold)
-        {
-            if (Disabled)
-                return false;
-
-            return CurrentState.Triggers.Right >= threshold;
-        }
-
-        public bool RightTriggerPressed(float threshold)
-        {
-            if (Disabled)
-                return false;
-
-            return CurrentState.Triggers.Right >= threshold && PreviousState.Triggers.Right < threshold;
-        }
-
-        public bool RightTriggerReleased(float threshold)
-        {
-            if (Disabled)
-                return false;
-
-            return CurrentState.Triggers.Right < threshold && PreviousState.Triggers.Right >= threshold;
-        }
-
-        #endregion
+        if ((uint)gamepadIndex >= (uint)rumbleTime.Length)
+            return;
+
+        GameInput.Rumble(gamepadIndex, 0f, 0f);
+        rumbleStrength[gamepadIndex] = 0;
+        rumbleTime[gamepadIndex] = 0;
     }
 
     #endregion
 
     #region Helpers
-
-    public static void RumbleFirst(float strength, float time)
-    {
-        GamePads[0].Rumble(strength, time);
-    }
 
     public static int Axis(bool negative, bool positive, int bothValue)
     {
@@ -854,8 +156,8 @@ public static class MInput
 
     public static int Axis(float axisValue, float deadzone)
     {
-        if (Math.Abs(axisValue) >= deadzone)
-            return Math.Sign(axisValue);
+        if (MathF.Abs(axisValue) >= deadzone)
+            return MathF.Sign(axisValue);
         else
             return 0;
     }

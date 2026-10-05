@@ -33,7 +33,7 @@ public struct Particle
         }
         else
         {
-            var dt = Engine.TimeRate * (Engine.Instance.TargetElapsedTime.Milliseconds / 1000f);
+            var dt = Engine.Instance.Time.Delta;
             if (dt > 0)
                 for (var t = 0f; t < duration; t += dt)
                     Update(dt);

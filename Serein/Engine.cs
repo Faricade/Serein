@@ -67,7 +67,7 @@ public class Engine : App
             }
         };
 
-        MInput.Initialize();
+        MInput.Initialize(Input);
         Tracker.Initialize();
         Pooler = new Pooler();
         Commands = new Commands();
@@ -83,7 +83,6 @@ public class Engine : App
 
     protected override void Update()
     {
-        // TODO: Update input?
         MInput.Update();
 
         if (OverloadGameLoop is not null)
