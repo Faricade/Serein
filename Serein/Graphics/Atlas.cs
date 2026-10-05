@@ -46,7 +46,8 @@ public class Atlas
 
                     var texturePath = at.Attr("imagePath", "");
                     var fileStream = new FileStream(Path.Combine(Path.GetDirectoryName(path), texturePath), FileMode.Open, FileAccess.Read);
-                    var texture = Texture.FromStream(Engine.Instance.GraphicsDevice, fileStream);
+                    using var image = new Foster.Framework.Image(fileStream);
+                    var texture = new Texture(Engine.Instance.GraphicsDevice, image);
                     fileStream.Close();
 
                     var mTexture = new MTexture(texture);
@@ -74,7 +75,8 @@ public class Atlas
                     {
                         var texturePath = tex.Attr("n", "");
                         var fileStream = new FileStream(Path.Combine(Path.GetDirectoryName(path), texturePath + ".png"), FileMode.Open, FileAccess.Read);
-                        var texture = Texture.FromStream(Engine.Instance.GraphicsDevice, fileStream);
+                        using var image = new Foster.Framework.Image(fileStream);
+                        var texture = new Texture(Engine.Instance.GraphicsDevice, image);
                         fileStream.Close();
 
                         var mTexture = new MTexture(texture);
@@ -104,7 +106,8 @@ public class Atlas
                         var textureName = reader.ReadNullTerminatedString();
                         var texturePath = Path.Combine(Path.GetDirectoryName(path), textureName + ".png");
                         var fileStream = new FileStream(texturePath, FileMode.Open, FileAccess.Read);
-                        var texture = Texture.FromStream(Engine.Instance.GraphicsDevice, fileStream);
+                        using var image = new Foster.Framework.Image(fileStream);
+                        var texture = new Texture(Engine.Instance.GraphicsDevice, image);
                         fileStream.Close();
 
                         atlas.Sources.Add(texture);
@@ -154,7 +157,8 @@ public class Atlas
                             var fh = reader.ReadInt16();
 
                             var fileStream = new FileStream(Path.Combine(folderPath, name + ".png"), FileMode.Open, FileAccess.Read);
-                            var texture = Texture.FromStream(Engine.Instance.GraphicsDevice, fileStream);
+                            using var image = new Foster.Framework.Image(fileStream);
+                            var texture = new Texture(Engine.Instance.GraphicsDevice, image);
                             fileStream.Close();
 
                             atlas.Sources.Add(texture);
@@ -179,7 +183,8 @@ public class Atlas
                         var textureName = reader.ReadString();
                         var texturePath = Path.Combine(Path.GetDirectoryName(path), textureName + ".data");
                         var fileStream = new FileStream(texturePath, FileMode.Open, FileAccess.Read);
-                        var texture = Texture.FromStream(Engine.Instance.GraphicsDevice, fileStream);
+                        using var image = new Foster.Framework.Image(fileStream);
+                        var texture = new Texture(Engine.Instance.GraphicsDevice, image);
                         fileStream.Close();
 
                         atlas.Sources.Add(texture);
@@ -233,7 +238,8 @@ public class Atlas
                             var fh = reader.ReadInt16();
 
                             var fileStream = new FileStream(Path.Combine(folderPath, name + ".data"), FileMode.Open, FileAccess.Read);
-                            var texture = Texture.FromStream(Engine.Instance.GraphicsDevice, fileStream);
+                            using var image = new Foster.Framework.Image(fileStream);
+                            var texture = new Texture(Engine.Instance.GraphicsDevice, image);
                             fileStream.Close();
 
                             atlas.Sources.Add(texture);
@@ -307,7 +313,8 @@ public class Atlas
 
             // get path and load
             var fileStream = new FileStream(file.Substring(contentDirectoryLength + 1), FileMode.Open, FileAccess.Read);
-            var texture = Texture.FromStream(Engine.Instance.GraphicsDevice, fileStream);
+            using var image = new Foster.Framework.Image(fileStream);
+            var texture = new Texture(Engine.Instance.GraphicsDevice, image);
             fileStream.Close();
 
             atlas.Sources.Add(texture);

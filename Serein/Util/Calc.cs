@@ -561,7 +561,10 @@ public static class Calc
             float r = (HexToByte(hex[0]) * 16 + HexToByte(hex[1])) / 255.0f;
             float g = (HexToByte(hex[2]) * 16 + HexToByte(hex[3])) / 255.0f;
             float b = (HexToByte(hex[4]) * 16 + HexToByte(hex[5])) / 255.0f;
-            return new Color(r, g, b);
+            float a = 1;
+            if (hex.Length >= 8)
+                a = (HexToByte(hex[6]) * 16 + HexToByte(hex[7])) / 255.0f;
+            return new Color(r, g, b, a);
         }
 
         return Color.White;
@@ -655,7 +658,7 @@ public static class Calc
     {
         float min = values[0];
         for (int i = 1; i < values.Length; i++)
-            min = MathHelper.Min(values[i], min);
+            min = MathF.Min(values[i], min);
         return min;
     }
 
@@ -663,7 +666,7 @@ public static class Calc
     {
         float max = values[0];
         for (int i = 1; i < values.Length; i++)
-            max = MathHelper.Max(values[i], max);
+            max = MathF.Max(values[i], max);
         return max;
     }
 

@@ -10,7 +10,6 @@ public abstract class GraphicsComponent : Component
     public Vector2 Scale = Vector2.One;
     public float Rotation;
     public Color Color = Color.White;
-    public SpriteEffects Effects = SpriteEffects.None;
 
     public GraphicsComponent(bool active)
         : base(active, true)
@@ -28,32 +27,6 @@ public abstract class GraphicsComponent : Component
     {
         get { return Position.Y; }
         set { Position.Y = value; }
-    }
-
-    public bool FlipX
-    {
-        get
-        {
-            return (Effects & SpriteEffects.FlipHorizontally) == SpriteEffects.FlipHorizontally;
-        }
-
-        set
-        {
-            Effects = value ? (Effects | SpriteEffects.FlipHorizontally) : (Effects & ~SpriteEffects.FlipHorizontally);
-        }
-    }
-
-    public bool FlipY
-    {
-        get
-        {
-            return (Effects & SpriteEffects.FlipVertically) == SpriteEffects.FlipVertically;
-        }
-
-        set
-        {
-            Effects = value ? (Effects | SpriteEffects.FlipVertically) : (Effects & ~SpriteEffects.FlipVertically);
-        }
     }
 
     public Vector2 RenderPosition
