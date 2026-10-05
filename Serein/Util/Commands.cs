@@ -1,9 +1,5 @@
 ﻿using Foster.Framework;
-
-
-using System;
-using System.Collections.Generic;
-using System.Reflection;
+using System.Globalization;
 using System.Text;
 
 namespace Serein;
@@ -11,9 +7,9 @@ namespace Serein;
 public class Commands
 {
     private const float UNDERSCORE_TIME = .5f;
-    private const float REPEAT_DELAY = .5f;
-    private const float REPEAT_EVERY = 1 / 30f;
     private const float OPACITY = .8f;
+
+    private const Keys ToggleKey = Keys.Tilde;
 
     public bool Enabled = true;
     public bool Open;
@@ -22,8 +18,6 @@ public class Commands
     private Dictionary<string, CommandInfo> commands;
     private List<string> sorted;
 
-    private KeyboardState oldState;
-    private KeyboardState currentState;
     private string currentText = "";
     private List<Line> drawCommands;
     private bool underscore;
@@ -32,8 +26,6 @@ public class Commands
     private int seekIndex = -1;
     private int tabIndex = -1;
     private string tabSearch;
-    private float repeatCounter = 0;
-    private Keys? repeatKey = null;
     private bool canOpen;
 
     public Commands()
@@ -44,7 +36,7 @@ public class Commands
         sorted = new List<string>();
         FunctionKeyActions = new Action[12];
 
-        BuildCommandsList();
+        RegisterBuiltIns();
     }
 
     public void Log(object obj, Color color)
@@ -52,24 +44,23 @@ public class Commands
         string str = obj.ToString();
 
         //Newline splits
-        if (str.Contains("\n"))
+        if (str.Contains('\n'))
         {
-            var all = str.Split('\n');
-            foreach (var line in all)
-                Log(line, color);
+            foreach (var line in str.Split('\n'))
+                Log(line.TrimEnd('\r'), color);
             return;
         }
 
         //Split the string if you overlow horizontally
-        int maxWidth = Engine.Instance.Window.ClientBounds.Width - 40;
-        while (Draw.DefaultFont.MeasureString(str).X > maxWidth)
+        int maxWidth = Engine.Instance.Window.WidthInPixels - 40;
+        while (Draw.DefaultFont.SizeOf(str).X > maxWidth)
         {
             int split = -1;
             for (int i = 0; i < str.Length; i++)
             {
                 if (str[i] == ' ')
                 {
-                    if (Draw.DefaultFont.MeasureString(str.Substring(0, i)).X <= maxWidth)
+                    if (Draw.DefaultFont.SizeOf(str.Substring(0, i)).X <= maxWidth)
                         split = i;
                     else
                         break;
@@ -86,7 +77,7 @@ public class Commands
         drawCommands.Insert(0, new Line(str, color));
 
         //Don't overflow top of window
-        int maxCommands = (Engine.Instance.Window.ClientBounds.Height - 100) / 30;
+        int maxCommands = (Engine.Instance.Window.HeightInPixels - 100) / 30;
         while (drawCommands.Count > maxCommands)
             drawCommands.RemoveAt(drawCommands.Count - 1);
     }
@@ -100,287 +91,121 @@ public class Commands
 
     internal void UpdateClosed()
     {
+        var keyboard = Engine.Instance.Input.Keyboard;
+
         if (!canOpen)
             canOpen = true;
-        else if (MInput.Keyboard.Pressed(Keys.OemTilde, Keys.Oem8))
-        {
+        else if (keyboard.Pressed(ToggleKey))
             Open = true;
-            currentState = Keyboard.GetState();
-        }
 
         for (int i = 0; i < FunctionKeyActions.Length; i++)
-            if (MInput.Keyboard.Pressed((Keys)(Keys.F1 + i)))
+            if (keyboard.Pressed(Keys.F1 + i))
                 ExecuteFunctionKeyAction(i);
     }
 
     internal void UpdateOpen()
     {
-        oldState = currentState;
-        currentState = Keyboard.GetState();
+        var keyboard = Engine.Instance.Input.Keyboard;
 
-        underscoreCounter += Engine.DeltaTime;
+        underscoreCounter += Engine.Instance.Time.Delta;
         while (underscoreCounter >= UNDERSCORE_TIME)
         {
             underscoreCounter -= UNDERSCORE_TIME;
             underscore = !underscore;
         }
 
-        if (repeatKey.HasValue)
+        //Close before reading text, so the toggle key's own character never lands in the prompt
+        if (keyboard.Pressed(ToggleKey))
         {
-            if (currentState[repeatKey.Value] == KeyState.Down)
-            {
-                repeatCounter += Engine.DeltaTime;
+            Open = canOpen = false;
+            return;
+        }
 
-                while (repeatCounter >= REPEAT_DELAY)
+        //Typed characters come from the OS text input, so keyboard layout, Shift/AltGr,
+        //dead keys and IMEs are all handled for us. No key -> character tables needed.
+        foreach (var c in keyboard.Text.ToString())
+        {
+            if (char.IsControl(c))
+                continue;
+
+            currentText += c;
+            tabIndex = -1;
+        }
+
+        //Editing keys. Repeated() fires on the initial press and again on the OS key repeat.
+        if (keyboard.Repeated(Keys.Backspace) && currentText.Length > 0)
+        {
+            //Don't split a surrogate pair in half
+            int remove = currentText.Length >= 2 && char.IsLowSurrogate(currentText[^1]) && char.IsHighSurrogate(currentText[^2]) ? 2 : 1;
+            currentText = currentText.Substring(0, currentText.Length - remove);
+            tabIndex = -1;
+        }
+
+        if (keyboard.Pressed(Keys.Delete))
+        {
+            currentText = "";
+            tabIndex = -1;
+        }
+
+        //Command history
+        if (keyboard.Repeated(Keys.Up) && seekIndex < commandHistory.Count - 1)
+        {
+            seekIndex++;
+            currentText = commandHistory[seekIndex];
+            tabIndex = -1;
+        }
+
+        if (keyboard.Repeated(Keys.Down) && seekIndex > -1)
+        {
+            seekIndex--;
+            currentText = seekIndex == -1 ? "" : commandHistory[seekIndex];
+            tabIndex = -1;
+        }
+
+        //Tab completion (Shift+Tab goes backwards)
+        if (keyboard.Repeated(Keys.Tab))
+        {
+            if (keyboard.Down(Keys.LeftShift) || keyboard.Down(Keys.RightShift))
+            {
+                if (tabIndex == -1)
                 {
-                    HandleKey(repeatKey.Value);
-                    repeatCounter -= REPEAT_EVERY;
+                    tabSearch = currentText;
+                    FindLastTab();
+                }
+                else
+                {
+                    tabIndex--;
+                    if (tabIndex < 0 || !TabMatches(tabIndex))
+                        FindLastTab();
                 }
             }
             else
-                repeatKey = null;
-        }
-
-        foreach (Keys key in currentState.GetPressedKeys())
-        {
-            if (oldState[key] == KeyState.Up)
             {
-                HandleKey(key);
-                break;
-            }
-        }
-    }
-
-    private void HandleKey(Keys key)
-    {
-        if (key != Keys.Tab && key != Keys.LeftShift && key != Keys.RightShift && key != Keys.RightAlt && key != Keys.LeftAlt && key != Keys.RightControl && key != Keys.LeftControl)
-            tabIndex = -1;
-
-        if (key != Keys.OemTilde && key != Keys.Oem8 && key != Keys.Enter && repeatKey != key)
-        {
-            repeatKey = key;
-            repeatCounter = 0;
-        }
-
-        switch (key)
-        {
-            default:
-                if (key.ToString().Length == 1)
+                if (tabIndex == -1)
                 {
-                    if (currentState[Keys.LeftShift] == KeyState.Down || currentState[Keys.RightShift] == KeyState.Down)
-                        currentText += key.ToString();
-                    else
-                        currentText += key.ToString().ToLower();
-                }
-                break;
-
-            case (Keys.D1):
-                if (currentState[Keys.LeftShift] == KeyState.Down || currentState[Keys.RightShift] == KeyState.Down)
-                    currentText += '!';
-                else
-                    currentText += '1';
-                break;
-            case (Keys.D2):
-                if (currentState[Keys.LeftShift] == KeyState.Down || currentState[Keys.RightShift] == KeyState.Down)
-                    currentText += '@';
-                else
-                    currentText += '2';
-                break;
-            case (Keys.D3):
-                if (currentState[Keys.LeftShift] == KeyState.Down || currentState[Keys.RightShift] == KeyState.Down)
-                    currentText += '#';
-                else
-                    currentText += '3';
-                break;
-            case (Keys.D4):
-                if (currentState[Keys.LeftShift] == KeyState.Down || currentState[Keys.RightShift] == KeyState.Down)
-                    currentText += '$';
-                else
-                    currentText += '4';
-                break;
-            case (Keys.D5):
-                if (currentState[Keys.LeftShift] == KeyState.Down || currentState[Keys.RightShift] == KeyState.Down)
-                    currentText += '%';
-                else
-                    currentText += '5';
-                break;
-            case (Keys.D6):
-                if (currentState[Keys.LeftShift] == KeyState.Down || currentState[Keys.RightShift] == KeyState.Down)
-                    currentText += '^';
-                else
-                    currentText += '6';
-                break;
-            case (Keys.D7):
-                if (currentState[Keys.LeftShift] == KeyState.Down || currentState[Keys.RightShift] == KeyState.Down)
-                    currentText += '&';
-                else
-                    currentText += '7';
-                break;
-            case (Keys.D8):
-                if (currentState[Keys.LeftShift] == KeyState.Down || currentState[Keys.RightShift] == KeyState.Down)
-                    currentText += '*';
-                else
-                    currentText += '8';
-                break;
-            case (Keys.D9):
-                if (currentState[Keys.LeftShift] == KeyState.Down || currentState[Keys.RightShift] == KeyState.Down)
-                    currentText += '(';
-                else
-                    currentText += '9';
-                break;
-            case (Keys.D0):
-                if (currentState[Keys.LeftShift] == KeyState.Down || currentState[Keys.RightShift] == KeyState.Down)
-                    currentText += ')';
-                else
-                    currentText += '0';
-                break;
-            case (Keys.OemComma):
-                if (currentState[Keys.LeftShift] == KeyState.Down || currentState[Keys.RightShift] == KeyState.Down)
-                    currentText += '<';
-                else
-                    currentText += ',';
-                break;
-            case Keys.OemPeriod:
-                if (currentState[Keys.LeftShift] == KeyState.Down || currentState[Keys.RightShift] == KeyState.Down)
-                    currentText += '>';
-                else
-                    currentText += '.';
-                break;
-            case Keys.OemQuestion:
-                if (currentState[Keys.LeftShift] == KeyState.Down || currentState[Keys.RightShift] == KeyState.Down)
-                    currentText += '?';
-                else
-                    currentText += '/';
-                break;
-            case Keys.OemSemicolon:
-                if (currentState[Keys.LeftShift] == KeyState.Down || currentState[Keys.RightShift] == KeyState.Down)
-                    currentText += ':';
-                else
-                    currentText += ';';
-                break;
-            case Keys.OemQuotes:
-                if (currentState[Keys.LeftShift] == KeyState.Down || currentState[Keys.RightShift] == KeyState.Down)
-                    currentText += '"';
-                else
-                    currentText += '\'';
-                break;
-            case Keys.OemBackslash:
-                if (currentState[Keys.LeftShift] == KeyState.Down || currentState[Keys.RightShift] == KeyState.Down)
-                    currentText += '|';
-                else
-                    currentText += '\\';
-                break;
-            case Keys.OemOpenBrackets:
-                if (currentState[Keys.LeftShift] == KeyState.Down || currentState[Keys.RightShift] == KeyState.Down)
-                    currentText += '{';
-                else
-                    currentText += '[';
-                break;
-            case Keys.OemCloseBrackets:
-                if (currentState[Keys.LeftShift] == KeyState.Down || currentState[Keys.RightShift] == KeyState.Down)
-                    currentText += '}';
-                else
-                    currentText += ']';
-                break;
-            case Keys.OemMinus:
-                if (currentState[Keys.LeftShift] == KeyState.Down || currentState[Keys.RightShift] == KeyState.Down)
-                    currentText += '_';
-                else
-                    currentText += '-';
-                break;
-            case Keys.OemPlus:
-                if (currentState[Keys.LeftShift] == KeyState.Down || currentState[Keys.RightShift] == KeyState.Down)
-                    currentText += '+';
-                else
-                    currentText += '=';
-                break;
-
-            case Keys.Space:
-                currentText += " ";
-                break;
-            case Keys.Back:
-                if (currentText.Length > 0)
-                    currentText = currentText.Substring(0, currentText.Length - 1);
-                break;
-            case Keys.Delete:
-                currentText = "";
-                break;
-
-            case Keys.Up:
-                if (seekIndex < commandHistory.Count - 1)
-                {
-                    seekIndex++;
-                    currentText = string.Join(" ", commandHistory[seekIndex]);
-                }
-                break;
-            case Keys.Down:
-                if (seekIndex > -1)
-                {
-                    seekIndex--;
-                    if (seekIndex == -1)
-                        currentText = "";
-                    else
-                        currentText = string.Join(" ", commandHistory[seekIndex]);
-                }
-                break;
-
-            case Keys.Tab:
-                if (currentState[Keys.LeftShift] == KeyState.Down || currentState[Keys.RightShift] == KeyState.Down)
-                {
-                    if (tabIndex == -1)
-                    {
-                        tabSearch = currentText;
-                        FindLastTab();
-                    }
-                    else
-                    {
-                        tabIndex--;
-                        if (tabIndex < 0 || (tabSearch != "" && sorted[tabIndex].IndexOf(tabSearch) != 0))
-                            FindLastTab();
-                    }
+                    tabSearch = currentText;
+                    FindFirstTab();
                 }
                 else
                 {
-                    if (tabIndex == -1)
-                    {
-                        tabSearch = currentText;
+                    tabIndex++;
+                    if (tabIndex >= sorted.Count || !TabMatches(tabIndex))
                         FindFirstTab();
-                    }
-                    else
-                    {
-                        tabIndex++;
-                        if (tabIndex >= sorted.Count || (tabSearch != "" && sorted[tabIndex].IndexOf(tabSearch) != 0))
-                            FindFirstTab();
-                    }
                 }
-                if (tabIndex != -1)
-                    currentText = sorted[tabIndex];
-                break;
+            }
 
-            case Keys.F1:
-            case Keys.F2:
-            case Keys.F3:
-            case Keys.F4:
-            case Keys.F5:
-            case Keys.F6:
-            case Keys.F7:
-            case Keys.F8:
-            case Keys.F9:
-            case Keys.F10:
-            case Keys.F11:
-            case Keys.F12:
-                ExecuteFunctionKeyAction((int)(key - Keys.F1));
-                break;
+            if (tabIndex != -1)
+                currentText = sorted[tabIndex];
+        }
 
-            case Keys.Enter:
-                if (currentText.Length > 0)
-                    EnterCommand();
-                break;
+        for (int i = 0; i < FunctionKeyActions.Length; i++)
+            if (keyboard.Pressed(Keys.F1 + i))
+                ExecuteFunctionKeyAction(i);
 
-            case Keys.Oem8:
-            case Keys.OemTilde:
-                Open = canOpen = false;
-                break;
+        if (keyboard.Pressed(Keys.Enter) && currentText.Length > 0)
+        {
+            tabIndex = -1;
+            EnterCommand();
         }
     }
 
@@ -396,14 +221,19 @@ public class Commands
         string[] args = new string[data.Length - 1];
         for (int i = 1; i < data.Length; i++)
             args[i - 1] = data[i];
-        ExecuteCommand(data[0].ToLower(), args);
+        ExecuteCommand(data[0].ToLowerInvariant(), args);
+    }
+
+    private bool TabMatches(int index)
+    {
+        return tabSearch == "" || sorted[index].StartsWith(tabSearch, StringComparison.Ordinal);
     }
 
     private void FindFirstTab()
     {
         for (int i = 0; i < sorted.Count; i++)
         {
-            if (tabSearch == "" || sorted[i].IndexOf(tabSearch) == 0)
+            if (TabMatches(i))
             {
                 tabIndex = i;
                 break;
@@ -414,7 +244,7 @@ public class Commands
     private void FindLastTab()
     {
         for (int i = 0; i < sorted.Count; i++)
-            if (tabSearch == "" || sorted[i].IndexOf(tabSearch) == 0)
+            if (TabMatches(i))
                 tabIndex = i;
     }
 
@@ -422,19 +252,17 @@ public class Commands
     {
         int screenWidth = Engine.Instance.Window.WidthInPixels;
         int screenHeight = Engine.Instance.Window.HeightInPixels;
+        var background = Color.Black * OPACITY;
 
-        Draw.Rect(10, screenHeight - 50, screenWidth - 20, 40, Color.Black * OPACITY);
-        if (underscore)
-            Draw.Batcher.DrawString(Draw.DefaultFont, ">" + currentText + "_", new Vector2(20, screenHeight - 42), Color.White);
-        else
-            Draw.Batcher.DrawString(Draw.DefaultFont, ">" + currentText, new Vector2(20, screenHeight - 42), Color.White);
+        Draw.Batcher.Rect(new Rect(10, screenHeight - 50, screenWidth - 20, 40), background);
+        Draw.Batcher.Text(Draw.DefaultFont, underscore ? $">{currentText}_" : $">{currentText}", new Vector2(20, screenHeight - 42), Color.White);
 
         if (drawCommands.Count > 0)
         {
             int height = 10 + (30 * drawCommands.Count);
-            Draw.Rect(10, screenHeight - height - 60, screenWidth - 20, height, Color.Black * OPACITY);
+            Draw.Batcher.Rect(new Rect(10, screenHeight - height - 60, screenWidth - 20, height), background);
             for (int i = 0; i < drawCommands.Count; i++)
-                Draw.Batcher.DrawString(Draw.DefaultFont, drawCommands[i].Text, new Vector2(20, screenHeight - 92 - (30 * i)), drawCommands[i].Color);
+                Draw.Batcher.Text(Draw.DefaultFont, drawCommands[i].Text, new Vector2(20, screenHeight - 92 - (30 * i)), drawCommands[i].Color);
         }
     }
 
@@ -444,10 +272,21 @@ public class Commands
 
     public void ExecuteCommand(string command, string[] args)
     {
-        if (commands.ContainsKey(command))
-            commands[command].Action(args);
-        else
+        if (!commands.TryGetValue(command, out var info))
+        {
             Log("Command '" + command + "' not found! Type 'help' for list of commands", Color.Yellow);
+            return;
+        }
+
+        try
+        {
+            info.Action(new CommandArgs(args));
+        }
+        catch (Exception e)
+        {
+            Log(e.Message, Color.Yellow);
+            LogStackTrace(e.StackTrace);
+        }
     }
 
     public void ExecuteFunctionKeyAction(int num)
@@ -458,250 +297,131 @@ public class Commands
 
     #endregion
 
-    #region Parse Commands
+    #region Registering Commands
 
-    private void BuildCommandsList()
+    //Commands are registered explicitly instead of being discovered through reflection
+    //(scanning assemblies for [Command] methods and Invoke()-ing them isn't trim / Native AOT safe).
+    //
+    //  Engine.Commands.Register("spawn", "Spawns an enemy", "[count:int=1]",
+    //      args => Spawn(args.Int(0, 1)));
+
+    public void Register(string name, string help, Action<CommandArgs> action)
     {
-#if !CONSOLE
-        //Check Monocle for Commands
-        foreach (var type in Assembly.GetCallingAssembly().GetTypes())
-            foreach (var method in type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
-                ProcessMethod(method);
-
-        //Check the calling assembly for Commands
-        foreach (var type in Assembly.GetEntryAssembly().GetTypes())
-            foreach (var method in type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
-                ProcessMethod(method);
-
-        //Maintain the sorted command list
-        foreach (var command in commands)
-            sorted.Add(command.Key);
-        sorted.Sort();
-#endif
+        Register(name, help, "", action);
     }
 
-    private void ProcessMethod(MethodInfo method)
+    /// <param name="usage">Shown by 'help', e.g. "[count:int=1 name:string]"</param>
+    public void Register(string name, string help, string usage, Action<CommandArgs> action)
     {
-        Command attr = null;
-        {
-            var attrs = method.GetCustomAttributes(typeof(Command), false);
-            if (attrs.Length > 0)
-                attr = attrs[0] as Command;
-        }
+        //Input is lowercased before lookup, so the name has to be as well
+        name = name.ToLowerInvariant();
 
-        if (attr != null)
-        {
-            if (!method.IsStatic)
-                throw new Exception(method.DeclaringType.Name + "." + method.Name + " is marked as a command, but is not static");
-            else
-            {
-                CommandInfo info = new CommandInfo();
-                info.Help = attr.Help;  
+        commands[name] = new CommandInfo { Action = action, Help = help, Usage = usage };
 
-                var parameters = method.GetParameters();
-                var defaults = new object[parameters.Length];                 
-                string[] usage = new string[parameters.Length];
-                
-                for (int i = 0; i < parameters.Length; i++)
-                {                       
-                    var p = parameters[i];
-                    usage[i] = p.Name + ":";
-
-                    if (p.ParameterType == typeof(string))
-                        usage[i] += "string";
-                    else if (p.ParameterType == typeof(int))
-                        usage[i] += "int";
-                    else if (p.ParameterType == typeof(float))
-                        usage[i] += "float";
-                    else if (p.ParameterType == typeof(bool))
-                        usage[i] += "bool";
-                    else
-                        throw new Exception(method.DeclaringType.Name + "." + method.Name + " is marked as a command, but has an invalid parameter type. Allowed types are: string, int, float, and bool");
-
-                    if (p.DefaultValue == DBNull.Value)
-                        defaults[i] = null;
-                    else if (p.DefaultValue != null)
-                    {
-                        defaults[i] = p.DefaultValue;
-                        if (p.ParameterType == typeof(string))
-                            usage[i] += "=\"" + p.DefaultValue + "\"";
-                        else
-                            usage[i] += "=" + p.DefaultValue;
-                    }
-                    else
-                        defaults[i] = null;
-                }
-
-                if (usage.Length == 0)
-                    info.Usage = "";
-                else
-                    info.Usage = "[" + string.Join(" ", usage) + "]";
-
-                info.Action = (args) =>
-                    {
-                        if (parameters.Length == 0)
-                            InvokeMethod(method);
-                        else
-                        {
-                            object[] param = (object[])defaults.Clone();
-
-                            for (int i = 0; i < param.Length && i < args.Length; i++)
-                            {
-                                if (parameters[i].ParameterType == typeof(string))
-                                    param[i] = ArgString(args[i]);
-                                else if (parameters[i].ParameterType == typeof(int))
-                                    param[i] = ArgInt(args[i]);
-                                else if (parameters[i].ParameterType == typeof(float))
-                                    param[i] = ArgFloat(args[i]);
-                                else if (parameters[i].ParameterType == typeof(bool))
-                                    param[i] = ArgBool(args[i]);
-                            }
-
-                            InvokeMethod(method, param);
-                        }
-                    };
-
-                commands[attr.Name] = info;
-            }
-        }
-    }
-
-    private void InvokeMethod(MethodInfo method, object[] param = null)
-    {
-        try
-        {
-            method.Invoke(null, param);
-        }
-        catch (Exception e)
-        {
-            Engine.Commands.Log(e.InnerException.Message, Color.Yellow);
-            LogStackTrace(e.InnerException.StackTrace);
-        }
+        //Keep the tab-completion list sorted and free of duplicates
+        int index = sorted.BinarySearch(name, StringComparer.Ordinal);
+        if (index < 0)
+            sorted.Insert(~index, name);
     }
 
     private void LogStackTrace(string stackTrace)
     {
+        //Works from the plain trace text, because that is what is available under Native AOT
+        //(StackFrame.GetMethod() and file info aren't)
+        if (string.IsNullOrEmpty(stackTrace))
+            return;
+
         foreach (var call in stackTrace.Split('\n'))
         {
-            string log = call;
+            string log = call.Trim();
+            if (log.Length == 0)
+                continue;
 
-            //Remove File Path
+            //Remove file path, keeping just the file name. Handles both / and \ separators,
+            //since the path is whatever the build machine used.
+            int inFile = log.LastIndexOf(" in ", StringComparison.Ordinal);
+            if (inFile != -1)
             {
-                var from = log.LastIndexOf(" in ") + 4;
-                var to = log.LastIndexOf('\\') + 1;
-                if (from != -1 && to != -1)
-                    log = log.Substring(0, from) + log.Substring(to);
+                int pathStart = inFile + 4;
+                int separator = log.LastIndexOfAny(PathSeparators);
+                if (separator >= pathStart)
+                    log = log.Remove(pathStart, separator + 1 - pathStart);
             }
 
             //Remove arguments list
-            {
-                var from = log.IndexOf('(') + 1;
-                var to = log.IndexOf(')');
-                if (from != -1 && to != -1)
-                    log = log.Substring(0, from) + log.Substring(to);
-            }
+            int open = log.IndexOf('(');
+            int close = log.IndexOf(')');
+            if (open != -1 && close > open)
+                log = log.Remove(open + 1, close - open - 1);
 
             //Space out the colon line number
-            var colon = log.LastIndexOf(':');
-            if (colon != -1)
-                log = log.Insert(colon + 1, " ").Insert(colon, " ");
+            if (inFile != -1)
+            {
+                int colon = log.LastIndexOf(':');
+                if (colon != -1)
+                    log = log.Insert(colon + 1, " ").Insert(colon, " ");
+            }
 
-            log = log.TrimStart();
-            log = "-> " + log;
-
-            Engine.Commands.Log(log, Color.White);
+            Log("-> " + log, Color.White);
         }
     }
 
+    private static readonly char[] PathSeparators = { '/', '\\' };
+
     private struct CommandInfo
     {
-        public Action<string[]> Action;         
+        public Action<CommandArgs> Action;
         public string Help;
         public string Usage;
     }
 
-    #region Parsing Arguments
-
-    private static string ArgString(string arg)
-    {
-        if (arg == null)
-            return "";
-        else
-            return arg;
-    }
-
-    private static bool ArgBool(string arg)
-    {
-        if (arg != null)
-            return !(arg == "0" || arg.ToLower() == "false" || arg.ToLower() == "f");
-        else
-            return false;
-    }
-
-    private static int ArgInt(string arg)
-    {
-        try
-        {
-            return Convert.ToInt32(arg);
-        }
-        catch
-        {
-            return 0;
-        }
-    }
-
-    private static float ArgFloat(string arg)
-    {
-        try
-        {
-            return Convert.ToSingle(arg);
-        }
-        catch
-        {
-            return 0;
-        }
-    }
-
-    #endregion
-
     #endregion
 
     #region Built-In Commands
-#if !CONSOLE
-    [Command("clear", "Clears the terminal")]
+
+    private void RegisterBuiltIns()
+    {
+        Register("clear", "Clears the terminal", args => Clear());
+        Register("exit", "Exits the game", args => Exit());
+        Register("vsync", "Enables or disables vertical sync", "[enabled:bool=true]", args => Vsync(args.Bool(0, true)));
+        Register("unlocked", "Disables fixed time step", args => Unlocked());
+        Register("framerate", "Sets fixed time step and the target framerate", "[targetFps:int]", args => Framerate(args.Int(0)));
+        Register("count", "Logs amount of Entities in the Scene. Pass a tagIndex to count only Entities with that tag", "[tagIndex:int=-1]", args => Count(args.Int(0, -1)));
+        Register("tracker", "Logs all tracked objects in the scene. Set mode to 'e' for just entities, 'c' for just components, or 'cc' for just collidable components", "[mode:string]", args => Tracker(args.String(0)));
+        Register("pooler", "Logs the pooled Entity counts", args => Pooler());
+        Register("fullscreen", "Switches to fullscreen mode", args => Fullscreen());
+        Register("window", "Switches to window mode", "[scale:int=1]", args => Window(args.Int(0, 1)));
+        Register("help", "Shows usage help for a given command", "[command:string]", args => Help(args.String(0)));
+    }
+
     public static void Clear()
     {
         Engine.Commands.drawCommands.Clear();
     }
 
-    [Command("exit", "Exits the game")]
     private static void Exit()
     {
         Engine.Instance.Exit();
     }
 
-    [Command("vsync", "Enables or disables vertical sync")]
     private static void Vsync(bool enabled = true)
     {
-        Engine.Graphics.SynchronizeWithVerticalRetrace = enabled;
-        Engine.Graphics.ApplyChanges();
+        Engine.Instance.GraphicsDevice.VSync = enabled;
         Engine.Commands.Log("Vertical Sync " + (enabled ? "Enabled" : "Disabled"));
     }
 
-    [Command("fixed", "Enables or disables fixed time step")]
-    private static void Fixed(bool enabled = true)
+    private static void Unlocked()
     {
-        Engine.Instance.IsFixedTimeStep = enabled;
-        Engine.Commands.Log("Fixed Time Step " + (enabled ? "Enabled" : "Disabled"));
+        Engine.Instance.UpdateMode = UpdateMode.UnlockedStep();
+        Engine.Commands.Log("Unlocked Time Step.");
     }
 
-    [Command("framerate", "Sets the target framerate")]
-    private static void Framerate(float target)
+    private static void Framerate(int targetFps)
     {
-        Engine.Instance.TargetElapsedTime = TimeSpan.FromSeconds(1.0 / target);
+        Engine.Instance.UpdateMode = UpdateMode.FixedStep(targetFps);
+        Engine.Commands.Log("Fixed Time Step " + targetFps + "fps");
     }
 
-    [Command("count", "Logs amount of Entities in the Scene. Pass a tagIndex to count only Entities with that tag")]
     private static void Count(int tagIndex = -1)
     {
         if (Engine.Scene == null)
@@ -716,7 +436,6 @@ public class Commands
             Engine.Commands.Log(Engine.Scene.TagLists[tagIndex].Count.ToString());
     }
 
-    [Command("tracker", "Logs all tracked objects in the scene. Set mode to 'e' for just entities, 'c' for just components, or 'cc' for just collidable components")]
     private static void Tracker(string mode)
     {
         if (Engine.Scene == null)
@@ -750,25 +469,21 @@ public class Commands
         }
     }
 
-    [Command("pooler", "Logs the pooled Entity counts")]
     private static void Pooler()
     {
         Engine.Pooler.Log();
     }
 
-    [Command("fullscreen", "Switches to fullscreen mode")]
     private static void Fullscreen()
     {
-        Engine.SetFullscreen();
+        Engine.Instance.Window.Fullscreen = true;
     }
 
-    [Command("window", "Switches to window mode")]
     private static void Window(int scale = 1)
     {
-        Engine.SetWindowed(Engine.Width * scale, Engine.Height * scale);
+        Engine.Instance.Window.Fullscreen = false;
     }
 
-    [Command("help", "Shows usage help for a given command")]
     private static void Help(string command)
     {
         if (Engine.Commands.sorted.Contains(command))
@@ -787,7 +502,7 @@ public class Commands
                 str.Append(c.Usage);
             }
             Engine.Commands.Log(str.ToString());
-           
+
             //Help
             if (string.IsNullOrEmpty(c.Help))
                 Engine.Commands.Log("No help info set");
@@ -803,8 +518,56 @@ public class Commands
             Engine.Commands.Log("Type 'help command' for more info on that command!");
         }
     }
-#endif
     #endregion
+
+    /// <summary>
+    /// The arguments typed after a command name. Missing arguments give the supplied fallback;
+    /// present-but-unparsable ones give 0 / false. Parsing is culture-invariant ('.' decimals).
+    /// </summary>
+    public readonly struct CommandArgs
+    {
+        private readonly string[] values;
+
+        public CommandArgs(string[] values)
+        {
+            this.values = values ?? Array.Empty<string>();
+        }
+
+        public int Count => values?.Length ?? 0;
+
+        public string String(int index, string fallback = "")
+        {
+            return index < Count ? values[index] ?? "" : fallback;
+        }
+
+        public bool Bool(int index, bool fallback = false)
+        {
+            if (index >= Count)
+                return fallback;
+
+            var arg = values[index];
+            if (arg == null)
+                return false;
+
+            return !(arg == "0"
+                || arg.Equals("false", StringComparison.OrdinalIgnoreCase)
+                || arg.Equals("f", StringComparison.OrdinalIgnoreCase));
+        }
+
+        public int Int(int index, int fallback = 0)
+        {
+            if (index >= Count)
+                return fallback;
+            return int.TryParse(values[index], NumberStyles.Integer, CultureInfo.InvariantCulture, out var value) ? value : 0;
+        }
+
+        public float Float(int index, float fallback = 0)
+        {
+            if (index >= Count)
+                return fallback;
+            return float.TryParse(values[index], NumberStyles.Float, CultureInfo.InvariantCulture, out var value) ? value : 0;
+        }
+    }
 
     private struct Line
     {
@@ -825,15 +588,10 @@ public class Commands
     }
 }
 
+[Obsolete("Reflection-based command discovery isn't Native AOT safe. Call Engine.Commands.Register(...) instead.", true)]
 public class Command : Attribute
 {
-    public string Name;
-    public string Help;
-
     public Command(string name, string help)
     {
-        Name = name;
-        Help = help;
     }
 }
-
