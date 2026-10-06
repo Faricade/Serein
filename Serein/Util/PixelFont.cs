@@ -90,16 +90,14 @@ public class PixelFontSize
 
     public PixelFontCharacter Get(int id)
     {
-        PixelFontCharacter val = null;
-        if (Characters.TryGetValue(id, out val))
-            return val;
+        if (Characters.TryGetValue(id, out PixelFontCharacter c))
+            return c;
         return null;
     }
 
     public Vector2 Measure(char text)
     {
-        PixelFontCharacter c = null;
-        if (Characters.TryGetValue(text, out c))
+        if (Characters.TryGetValue(text, out PixelFontCharacter c))
             return new Vector2(c.XAdvance, LineHeight);
         return Vector2.Zero;
     }
@@ -123,8 +121,7 @@ public class PixelFontSize
             }
             else
             {
-                PixelFontCharacter c = null;
-                if (Characters.TryGetValue(text[i], out c))
+                if (Characters.TryGetValue(text[i], out PixelFontCharacter c))
                 {
                     currentLineWidth += c.XAdvance;
 
@@ -153,8 +150,7 @@ public class PixelFontSize
             if (text[i] == '\n')
                 break;
 
-            PixelFontCharacter c = null;
-            if (Characters.TryGetValue(text[i], out c))
+            if (Characters.TryGetValue(text[i], out PixelFontCharacter c))
             {
                 currentLineWidth += c.XAdvance;
 
@@ -185,8 +181,7 @@ public class PixelFontSize
         if (char.IsWhiteSpace(character))
             return;
 
-        PixelFontCharacter c = null;
-        if (Characters.TryGetValue(character, out c))
+        if (Characters.TryGetValue(character, out PixelFontCharacter c))
         {
             var measure = Measure(character);
             var justified = new Vector2(measure.X * justify.X, measure.Y * justify.Y);
@@ -215,8 +210,7 @@ public class PixelFontSize
                 continue;
             }
 
-            PixelFontCharacter c = null;
-            if (Characters.TryGetValue(text[i], out c))
+            if (Characters.TryGetValue(text[i], out PixelFontCharacter c))
             {
                 var pos = (position + (offset + new Vector2(c.XOffset, c.YOffset) - justified) * scale);
 
@@ -395,7 +389,7 @@ public class PixelFont
         var scale = Vector2.One;
         var fontSize = Get(baseSize * Math.Max(scale.X, scale.Y));
         scale *= (baseSize / fontSize.Size);
-        fontSize.Draw(text, position, Vector2.Zero, Vector2.One, color, 0, Color.Transparent, 0, Color.Transparent);
+        fontSize.Draw(text, position, Vector2.Zero, scale, color, 0, Color.Transparent, 0, Color.Transparent);
     }
 
     public void Draw(float baseSize, string text, Vector2 position, Vector2 justify, Vector2 scale, Color color)

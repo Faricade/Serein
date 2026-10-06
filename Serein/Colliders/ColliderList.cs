@@ -6,7 +6,7 @@ namespace Serein;
 
 public class ColliderList : Collider
 {
-    public Collider[] colliders { get; private set; }
+    public Collider[] Colliders { get; private set; }
 
     public ColliderList(params Collider[] colliders)
     {
@@ -15,7 +15,7 @@ public class ColliderList : Collider
             if (c == null)
                 throw new Exception("Cannot add a null Collider to a ColliderList.");
 #endif
-        this.colliders = colliders;
+        this.Colliders = colliders;
     }
 
     public void Add(params Collider[] toAdd)
@@ -23,22 +23,22 @@ public class ColliderList : Collider
 #if DEBUG
         foreach (var c in toAdd)
         {
-            if (colliders.Contains(c))
+            if (Colliders.Contains(c))
                 throw new Exception("Adding a Collider to a ColliderList that already contains it!");
             else if (c == null)
                 throw new Exception("Cannot add a null Collider to a ColliderList.");
         }
 #endif
 
-        Collider[] newColliders = new Collider[colliders.Length + toAdd.Length];
-        for (int i = 0; i < colliders.Length; i++)
-            newColliders[i] = colliders[i];
+        Collider[] newColliders = new Collider[Colliders.Length + toAdd.Length];
+        for (int i = 0; i < Colliders.Length; i++)
+            newColliders[i] = Colliders[i];
         for (int i = 0; i < toAdd.Length; i++)
         {
-            newColliders[i + colliders.Length] = toAdd[i];
+            newColliders[i + Colliders.Length] = toAdd[i];
             toAdd[i].Added(Entity);
         }
-        colliders = newColliders;
+        Colliders = newColliders;
     }
 
     public void Remove(params Collider[] toRemove)
@@ -46,16 +46,16 @@ public class ColliderList : Collider
 #if DEBUG
         foreach (var c in toRemove)
         {
-            if (!colliders.Contains(c))
+            if (!Colliders.Contains(c))
                 throw new Exception("Removing a Collider from a ColliderList that does not contain it!");
             else if (c == null)
                 throw new Exception("Cannot remove a null Collider from a ColliderList.");
         }
 #endif
 
-        Collider[] newColliders = new Collider[colliders.Length - toRemove.Length];
+        Collider[] newColliders = new Collider[Colliders.Length - toRemove.Length];
         int at = 0;
-        foreach (var c in colliders)
+        foreach (var c in Colliders)
         {
             if (!toRemove.Contains(c))
             {
@@ -63,20 +63,20 @@ public class ColliderList : Collider
                 at++;
             }
         }
-        colliders = newColliders;
+        Colliders = newColliders;
     }
 
     internal override void Added(Entity entity)
     {
         base.Added(entity);
-        foreach (var c in colliders)
+        foreach (var c in Colliders)
             c.Added(entity);
     }
 
     internal override void Removed()
     {
         base.Removed();
-        foreach (var c in colliders)
+        foreach (var c in Colliders)
             c.Removed();
     }
 
@@ -109,18 +109,18 @@ public class ColliderList : Collider
     {
         get
         {
-            float left = colliders[0].Left;
-            for (int i = 1; i < colliders.Length; i++)
-                if (colliders[i].Left < left)
-                    left = colliders[i].Left;
+            float left = Colliders[0].Left;
+            for (int i = 1; i < Colliders.Length; i++)
+                if (Colliders[i].Left < left)
+                    left = Colliders[i].Left;
             return left;
         }
 
         set
         {
             float changeX = value - Left;
-            foreach (var c in colliders)
-                Position.X += changeX;
+            foreach (var c in Colliders)
+                c.Position.X += changeX;
         }
     }
 
@@ -128,18 +128,18 @@ public class ColliderList : Collider
     {
         get
         {
-            float right = colliders[0].Right;
-            for (int i = 1; i < colliders.Length; i++)
-                if (colliders[i].Right > right)
-                    right = colliders[i].Right;
+            float right = Colliders[0].Right;
+            for (int i = 1; i < Colliders.Length; i++)
+                if (Colliders[i].Right > right)
+                    right = Colliders[i].Right;
             return right;
         }
 
         set
         {
             float changeX = value - Right;
-            foreach (var c in colliders)
-                Position.X += changeX;
+            foreach (var c in Colliders)
+                c.Position.X += changeX;
         }
     }
 
@@ -147,18 +147,18 @@ public class ColliderList : Collider
     {
         get
         {
-            float top = colliders[0].Top;
-            for (int i = 1; i < colliders.Length; i++)
-                if (colliders[i].Top < top)
-                    top = colliders[i].Top;
+            float top = Colliders[0].Top;
+            for (int i = 1; i < Colliders.Length; i++)
+                if (Colliders[i].Top < top)
+                    top = Colliders[i].Top;
             return top;
         }
 
         set
         {
             float changeY = value - Top;
-            foreach (var c in colliders)
-                Position.Y += changeY;
+            foreach (var c in Colliders)
+                c.Position.Y += changeY;
         }
     }
 
@@ -166,33 +166,33 @@ public class ColliderList : Collider
     {
         get
         {
-            float bottom = colliders[0].Bottom;
-            for (int i = 1; i < colliders.Length; i++)
-                if (colliders[i].Bottom > bottom)
-                    bottom = colliders[i].Bottom;
+            float bottom = Colliders[0].Bottom;
+            for (int i = 1; i < Colliders.Length; i++)
+                if (Colliders[i].Bottom > bottom)
+                    bottom = Colliders[i].Bottom;
             return bottom;
         }
 
         set
         {
             float changeY = value - Bottom;
-            foreach (var c in colliders)
-                Position.Y += changeY;
+            foreach (var c in Colliders)
+                c.Position.Y += changeY;
         }
     }
 
     public override Collider Clone()
     {
-        Collider[] clones = new Collider[colliders.Length];
-        for (int i = 0; i < colliders.Length; i++)
-            clones[i] = colliders[i].Clone();
+        Collider[] clones = new Collider[Colliders.Length];
+        for (int i = 0; i < Colliders.Length; i++)
+            clones[i] = Colliders[i].Clone();
 
         return new ColliderList(clones);
     }
 
     public override void Render(Camera camera, Color color)
     {
-        foreach (var c in colliders)
+        foreach (var c in Colliders)
             c.Render(camera, color);
     }
 
@@ -202,7 +202,7 @@ public class ColliderList : Collider
 
     public override bool Collide(Vector2 point)
     {
-        foreach (var c in colliders)
+        foreach (var c in Colliders)
             if (c.Collide(point))
                 return true;
 
@@ -211,7 +211,7 @@ public class ColliderList : Collider
 
     public override bool Collide(Rect rect)
     {
-        foreach (var c in colliders)
+        foreach (var c in Colliders)
             if (c.Collide(rect))
                 return true;
 
@@ -220,7 +220,7 @@ public class ColliderList : Collider
 
     public override bool Collide(Vector2 from, Vector2 to)
     {
-        foreach (var c in colliders)
+        foreach (var c in Colliders)
             if (c.Collide(from, to))
                 return true;
 
@@ -229,7 +229,7 @@ public class ColliderList : Collider
 
     public override bool Collide(Hitbox hitbox)
     {
-        foreach (var c in colliders)
+        foreach (var c in Colliders)
             if (c.Collide(hitbox))
                 return true;
 
@@ -238,7 +238,7 @@ public class ColliderList : Collider
 
     public override bool Collide(Grid grid)
     {
-        foreach (var c in colliders)
+        foreach (var c in Colliders)
             if (c.Collide(grid))
                 return true;
 
@@ -247,7 +247,7 @@ public class ColliderList : Collider
 
     public override bool Collide(Circle circle)
     {
-        foreach (var c in colliders)
+        foreach (var c in Colliders)
             if (c.Collide(circle))
                 return true;
 
@@ -256,7 +256,7 @@ public class ColliderList : Collider
 
     public override bool Collide(ColliderList list)
     {
-        foreach (var c in colliders)
+        foreach (var c in Colliders)
             if (c.Collide(list))
                 return true;
 

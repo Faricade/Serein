@@ -397,7 +397,7 @@ public class Scene : IEnumerable<Entity>, IEnumerable
 
         for (int i = 0; i < list.Count; i++)
             if (list[i].Collidable && list[i].CollideRect(rect))
-                list.Add(list[i]);
+                hits.Add(list[i]);
     }
 
     public void CollideInto<T>(Vector2 point, List<T> hits) where T : Entity
@@ -584,7 +584,7 @@ public class Scene : IEnumerable<Entity>, IEnumerable
 
         for (int i = 0; i < list.Count; i++)
             if (list[i].Entity.Collidable && list[i].Entity.CollideRect(rect))
-                list.Add(list[i]);
+                hits.Add(list[i]);
     }
 
     public void CollideIntoByComponent<T>(Vector2 point, List<T> hits) where T : Component
@@ -611,7 +611,7 @@ public class Scene : IEnumerable<Entity>, IEnumerable
 
         for (int i = 0; i < list.Count; i++)
             if (list[i].Entity.Collidable && list[i].Entity.CollideRect(rect))
-                list.Add(list[i] as T);
+                hits.Add(list[i] as T);
     }
 
     public List<T> CollideAllByComponent<T>(Vector2 point) where T : Component
@@ -691,8 +691,7 @@ public class Scene : IEnumerable<Entity>, IEnumerable
     {
         const double theta = .000001f;
 
-        double add = 0;
-        if (actualDepthLookup.TryGetValue(entity.depth, out add))
+        if (actualDepthLookup.TryGetValue(entity.depth, out double add))
             actualDepthLookup[entity.depth] += theta;
         else
             actualDepthLookup.Add(entity.depth, theta);

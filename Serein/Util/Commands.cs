@@ -589,11 +589,3 @@ public class Commands
         }
     }
 }
-
-[Obsolete("Reflection-based command discovery isn't Native AOT safe. Call Engine.Commands.Register(...) instead.", true)]
-public class Command : Attribute
-{
-    public Command(string name, string help)
-    {
-    }
-}

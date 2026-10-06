@@ -23,8 +23,7 @@ public class ChoiceSet<T>
     /// <param name="weight"></param>
     public void Set(T choice, int weight)
     {
-        int oldWeight = 0;
-        choices.TryGetValue(choice, out oldWeight);
+        choices.TryGetValue(choice, out int oldWeight);
         TotalWeight -= oldWeight;
 
         if (weight <= 0)
@@ -48,8 +47,7 @@ public class ChoiceSet<T>
     {
         get
         {
-            int weight = 0;
-            choices.TryGetValue(choice, out weight);
+            choices.TryGetValue(choice, out int weight);
             return weight;
         }
 
@@ -67,8 +65,7 @@ public class ChoiceSet<T>
     /// <param name="chance">A chance between 0 and 1.0f</param>
     public void Set(T choice, float chance)
     {
-        int oldWeight = 0;
-        choices.TryGetValue(choice, out oldWeight);
+        choices.TryGetValue(choice, out int oldWeight);
         TotalWeight -= oldWeight;
 
         int weight = (int)Math.Round(TotalWeight / (1f - chance));
@@ -98,13 +95,10 @@ public class ChoiceSet<T>
     {
         if (choices.Length > 0)
         {
-            float chance = totalChance / choices.Length;
-
             int oldTotalWeight = 0;
             foreach (var c in choices)
             {
-                int oldWeight = 0;
-                this.choices.TryGetValue(c, out oldWeight);
+                this.choices.TryGetValue(c, out int oldWeight);
                 oldTotalWeight += oldWeight;
             }
             TotalWeight -= oldTotalWeight;

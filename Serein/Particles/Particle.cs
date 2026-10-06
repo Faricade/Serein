@@ -44,7 +44,7 @@ public struct Particle
 
     public void Update(float? delta = null)
     {
-        var dt = 0f;
+        float dt;
         if (delta.HasValue)
             dt = delta.Value;
         else

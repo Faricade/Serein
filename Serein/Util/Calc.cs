@@ -2170,9 +2170,7 @@ public static class QuaternionExt
 {
     public static Quaternion Conjugated(this Quaternion q)
     {
-        var c = q;
-        c = Quaternion.Conjugate(c);
-        return c;
+        return Quaternion.Conjugate(q);
     }
 
     public static Quaternion LookAt(this Quaternion q, Vector3 from, Vector3 to, Vector3 up)

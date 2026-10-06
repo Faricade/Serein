@@ -15,7 +15,7 @@ public class Tileset
     {
         Texture = texture;
         TileWidth = tileWidth;
-        TileHeight = TileHeight;
+        TileHeight = tileHeight;
 
         tiles = new MTexture[Texture.Width / tileWidth, Texture.Height / tileHeight];
         for (int x = 0; x < Texture.Width / tileWidth; x++)
