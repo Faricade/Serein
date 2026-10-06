@@ -12,7 +12,8 @@ public class MTexture
     static public MTexture FromFile(string filename)
     {
         var fileStream = new FileStream(filename, FileMode.Open, FileAccess.Read);
-        var texture = Texture.FromStream(Engine.Instance.GraphicsDevice, fileStream);
+        using var image = new Foster.Framework.Image(fileStream);
+        var texture = new Texture(Engine.Instance.GraphicsDevice, image);
         fileStream.Close();
 
         return new MTexture(texture);
