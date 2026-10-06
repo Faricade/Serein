@@ -96,7 +96,7 @@ public class Atlas
                 break;
 
             case AtlasDataFormat.CrunchBinary:
-                using (var stream = File.OpenRead(Path.Combine(Engine.ContentDirectory, path)))
+                using (var stream = File.OpenRead(path))
                 {
                     var reader = new BinaryReader(stream);
                     var textures = reader.ReadInt16();
@@ -125,7 +125,7 @@ public class Atlas
                             var fy = reader.ReadInt16();
                             var fw = reader.ReadInt16();
                             var fh = reader.ReadInt16();
-                            
+
                             atlas.textures[name] = new MTexture(mTexture, name, new RectInt(x, y, w, h), new Vector2(-fx, -fy), fw, fh);
                         }
                     }
@@ -133,7 +133,7 @@ public class Atlas
                 break;
 
             case AtlasDataFormat.CrunchBinaryNoAtlas:
-                using (var stream = File.OpenRead(Path.Combine(Engine.ContentDirectory, path + ".bin")))
+                using (var stream = File.OpenRead(path + ".bin"))
                 {
                     var reader = new BinaryReader(stream);
                     var folders = reader.ReadInt16();
@@ -170,7 +170,7 @@ public class Atlas
 
             case AtlasDataFormat.Packer:
 
-                using (var stream = File.OpenRead(Path.Combine(Engine.ContentDirectory, path + ".meta")))
+                using (var stream = File.OpenRead(path + ".meta"))
                 {
                     var reader = new BinaryReader(stream);
                     reader.ReadInt32(); // version
@@ -211,7 +211,7 @@ public class Atlas
                 break;
 
             case AtlasDataFormat.PackerNoAtlas:
-                using (var stream = File.OpenRead(Path.Combine(Engine.ContentDirectory, path + ".meta")))
+                using (var stream = File.OpenRead(path + ".meta"))
                 {
                     var reader = new BinaryReader(stream);
                     reader.ReadInt32(); // version
@@ -251,7 +251,7 @@ public class Atlas
 
             case AtlasDataFormat.CrunchXmlOrBinary:
 
-                if (File.Exists(Path.Combine(Engine.ContentDirectory, path + ".bin")))
+                if (File.Exists(path + ".bin"))
                     ReadAtlasData(atlas, path + ".bin", AtlasDataFormat.CrunchBinary);
                 else
                     ReadAtlasData(atlas, path + ".xml", AtlasDataFormat.CrunchXml);
@@ -285,7 +285,7 @@ public class Atlas
         {
             var dataPath = Path.Combine(rootPath, filename + index.ToString() + ".xml");
 
-            if (!File.Exists(Path.Combine(Engine.ContentDirectory, dataPath)))
+            if (!File.Exists(dataPath))
                 break;
             
             ReadAtlasData(atlas, dataPath, format);
@@ -300,7 +300,7 @@ public class Atlas
         var atlas = new Atlas();
         atlas.Sources = new List<Texture>();
 
-        var contentDirectory = Engine.ContentDirectory;
+        var contentDirectory = AppContext.BaseDirectory;
         var contentDirectoryLength = contentDirectory.Length;
         var contentPath = Path.Combine(contentDirectory, path);
         var contentPathLength = contentPath.Length;

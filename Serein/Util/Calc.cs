@@ -1435,8 +1435,10 @@ public static class Calc
 
     public static XmlDocument LoadContentXML(string filename)
     {
-        XmlDocument xml = new XmlDocument();
-        xml.Load(TitleContainer.OpenStream(Path.Combine(Engine.Instance.Content.RootDirectory, filename)));
+        XmlDocument xml = new();
+        var fileStream = new FileStream(filename, FileMode.Open, FileAccess.Read);
+        xml.Load(fileStream);
+        fileStream.Close();
         return xml;
     }
 
@@ -1450,7 +1452,7 @@ public static class Calc
 
     public static bool ContentXMLExists(string filename)
     {
-        return File.Exists(Path.Combine(Engine.ContentDirectory, filename));
+        return File.Exists(filename);
     }
 
     public static bool XMLExists(string filename)
