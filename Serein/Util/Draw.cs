@@ -52,7 +52,7 @@ public static class Draw
 
     public static void Point(Vector2 at, Color color)
     {
-        Batcher.Draw(Pixel.Texture, at, Pixel.ClipRect, color, 0, Vector2.Zero, 1f, SpriteEffects.None, 0);
+        Batcher.Image(new Subtexture(Pixel.Texture, Pixel.ClipRect), at, Vector2.Zero, Vector2.One, 0, color);
     }
 
     #region Line
@@ -78,12 +78,12 @@ public static class Draw
 
     public static void LineAngle(Vector2 start, float angle, float length, Color color)
     {
-        Batcher.Draw(Pixel.Texture, start, Pixel.ClipRect, color, angle, Vector2.Zero, new Vector2(length, 1), SpriteEffects.None, 0);
+        Batcher.Image(new Subtexture(Pixel.Texture, Pixel.ClipRect), start, Vector2.Zero, new Vector2(length, 1), angle, color);
     }
 
     public static void LineAngle(Vector2 start, float angle, float length, Color color, float thickness)
     {
-        Batcher.Draw(Pixel.Texture, start, Pixel.ClipRect, color, angle, new Vector2(0, .5f), new Vector2(length, thickness), SpriteEffects.None, 0);
+        Batcher.Image(new Subtexture(Pixel.Texture, Pixel.ClipRect), start, new Vector2(0, .5f), new Vector2(length, thickness), angle, color);
     }
 
     public static void LineAngle(float startX, float startY, float angle, float length, Color color)
@@ -153,7 +153,7 @@ public static class Draw
         rect.Y = (int)y;
         rect.Width = (int)width;
         rect.Height = (int)height;
-        Batcher.Draw(Pixel.Texture, rect, Pixel.ClipRect, color);
+        Batcher.ImageStretch(new Subtexture(Pixel.Texture, Pixel.ClipRect), rect, color);
     }
 
     public static void Rect(Vector2 position, float width, float height, Color color)
@@ -164,7 +164,7 @@ public static class Draw
     public static void Rect(Rect rect, Color color)
     {
         Draw.rect = rect;
-        Batcher.Draw(Pixel.Texture, rect, Pixel.ClipRect, color);
+        Batcher.ImageStretch(new Subtexture(Pixel.Texture, Pixel.ClipRect), rect, color);
     }
 
     public static void Rect(Collider collider, Color color)
@@ -183,21 +183,21 @@ public static class Draw
         rect.Width = (int)width;
         rect.Height = 1;
 
-        Batcher.Draw(Pixel.Texture, rect, Pixel.ClipRect, color);
+        Batcher.ImageStretch(new Subtexture(Pixel.Texture, Pixel.ClipRect), rect, color);
 
         rect.Y += (int)height - 1;
 
-        Batcher.Draw(Pixel.Texture, rect, Pixel.ClipRect, color);
+        Batcher.ImageStretch(new Subtexture(Pixel.Texture, Pixel.ClipRect), rect, color);
 
         rect.Y -= (int)height - 1;
         rect.Width = 1;
         rect.Height = (int)height;
 
-        Batcher.Draw(Pixel.Texture, rect, Pixel.ClipRect, color);
+        Batcher.ImageStretch(new Subtexture(Pixel.Texture, Pixel.ClipRect), rect, color);
 
         rect.X += (int)width - 1;
 
-        Batcher.Draw(Pixel.Texture, rect, Pixel.ClipRect, color);
+        Batcher.ImageStretch(new Subtexture(Pixel.Texture, Pixel.ClipRect), rect, color);
     }
 
     public static void HollowRect(Vector2 position, float width, float height, Color color)
@@ -325,7 +325,7 @@ public static class Draw
 
     #region Weird Textures
 
-    public static void SineTextureH(MTexture tex, Vector2 position, Vector2 origin, Vector2 scale, float rotation, Color color, SpriteEffects effects, float sineCounter, float amplitude = 2, int sliceSize = 2, float sliceAdd = (Foster.Framework.Calc.PI * 2) / 8)
+    public static void SineTextureH(MTexture tex, Vector2 position, Vector2 origin, Vector2 scale, float rotation, Color color, float sineCounter, float amplitude = 2, int sliceSize = 2, float sliceAdd = (Foster.Framework.Calc.PI * 2) / 8)
     {
         position = Calc.Floor(position);
         Rect clip = tex.ClipRect;
@@ -335,7 +335,7 @@ public static class Draw
         while (clip.X < tex.ClipRect.X + tex.ClipRect.Width)
         {
             Vector2 add = new Vector2(sliceSize * num, (float)Math.Round(Math.Sin(sineCounter + sliceAdd * num) * amplitude));
-            Draw.Batcher.Draw(tex.Texture, position, clip, color, rotation, origin - add, scale, effects, 0);
+            Draw.Batcher.Image(new Subtexture(tex.Texture, clip), position, origin - add, scale, rotation, color);
 
             num++;
             clip.X += sliceSize;
@@ -343,7 +343,7 @@ public static class Draw
         }
     }
 
-    public static void SineTextureV(MTexture tex, Vector2 position, Vector2 origin, Vector2 scale, float rotation, Color color, SpriteEffects effects, float sineCounter, float amplitude = 2, int sliceSize = 2, float sliceAdd = (Foster.Framework.Calc.PI * 2) / 8)
+    public static void SineTextureV(MTexture tex, Vector2 position, Vector2 origin, Vector2 scale, float rotation, Color color, float sineCounter, float amplitude = 2, int sliceSize = 2, float sliceAdd = (Foster.Framework.Calc.PI * 2) / 8)
     {
         position = Calc.Floor(position);
         Rect clip = tex.ClipRect;
@@ -353,7 +353,7 @@ public static class Draw
         while (clip.Y < tex.ClipRect.Y + tex.ClipRect.Height)
         {
             Vector2 add = new Vector2((float)Math.Round(Math.Sin(sineCounter + sliceAdd * num) * amplitude), sliceSize * num);
-            Draw.Batcher.Draw(tex.Texture, position, clip, color, rotation, origin - add, scale, effects, 0);
+            Draw.Batcher.Image(new Subtexture(tex.Texture, clip), position, origin - add, scale, rotation, color);
 
             num++;
             clip.Y += sliceSize;
@@ -361,7 +361,7 @@ public static class Draw
         }
     }
 
-    public static void TextureBannerV(MTexture tex, Vector2 position, Vector2 origin, Vector2 scale, float rotation, Color color, SpriteEffects effects, float sineCounter, float amplitude = 2, int sliceSize = 2, float sliceAdd = (Foster.Framework.Calc.PI * 2) / 8)
+    public static void TextureBannerV(MTexture tex, Vector2 position, Vector2 origin, Vector2 scale, float rotation, Color color, float sineCounter, float amplitude = 2, int sliceSize = 2, float sliceAdd = (Foster.Framework.Calc.PI * 2) / 8)
     {
         position = Calc.Floor(position);
         Rect clip = tex.ClipRect;
@@ -375,7 +375,7 @@ public static class Draw
             clip.Height = Math.Min(sliceSize, tex.ClipRect.Y + tex.ClipRect.Height - clip.Y);
 
             Vector2 add = new Vector2((float)Math.Round(Math.Sin(sineCounter + sliceAdd * num) * amplitude * fade), clip.Y - tex.ClipRect.Y);
-            Draw.Batcher.Draw(tex.Texture, position, clip, color, rotation, origin - add, scale, effects, 0);
+            Draw.Batcher.Image(new Subtexture(tex.Texture, clip), position, origin - add, scale, rotation, color);
 
             num++;
             clip.Y += clip.Height;

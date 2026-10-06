@@ -196,7 +196,7 @@ public class MTexture
         if (Texture.IsDisposed)
             throw new Exception("Texture Is Disposed");
 #endif
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, Color.White, 0, -DrawOffset, 1f, SpriteEffects.None, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, -DrawOffset, Vector2.One, 0, Color.White);
     }
 
     public void Draw(Vector2 position, Vector2 origin)
@@ -205,7 +205,7 @@ public class MTexture
         if (Texture.IsDisposed)
             throw new Exception("Texture Is Disposed");
 #endif
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, Color.White, 0, origin - DrawOffset, 1f, SpriteEffects.None, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, origin - DrawOffset, Vector2.One, 0, Color.White);
     }
 
     public void Draw(Vector2 position, Vector2 origin, Color color)
@@ -214,7 +214,7 @@ public class MTexture
         if (Texture.IsDisposed)
             throw new Exception("Texture Is Disposed");
 #endif
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, 0, origin - DrawOffset, 1f, SpriteEffects.None, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, origin - DrawOffset, Vector2.One, 0, color);
     }
 
     public void Draw(Vector2 position, Vector2 origin, Color color, float scale)
@@ -223,7 +223,7 @@ public class MTexture
         if (Texture.IsDisposed)
             throw new Exception("Texture Is Disposed");
 #endif
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, 0, origin - DrawOffset, scale, SpriteEffects.None, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, origin - DrawOffset, new Vector2(scale, scale), 0, color);
     }
 
     public void Draw(Vector2 position, Vector2 origin, Color color, float scale, float rotation)
@@ -232,16 +232,7 @@ public class MTexture
         if (Texture.IsDisposed)
             throw new Exception("Texture Is Disposed");
 #endif
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, rotation, origin - DrawOffset, scale, SpriteEffects.None, 0);
-    }
-
-    public void Draw(Vector2 position, Vector2 origin, Color color, float scale, float rotation, SpriteEffects flip)
-    {
-#if DEBUG
-        if (Texture.IsDisposed)
-            throw new Exception("Texture Is Disposed");
-#endif
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, rotation, origin - DrawOffset, scale, flip, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, origin - DrawOffset, new Vector2(scale, scale), rotation, color);
     }
 
     public void Draw(Vector2 position, Vector2 origin, Color color, Vector2 scale)
@@ -250,7 +241,7 @@ public class MTexture
         if (Texture.IsDisposed)
             throw new Exception("Texture Is Disposed");
 #endif
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, 0, origin - DrawOffset, scale, SpriteEffects.None, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, origin - DrawOffset, scale, 0, color);
     }
 
     public void Draw(Vector2 position, Vector2 origin, Color color, Vector2 scale, float rotation)
@@ -259,16 +250,7 @@ public class MTexture
         if (Texture.IsDisposed)
             throw new Exception("Texture Is Disposed");
 #endif
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, rotation, origin - DrawOffset, scale, SpriteEffects.None, 0);
-    }
-
-    public void Draw(Vector2 position, Vector2 origin, Color color, Vector2 scale, float rotation, SpriteEffects flip)
-    {
-#if DEBUG
-        if (Texture.IsDisposed)
-            throw new Exception("Texture Is Disposed");
-#endif
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, rotation, origin - DrawOffset, scale, flip, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, origin - DrawOffset, scale, rotation, color);
     }
 
     public void Draw(Vector2 position, Vector2 origin, Color color, Vector2 scale, float rotation, RectInt clip)
@@ -277,7 +259,7 @@ public class MTexture
         if (Texture.IsDisposed)
             throw new Exception("Texture Is Disposed");
 #endif
-        Serein.Draw.Batcher.Draw(Texture, position, GetRelativeRect(clip), color, rotation, origin - DrawOffset, scale, SpriteEffects.None, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, GetRelativeRect(clip)), position, origin - DrawOffset, scale, rotation, color);
     }
 
     #endregion
@@ -290,7 +272,7 @@ public class MTexture
         if (Texture.IsDisposed)
             throw new Exception("Texture Is Disposed");
 #endif
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, Color.White, 0, Center - DrawOffset, 1f, SpriteEffects.None, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, Center - DrawOffset, Vector2.One, 0, Color.White);
     }
 
     public void DrawCentered(Vector2 position, Color color)
@@ -299,7 +281,7 @@ public class MTexture
         if (Texture.IsDisposed)
             throw new Exception("Texture Is Disposed");
 #endif
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, 0, Center - DrawOffset, 1f, SpriteEffects.None, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, Center - DrawOffset, Vector2.One, 0, color);
     }
 
     public void DrawCentered(Vector2 position, Color color, float scale)
@@ -308,7 +290,7 @@ public class MTexture
         if (Texture.IsDisposed)
             throw new Exception("Texture Is Disposed");
 #endif
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, 0, Center - DrawOffset, scale, SpriteEffects.None, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, Center - DrawOffset, new Vector2(scale, scale), 0, color);
     }
 
     public void DrawCentered(Vector2 position, Color color, float scale, float rotation)
@@ -317,16 +299,7 @@ public class MTexture
         if (Texture.IsDisposed)
             throw new Exception("Texture Is Disposed");
 #endif
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, rotation, Center - DrawOffset, scale, SpriteEffects.None, 0);
-    }
-
-    public void DrawCentered(Vector2 position, Color color, float scale, float rotation, SpriteEffects flip)
-    {
-#if DEBUG
-        if (Texture.IsDisposed)
-            throw new Exception("Texture Is Disposed");
-#endif
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, rotation, Center - DrawOffset, scale, flip, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, Center - DrawOffset, new Vector2(scale, scale), rotation, color);
     }
 
     public void DrawCentered(Vector2 position, Color color, Vector2 scale)
@@ -335,7 +308,7 @@ public class MTexture
         if (Texture.IsDisposed)
             throw new Exception("Texture Is Disposed");
 #endif
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, 0, Center - DrawOffset, scale, SpriteEffects.None, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, Center - DrawOffset, scale, 0, color);
     }
 
     public void DrawCentered(Vector2 position, Color color, Vector2 scale, float rotation)
@@ -344,16 +317,7 @@ public class MTexture
         if (Texture.IsDisposed)
             throw new Exception("Texture Is Disposed");
 #endif
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, rotation, Center - DrawOffset, scale, SpriteEffects.None, 0);
-    }
-
-    public void DrawCentered(Vector2 position, Color color, Vector2 scale, float rotation, SpriteEffects flip)
-    {
-#if DEBUG
-        if (Texture.IsDisposed)
-            throw new Exception("Texture Is Disposed");
-#endif
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, rotation, Center - DrawOffset, scale, flip, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, Center - DrawOffset, scale, rotation, color);
     }
 
     #endregion
@@ -366,7 +330,7 @@ public class MTexture
         if (Texture.IsDisposed)
             throw new Exception("Texture Is Disposed");
 #endif
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, Color.White, 0, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, 1f, SpriteEffects.None, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, Vector2.One, 0, Color.White);
     }
 
     public void DrawJustified(Vector2 position, Vector2 justify, Color color)
@@ -375,7 +339,7 @@ public class MTexture
         if (Texture.IsDisposed)
             throw new Exception("Texture Is Disposed");
 #endif
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, 0, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, 1f, SpriteEffects.None, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, Vector2.One, 0, color);
     }
 
     public void DrawJustified(Vector2 position, Vector2 justify, Color color, float scale)
@@ -384,7 +348,7 @@ public class MTexture
         if (Texture.IsDisposed)
             throw new Exception("Texture Is Disposed");
 #endif
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, 0, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, SpriteEffects.None, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, new Vector2(scale, scale), 0, color);
     }
 
     public void DrawJustified(Vector2 position, Vector2 justify, Color color, float scale, float rotation)
@@ -393,16 +357,7 @@ public class MTexture
         if (Texture.IsDisposed)
             throw new Exception("Texture Is Disposed");
 #endif
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, rotation, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, SpriteEffects.None, 0);
-    }
-
-    public void DrawJustified(Vector2 position, Vector2 justify, Color color, float scale, float rotation, SpriteEffects flip)
-    {
-#if DEBUG
-        if (Texture.IsDisposed)
-            throw new Exception("Texture Is Disposed");
-#endif
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, rotation, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, flip, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, new Vector2(scale, scale), rotation, color);
     }
 
     public void DrawJustified(Vector2 position, Vector2 justify, Color color, Vector2 scale)
@@ -411,7 +366,7 @@ public class MTexture
         if (Texture.IsDisposed)
             throw new Exception("Texture Is Disposed");
 #endif
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, 0, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, SpriteEffects.None, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, 0, color);
     }
 
     public void DrawJustified(Vector2 position, Vector2 justify, Color color, Vector2 scale, float rotation)
@@ -420,16 +375,7 @@ public class MTexture
         if (Texture.IsDisposed)
             throw new Exception("Texture Is Disposed");
 #endif
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, rotation, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, SpriteEffects.None, 0);
-    }
-
-    public void DrawJustified(Vector2 position, Vector2 justify, Color color, Vector2 scale, float rotation, SpriteEffects flip)
-    {
-#if DEBUG
-        if (Texture.IsDisposed)
-            throw new Exception("Texture Is Disposed");
-#endif
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, rotation, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, flip, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, rotation, color);
     }
 
     #endregion
@@ -446,9 +392,9 @@ public class MTexture
         for (var i = -1; i <= 1; i++)
             for (var j = -1; j <= 1; j++)
                 if (i != 0 || j != 0)
-                    Serein.Draw.Batcher.Draw(Texture, position + new Vector2(i, j), ClipRect, Color.Black, 0, -DrawOffset, 1f, SpriteEffects.None, 0);
+                    Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position + new Vector2(i, j), -DrawOffset, Vector2.One, 0, Color.Black);
 
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, Color.White, 0, -DrawOffset, 1f, SpriteEffects.None, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, -DrawOffset, Vector2.One, 0, Color.White);
     }
 
     public void DrawOutline(Vector2 position, Vector2 origin)
@@ -461,9 +407,9 @@ public class MTexture
         for (var i = -1; i <= 1; i++)
             for (var j = -1; j <= 1; j++)
                 if (i != 0 || j != 0)
-                    Serein.Draw.Batcher.Draw(Texture, position + new Vector2(i, j), ClipRect, Color.Black, 0, origin - DrawOffset, 1f, SpriteEffects.None, 0);
+                    Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position + new Vector2(i, j), origin - DrawOffset, Vector2.One, 0, Color.Black);
 
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, Color.White, 0, origin - DrawOffset, 1f, SpriteEffects.None, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, origin - DrawOffset, Vector2.One, 0, Color.White);
     }
 
     public void DrawOutline(Vector2 position, Vector2 origin, Color color)
@@ -476,9 +422,9 @@ public class MTexture
         for (var i = -1; i <= 1; i++)
             for (var j = -1; j <= 1; j++)
                 if (i != 0 || j != 0)
-                    Serein.Draw.Batcher.Draw(Texture, position + new Vector2(i, j), ClipRect, Color.Black, 0, origin - DrawOffset, 1f, SpriteEffects.None, 0);
+                    Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position + new Vector2(i, j), origin - DrawOffset, Vector2.One, 0, Color.Black);
 
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, 0, origin - DrawOffset, 1f, SpriteEffects.None, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, origin - DrawOffset, Vector2.One, 0, color);
     }
 
     public void DrawOutline(Vector2 position, Vector2 origin, Color color, float scale)
@@ -491,9 +437,9 @@ public class MTexture
         for (var i = -1; i <= 1; i++)
             for (var j = -1; j <= 1; j++)
                 if (i != 0 || j != 0)
-                    Serein.Draw.Batcher.Draw(Texture, position + new Vector2(i, j), ClipRect, Color.Black, 0, origin - DrawOffset, scale, SpriteEffects.None, 0);
+                    Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position + new Vector2(i, j), origin - DrawOffset, new Vector2(scale, scale), 0, Color.Black);
 
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, 0, origin - DrawOffset, scale, SpriteEffects.None, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, origin - DrawOffset, new Vector2(scale, scale), 0, color);
     }
 
     public void DrawOutline(Vector2 position, Vector2 origin, Color color, float scale, float rotation)
@@ -506,24 +452,9 @@ public class MTexture
         for (var i = -1; i <= 1; i++)
             for (var j = -1; j <= 1; j++)
                 if (i != 0 || j != 0)
-                    Serein.Draw.Batcher.Draw(Texture, position + new Vector2(i, j), ClipRect, Color.Black, rotation, origin - DrawOffset, scale, SpriteEffects.None, 0);
+                    Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position + new Vector2(i, j), origin - DrawOffset, new Vector2(scale, scale), rotation, Color.Black);
 
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, rotation, origin - DrawOffset, scale, SpriteEffects.None, 0);
-    }
-
-    public void DrawOutline(Vector2 position, Vector2 origin, Color color, float scale, float rotation, SpriteEffects flip)
-    {
-#if DEBUG
-        if (Texture.IsDisposed)
-            throw new Exception("Texture Is Disposed");
-#endif
-
-        for (var i = -1; i <= 1; i++)
-            for (var j = -1; j <= 1; j++)
-                if (i != 0 || j != 0)
-                    Serein.Draw.Batcher.Draw(Texture, position + new Vector2(i, j), ClipRect, Color.Black, rotation, origin - DrawOffset, scale, flip, 0);
-
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, rotation, origin - DrawOffset, scale, flip, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, origin - DrawOffset, new Vector2(scale, scale), rotation, color);
     }
 
     public void DrawOutline(Vector2 position, Vector2 origin, Color color, Vector2 scale)
@@ -536,9 +467,9 @@ public class MTexture
         for (var i = -1; i <= 1; i++)
             for (var j = -1; j <= 1; j++)
                 if (i != 0 || j != 0)
-                    Serein.Draw.Batcher.Draw(Texture, position + new Vector2(i, j), ClipRect, Color.Black, 0, origin - DrawOffset, scale, SpriteEffects.None, 0);
+                    Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position + new Vector2(i, j), origin - DrawOffset, scale, 0, Color.Black);
 
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, 0, origin - DrawOffset, scale, SpriteEffects.None, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, origin - DrawOffset, scale, 0, color);
     }
 
     public void DrawOutline(Vector2 position, Vector2 origin, Color color, Vector2 scale, float rotation)
@@ -551,24 +482,9 @@ public class MTexture
         for (var i = -1; i <= 1; i++)
             for (var j = -1; j <= 1; j++)
                 if (i != 0 || j != 0)
-                    Serein.Draw.Batcher.Draw(Texture, position + new Vector2(i, j), ClipRect, Color.Black, rotation, origin - DrawOffset, scale, SpriteEffects.None, 0);
+                    Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position + new Vector2(i, j), origin - DrawOffset, scale, rotation, Color.Black);
 
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, rotation, origin - DrawOffset, scale, SpriteEffects.None, 0);
-    }
-
-    public void DrawOutline(Vector2 position, Vector2 origin, Color color, Vector2 scale, float rotation, SpriteEffects flip)
-    {
-#if DEBUG
-        if (Texture.IsDisposed)
-            throw new Exception("Texture Is Disposed");
-#endif
-
-        for (var i = -1; i <= 1; i++)
-            for (var j = -1; j <= 1; j++)
-                if (i != 0 || j != 0)
-                    Serein.Draw.Batcher.Draw(Texture, position + new Vector2(i, j), ClipRect, Color.Black, rotation, origin - DrawOffset, scale, flip, 0);
-
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, rotation, origin - DrawOffset, scale, flip, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, origin - DrawOffset, scale, rotation, color);
     }
 
     #endregion
@@ -585,9 +501,9 @@ public class MTexture
         for (var i = -1; i <= 1; i++)
             for (var j = -1; j <= 1; j++)
                 if (i != 0 || j != 0)
-                    Serein.Draw.Batcher.Draw(Texture, position + new Vector2(i, j), ClipRect, Color.Black, 0, Center - DrawOffset, 1f, SpriteEffects.None, 0);
+                    Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position + new Vector2(i, j), Center - DrawOffset, Vector2.One, 0, Color.Black);
 
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, Color.White, 0, Center - DrawOffset, 1f, SpriteEffects.None, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, Center - DrawOffset, Vector2.One, 0, Color.White);
     }
 
     public void DrawOutlineCentered(Vector2 position, Color color)
@@ -600,9 +516,9 @@ public class MTexture
         for (var i = -1; i <= 1; i++)
             for (var j = -1; j <= 1; j++)
                 if (i != 0 || j != 0)
-                    Serein.Draw.Batcher.Draw(Texture, position + new Vector2(i, j), ClipRect, Color.Black, 0, Center - DrawOffset, 1f, SpriteEffects.None, 0);
+                    Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position + new Vector2(i, j), Center - DrawOffset, Vector2.One, 0, Color.Black);
 
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, 0, Center - DrawOffset, 1f, SpriteEffects.None, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, Center - DrawOffset, Vector2.One, 0, color);
     }
 
     public void DrawOutlineCentered(Vector2 position, Color color, float scale)
@@ -615,9 +531,9 @@ public class MTexture
         for (var i = -1; i <= 1; i++)
             for (var j = -1; j <= 1; j++)
                 if (i != 0 || j != 0)
-                    Serein.Draw.Batcher.Draw(Texture, position + new Vector2(i, j), ClipRect, Color.Black, 0, Center - DrawOffset, scale, SpriteEffects.None, 0);
+                    Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position + new Vector2(i, j), Center - DrawOffset, new Vector2(scale, scale), 0, Color.Black);
 
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, 0, Center - DrawOffset, scale, SpriteEffects.None, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, Center - DrawOffset, new Vector2(scale, scale), 0, color);
     }
 
     public void DrawOutlineCentered(Vector2 position, Color color, float scale, float rotation)
@@ -630,24 +546,9 @@ public class MTexture
         for (var i = -1; i <= 1; i++)
             for (var j = -1; j <= 1; j++)
                 if (i != 0 || j != 0)
-                    Serein.Draw.Batcher.Draw(Texture, position + new Vector2(i, j), ClipRect, Color.Black, rotation, Center - DrawOffset, scale, SpriteEffects.None, 0);
+                    Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position + new Vector2(i, j), Center - DrawOffset, new Vector2(scale, scale), rotation, Color.Black);
 
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, rotation, Center - DrawOffset, scale, SpriteEffects.None, 0);
-    }
-
-    public void DrawOutlineCentered(Vector2 position, Color color, float scale, float rotation, SpriteEffects flip)
-    {
-#if DEBUG
-        if (Texture.IsDisposed)
-            throw new Exception("Texture Is Disposed");
-#endif
-
-        for (var i = -1; i <= 1; i++)
-            for (var j = -1; j <= 1; j++)
-                if (i != 0 || j != 0)
-                    Serein.Draw.Batcher.Draw(Texture, position + new Vector2(i, j), ClipRect, Color.Black, rotation, Center - DrawOffset, scale, flip, 0);
-
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, rotation, Center - DrawOffset, scale, flip, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, Center - DrawOffset, new Vector2(scale, scale), rotation, color);
     }
 
     public void DrawOutlineCentered(Vector2 position, Color color, Vector2 scale)
@@ -660,9 +561,9 @@ public class MTexture
         for (var i = -1; i <= 1; i++)
             for (var j = -1; j <= 1; j++)
                 if (i != 0 || j != 0)
-                    Serein.Draw.Batcher.Draw(Texture, position + new Vector2(i, j), ClipRect, Color.Black, 0, Center - DrawOffset, scale, SpriteEffects.None, 0);
+                    Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position + new Vector2(i, j), Center - DrawOffset, scale, 0, Color.Black);
 
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, 0, Center - DrawOffset, scale, SpriteEffects.None, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, Center - DrawOffset, scale, 0, color);
     }
 
     public void DrawOutlineCentered(Vector2 position, Color color, Vector2 scale, float rotation)
@@ -675,24 +576,9 @@ public class MTexture
         for (var i = -1; i <= 1; i++)
             for (var j = -1; j <= 1; j++)
                 if (i != 0 || j != 0)
-                    Serein.Draw.Batcher.Draw(Texture, position + new Vector2(i, j), ClipRect, Color.Black, rotation, Center - DrawOffset, scale, SpriteEffects.None, 0);
+                    Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position + new Vector2(i, j), Center - DrawOffset, scale, rotation, Color.Black);
 
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, rotation, Center - DrawOffset, scale, SpriteEffects.None, 0);
-    }
-
-    public void DrawOutlineCentered(Vector2 position, Color color, Vector2 scale, float rotation, SpriteEffects flip)
-    {
-#if DEBUG
-        if (Texture.IsDisposed)
-            throw new Exception("Texture Is Disposed");
-#endif
-
-        for (var i = -1; i <= 1; i++)
-            for (var j = -1; j <= 1; j++)
-                if (i != 0 || j != 0)
-                    Serein.Draw.Batcher.Draw(Texture, position + new Vector2(i, j), ClipRect, Color.Black, rotation, Center - DrawOffset, scale, flip, 0);
-
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, rotation, Center - DrawOffset, scale, flip, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, Center - DrawOffset, scale, rotation, color);
     }
 
     #endregion
@@ -709,9 +595,9 @@ public class MTexture
         for (var i = -1; i <= 1; i++)
             for (var j = -1; j <= 1; j++)
                 if (i != 0 || j != 0)
-                    Serein.Draw.Batcher.Draw(Texture, position + new Vector2(i, j), ClipRect, Color.Black, 0, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, 1f, SpriteEffects.None, 0);
+                    Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position + new Vector2(i, j), new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, Vector2.One, 0, Color.Black);
 
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, Color.White, 0, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, 1f, SpriteEffects.None, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, Vector2.One, 0, Color.White);
     }
 
     public void DrawOutlineJustified(Vector2 position, Vector2 justify, Color color)
@@ -724,9 +610,9 @@ public class MTexture
         for (var i = -1; i <= 1; i++)
             for (var j = -1; j <= 1; j++)
                 if (i != 0 || j != 0)
-                    Serein.Draw.Batcher.Draw(Texture, position + new Vector2(i, j), ClipRect, Color.Black, 0, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, 1f, SpriteEffects.None, 0);
+                    Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position + new Vector2(i, j), new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, Vector2.One, 0, Color.Black);
 
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, 0, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, 1f, SpriteEffects.None, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, Vector2.One, 0, color);
     }
 
     public void DrawOutlineJustified(Vector2 position, Vector2 justify, Color color, float scale)
@@ -739,9 +625,9 @@ public class MTexture
         for (var i = -1; i <= 1; i++)
             for (var j = -1; j <= 1; j++)
                 if (i != 0 || j != 0)
-                    Serein.Draw.Batcher.Draw(Texture, position + new Vector2(i, j), ClipRect, Color.Black, 0, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, SpriteEffects.None, 0);
+                    Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position + new Vector2(i, j), new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, new Vector2(scale, scale), 0, Color.Black);
 
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, 0, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, SpriteEffects.None, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, new Vector2(scale, scale), 0, color);
     }
 
     public void DrawOutlineJustified(Vector2 position, Vector2 justify, Color color, float scale, float rotation)
@@ -754,24 +640,9 @@ public class MTexture
         for (var i = -1; i <= 1; i++)
             for (var j = -1; j <= 1; j++)
                 if (i != 0 || j != 0)
-                    Serein.Draw.Batcher.Draw(Texture, position + new Vector2(i, j), ClipRect, Color.Black, rotation, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, SpriteEffects.None, 0);
+                    Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position + new Vector2(i, j), new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, new Vector2(scale, scale), rotation, Color.Black);
 
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, rotation, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, SpriteEffects.None, 0);
-    }
-
-    public void DrawOutlineJustified(Vector2 position, Vector2 justify, Color color, float scale, float rotation, SpriteEffects flip)
-    {
-#if DEBUG
-        if (Texture.IsDisposed)
-            throw new Exception("Texture Is Disposed");
-#endif
-
-        for (var i = -1; i <= 1; i++)
-            for (var j = -1; j <= 1; j++)
-                if (i != 0 || j != 0)
-                    Serein.Draw.Batcher.Draw(Texture, position + new Vector2(i, j), ClipRect, Color.Black, rotation, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, flip, 0);
-
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, rotation, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, flip, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, new Vector2(scale, scale), rotation, color);
     }
 
     public void DrawOutlineJustified(Vector2 position, Vector2 justify, Color color, Vector2 scale)
@@ -784,9 +655,9 @@ public class MTexture
         for (var i = -1; i <= 1; i++)
             for (var j = -1; j <= 1; j++)
                 if (i != 0 || j != 0)
-                    Serein.Draw.Batcher.Draw(Texture, position + new Vector2(i, j), ClipRect, Color.Black, 0, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, SpriteEffects.None, 0);
+                    Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position + new Vector2(i, j), new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, 0, Color.Black);
 
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, 0, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, SpriteEffects.None, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, 0, color);
     }
 
     public void DrawOutlineJustified(Vector2 position, Vector2 justify, Color color, Vector2 scale, float rotation)
@@ -799,24 +670,9 @@ public class MTexture
         for (var i = -1; i <= 1; i++)
             for (var j = -1; j <= 1; j++)
                 if (i != 0 || j != 0)
-                    Serein.Draw.Batcher.Draw(Texture, position + new Vector2(i, j), ClipRect, Color.Black, rotation, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, SpriteEffects.None, 0);
+                    Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position + new Vector2(i, j), new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, rotation, Color.Black);
 
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, rotation, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, SpriteEffects.None, 0);
-    }
-
-    public void DrawOutlineJustified(Vector2 position, Vector2 justify, Color color, Vector2 scale, float rotation, SpriteEffects flip)
-    {
-#if DEBUG
-        if (Texture.IsDisposed)
-            throw new Exception("Texture Is Disposed");
-#endif
-
-        for (var i = -1; i <= 1; i++)
-            for (var j = -1; j <= 1; j++)
-                if (i != 0 || j != 0)
-                    Serein.Draw.Batcher.Draw(Texture, position + new Vector2(i, j), ClipRect, Color.Black, rotation, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, flip, 0);
-
-        Serein.Draw.Batcher.Draw(Texture, position, ClipRect, color, rotation, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, flip, 0);
+        Serein.Draw.Batcher.Image(new Subtexture(Texture, ClipRect), position, new Vector2(Width * justify.X, Height * justify.Y) - DrawOffset, scale, rotation, color);
     }
 
     #endregion
