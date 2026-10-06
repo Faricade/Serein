@@ -48,7 +48,7 @@ public struct Particle
         if (delta.HasValue)
             dt = delta.Value;
         else
-            dt = (Type.UseActualDeltaTime ? Engine.Instance.Time.Delta : Engine.Instance!.Time.Delta);
+            dt = Engine.Instance!.Time.Delta;
 
         var ease = Life / StartLife;
 

@@ -1,8 +1,4 @@
-﻿using Foster.Framework;
-using static System.Net.Mime.MediaTypeNames;
-
-
-namespace Serein;
+﻿namespace Serein;
 
 public class OutlineText : Text
 {
@@ -33,9 +29,9 @@ public class OutlineText : Text
             for (int j = -1; j < 2; j++)
                 if (i != 0 || j != 0)
                 {
-                    Draw.Batcher.PushMatrix(position: RenderPosition, origin: Origin, scale: Scale, rotation: Rotation);
-                    Draw.Batcher.Text(Font, DrawText, Vector2.Zero, Color);
-                    Draw.Batcher.PopMatrix();
+                    Draw.Batcher.PushMatrix(position: RenderPosition + new Vector2(i * OutlineOffset, j * OutlineOffset), origin: Origin, scale: Scale, rotation: Rotation);
+                    Draw.Batcher.Text(Font, DrawText, Vector2.Zero, OutlineColor);
+                    Draw.Batcher.PopMatrix(); 
                 }
         base.Render();
     }

@@ -56,15 +56,18 @@ public class Engine : App
         Window.OnResize += OnResize;
         OnEvent += (ev) =>
         {
-            switch (ev)
+            RunOnMainThread(() =>
             {
-                case AppEvents.EnterForeground:
-                    scene?.GainFocus();
-                    break;
-                case AppEvents.EnterBackground:
-                    scene?.LoseFocus();
-                    break;
-            }
+                switch (ev)
+                {
+                    case AppEvents.EnterForeground:
+                        scene?.GainFocus();
+                        break;
+                    case AppEvents.EnterBackground:
+                        scene?.LoseFocus();
+                        break;
+                }
+            });
         };
 
         MInput.Initialize(Input);

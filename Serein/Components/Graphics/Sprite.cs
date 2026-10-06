@@ -10,7 +10,6 @@ namespace Serein;
 public class Sprite : Image
 {
     public float Rate = 1f;
-    public bool UseRawDeltaTime;
     public Vector2? Justify;
     public Action<string> OnFinish;
     public Action<string> OnLoop;
@@ -68,10 +67,7 @@ public class Sprite : Image
         if (Animating)
         {
             //Timer
-            if (UseRawDeltaTime)
-                animationTimer += Engine.Instance.Time.Delta * Rate;
-            else
-                animationTimer += Engine.Instance!.Time.Delta * Rate;
+            animationTimer += Engine.Instance!.Time.Delta * Rate;
 
             //Next Frame
             if (Math.Abs(animationTimer) >= currentAnimation.Delay)

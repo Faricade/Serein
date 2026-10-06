@@ -7,7 +7,6 @@ public class Coroutine : Component
 {
     public bool Finished { get; private set; }
     public bool RemoveOnComplete = true;
-    public bool UseRawDeltaTime = false;
 
     private Stack<IEnumerator> enumerators;
     private float waitTimer;
@@ -33,7 +32,7 @@ public class Coroutine : Component
         ended = false;
         
         if (waitTimer > 0)
-            waitTimer -= (UseRawDeltaTime ? Engine.Instance.Time.Delta : Engine.Instance!.Time.Delta);
+            waitTimer -= Engine.Instance.Time.Delta;
         else if (enumerators.Count > 0)
         {
             IEnumerator now = enumerators.Peek();

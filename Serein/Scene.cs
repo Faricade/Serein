@@ -237,7 +237,7 @@ public class Scene : IEnumerable<Entity>, IEnumerable
 
         for (int i = 0; i < list.Count; i++)
             if (list[i].Collidable && list[i].CollideRect(rect))
-                list.Add(list[i]);
+                hits.Add(list[i]);
     }
 
     public List<Entity> CollideAll(Vector2 point, int tag)

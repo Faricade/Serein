@@ -34,7 +34,6 @@ public class ParticleType
     public bool SpinFlippedChance;
     public RotationModes RotationMode;
     public bool ScaleOut;
-    public bool UseActualDeltaTime;
 
     public ParticleType()
     {
@@ -80,7 +79,6 @@ public class ParticleType
         SpinMax = copyFrom.SpinMax;
         SpinFlippedChance = copyFrom.SpinFlippedChance;
         ScaleOut = copyFrom.ScaleOut;
-        UseActualDeltaTime = copyFrom.UseActualDeltaTime;
 
         AllTypes.Add(this);
     }

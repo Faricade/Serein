@@ -297,34 +297,26 @@ public class Atlas
 
     public static Atlas FromDirectory(string path)
     {
-        var atlas = new Atlas();
-        atlas.Sources = new List<Texture>();
-
-        var contentDirectory = AppContext.BaseDirectory;
-        var contentDirectoryLength = contentDirectory.Length;
-        var contentPath = Path.Combine(contentDirectory, path);
-        var contentPathLength = contentPath.Length;
-
-        foreach (var file in Directory.GetFiles(contentPath, "*", SearchOption.AllDirectories))
+        Atlas atlas = new()
         {
-            var ext = Path.GetExtension(file);
-            if (ext != ".png" && ext != ".xnb")
+            Sources = []
+        };
+
+        foreach (var file in Directory.GetFiles(path, "*", SearchOption.AllDirectories))
+        {
+            if (!Path.GetExtension(file).Equals(".png", StringComparison.OrdinalIgnoreCase))
                 continue;
 
-            // get path and load
-            var fileStream = new FileStream(file.Substring(contentDirectoryLength + 1), FileMode.Open, FileAccess.Read);
+            using var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
             using var image = new Foster.Framework.Image(fileStream);
             var texture = new Texture(Engine.Instance.GraphicsDevice, image);
-            fileStream.Close();
 
             atlas.Sources.Add(texture);
 
             // make nice for dictionary
-            var filepath = file.Substring(contentPathLength + 1);
-            filepath = filepath.Substring(0, filepath.Length - 4);
-            filepath = filepath.Replace('\\', '/');
+            var filepath = Path.GetRelativePath(path, file);
+            filepath = Path.ChangeExtension(filepath, null).Replace('\\', '/');
 
-            // load
             atlas.textures.Add(filepath, new MTexture(texture));
         }
 

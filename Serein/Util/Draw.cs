@@ -282,7 +282,7 @@ public static class Draw
                 if (i != 0 || j != 0)
                 {
                     Batcher.PushMatrix(position: Calc.Floor(position) + new Vector2(i, j), origin: origin, scale: new Vector2(scale, scale), rotation: 0);
-                    Batcher.Text(font, text, Vector2.Zero, color);
+                    Batcher.Text(font, text, Vector2.Zero, Color.Black);
                     Batcher.PopMatrix();
                 }
 
@@ -300,7 +300,7 @@ public static class Draw
                 if (i != 0 || j != 0)
                 {
                     Batcher.PushMatrix(position: Calc.Floor(position) + new Vector2(i, j), origin: origin, scale: Vector2.One, rotation: 0);
-                    Batcher.Text(font, text, Vector2.Zero, color);
+                    Batcher.Text(font, text, Vector2.Zero, outlineColor);
                     Batcher.PopMatrix();
                 }
 

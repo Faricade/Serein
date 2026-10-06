@@ -11,7 +11,6 @@ public class Wiggler : Component
     public float Counter { get; private set; }
     public float Value { get; private set; }
     public bool StartZero;
-    public bool UseRawDeltaTime;
 
     private float sineCounter;
 
@@ -42,7 +41,6 @@ public class Wiggler : Component
     private void Init(float duration, float frequency, Action<float> onChange, bool start, bool removeSelfOnFinish)
     {
         Counter = sineCounter = 0;
-        UseRawDeltaTime = false;
 
         increment = 1f / duration;
         sineAdd = (Foster.Framework.Calc.PI * 2) * frequency;
@@ -103,16 +101,9 @@ public class Wiggler : Component
 
     public override void Update()
     {
-        if (UseRawDeltaTime)
-        {
-            sineCounter += sineAdd * Engine.Instance.Time.Delta;
-            Counter -= increment * Engine.Instance.Time.Delta;
-        }
-        else
-        {
-            sineCounter += sineAdd * Engine.Instance!.Time.Delta;
-            Counter -= increment * Engine.Instance!.Time.Delta;
-        }
+        sineCounter += sineAdd * Engine.Instance!.Time.Delta;
+        Counter -= increment * Engine.Instance!.Time.Delta;
+        
 
         if (Counter <= 0)
         {

@@ -8,7 +8,6 @@ public class Spritesheet<T> : Image
 {
     public int CurrentFrame;
     public float Rate = 1;
-    public bool UseRawDeltaTime;
     public Action<T> OnFinish;
     public Action<T> OnLoop;
     public Action<T> OnAnimate;
@@ -50,10 +49,7 @@ public class Spritesheet<T> : Image
         if (Animating && currentAnimation.Delay > 0)
         {
             //Timer
-            if (UseRawDeltaTime)
-                animationTimer += Engine.Instance.Time.Delta * Rate;
-            else
-                animationTimer += Engine.Instance!.Time.Delta * Rate;
+            animationTimer += Engine.Instance!.Time.Delta * Rate;
 
             //Next Frame
             if (Math.Abs(animationTimer) >= currentAnimation.Delay)

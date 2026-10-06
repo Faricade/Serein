@@ -385,7 +385,7 @@ public class Commands
         Register("exit", "Exits the game", args => Exit());
         Register("vsync", "Enables or disables vertical sync", "[enabled:bool=true]", args => Vsync(args.Bool(0, true)));
         Register("unlocked", "Disables fixed time step", args => Unlocked());
-        Register("framerate", "Sets fixed time step and the target framerate", "[targetFps:int]", args => Framerate(args.Int(0)));
+        Register("framerate", "Sets fixed time step and the target framerate", "[targetFps:int]", args => Framerate(args.Int(0, 60)));
         Register("count", "Logs amount of Entities in the Scene. Pass a tagIndex to count only Entities with that tag", "[tagIndex:int=-1]", args => Count(args.Int(0, -1)));
         Register("tracker", "Logs all tracked objects in the scene. Set mode to 'e' for just entities, 'c' for just components, or 'cc' for just collidable components", "[mode:string]", args => Tracker(args.String(0)));
         Register("pooler", "Logs the pooled Entity counts", args => Pooler());
@@ -418,7 +418,7 @@ public class Commands
 
     private static void Framerate(int targetFps)
     {
-        Engine.Instance.UpdateMode = UpdateMode.FixedStep(targetFps);
+        Engine.Instance.UpdateMode = UpdateMode.FixedStep(Math.Max(targetFps, 1));
         Engine.Commands.Log("Fixed Time Step " + targetFps + "fps");
     }
 
@@ -482,6 +482,8 @@ public class Commands
     private static void Window(int scale = 1)
     {
         Engine.Instance.Window.Fullscreen = false;
+        // TODO: Technically that's incorrect, but there's no way to get past window scale
+        Engine.Instance.Window.Size = new(Engine.GameWidth * scale, Engine.GameHeight * scale);
     }
 
     private static void Help(string command)

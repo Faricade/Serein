@@ -13,7 +13,6 @@ public class Tween : Component
     public Action<Tween> OnUpdate;
     public Action<Tween> OnComplete;
     public Action<Tween> OnStart;
-    public bool UseRawDeltaTime;
 
     public TweenMode Mode { get; private set; }
     public float Duration { get; private set; }
@@ -77,7 +76,6 @@ public class Tween : Component
             duration = .000001f;
 #endif
 
-        UseRawDeltaTime = false;
         Mode = mode;
         Easer = easer;
         Duration = duration;
@@ -98,7 +96,7 @@ public class Tween : Component
 
     public override void Update()
     {
-        TimeLeft -= (UseRawDeltaTime ? Engine.Instance.Time.Delta : Engine.Instance!.Time.Delta);
+        TimeLeft -= Engine.Instance!.Time.Delta;
         
         //Update the percentage and eased percentage
         Percent = Math.Max(0, TimeLeft) / (float)Duration;

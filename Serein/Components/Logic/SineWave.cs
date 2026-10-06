@@ -38,7 +38,6 @@ public class SineWave : Component
     public float ValueOverTwo { get; private set; }
     public float TwoValue { get; private set; }
     public Action<float> OnUpdate;
-    public bool UseRawDeltaTime;
 
     private float counter;
 
@@ -56,7 +55,7 @@ public class SineWave : Component
 
     public override void Update()
     {
-        Counter += (Foster.Framework.Calc.PI * 2) * Frequency * Rate * (UseRawDeltaTime ? Engine.Instance.Time.Delta : Engine.Instance!.Time.Delta);
+        Counter += (Foster.Framework.Calc.PI * 2) * Frequency * Rate * Engine.Instance!.Time.Delta;
         if (OnUpdate != null)
             OnUpdate(Value);
     }
