@@ -109,6 +109,8 @@ public class Text : GraphicsComponent
 
     public override void Render()
     {
-        Draw.Batcher.Text(font, text, RenderPosition, Color, Rotation, Origin, Scale, Effects, 0);
+        Draw.Batcher.PushMatrix(position: RenderPosition, origin: Origin, scale: Scale, rotation: Rotation);
+        Draw.Batcher.Text(font, text, Vector2.Zero, Color);
+        Draw.Batcher.PopMatrix();
     }
 }

@@ -51,7 +51,9 @@ public class NumberText : GraphicsComponent
 
     public override void Render()
     {
-        Draw.Batcher.Text(font, drawString, RenderPosition, Color, Rotation, Origin, Scale, Effects, 0);
+        Draw.Batcher.PushMatrix(position: RenderPosition, origin: Origin, scale: Scale, rotation: Rotation);
+        Draw.Batcher.Text(font, drawString, Vector2.Zero, Color);
+        Draw.Batcher.PopMatrix();
     }
 
     public float Width
