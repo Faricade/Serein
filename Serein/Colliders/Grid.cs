@@ -89,22 +89,22 @@ public class Grid : Collider
         //Left
         for (int x = 0; x < left; x++)
             for (int y = 0; y < newHeight; y++)
-                newData[x, y] = Data[0, Calc.Clamp(y - up, 0, Data.Rows - 1)];
+                newData[x, y] = Data[0, Foster.Framework.Calc.Clamp(y - up, 0, Data.Rows - 1)];
 
         //Right
         for (int x = newWidth - right; x < newWidth; x++)
             for (int y = 0; y < newHeight; y++)
-                newData[x, y] = Data[Data.Columns - 1, Calc.Clamp(y - up, 0, Data.Rows - 1)];
+                newData[x, y] = Data[Data.Columns - 1, Foster.Framework.Calc.Clamp(y - up, 0, Data.Rows - 1)];
 
         //Top
         for (int y = 0; y < up; y++)
             for (int x = 0; x < newWidth; x++)
-                newData[x, y] = Data[Calc.Clamp(x - left, 0, Data.Columns - 1), 0];
+                newData[x, y] = Data[Foster.Framework.Calc.Clamp(x - left, 0, Data.Columns - 1), 0];
 
         //Bottom
         for (int y = newHeight - down; y < newHeight; y++)
             for (int x = 0; x < newWidth; x++)
-                newData[x, y] = Data[Calc.Clamp(x - left, 0, Data.Columns - 1), Data.Rows - 1];
+                newData[x, y] = Data[Foster.Framework.Calc.Clamp(x - left, 0, Data.Columns - 1), Data.Rows - 1];
 
         Data = newData;
     }

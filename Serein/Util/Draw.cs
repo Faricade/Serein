@@ -59,12 +59,12 @@ public static class Draw
 
     public static void Line(Vector2 start, Vector2 end, Color color)
     {
-        LineAngle(start, Calc.Angle(start, end), Vector2.Distance(start, end), color);
+        LineAngle(start, Foster.Framework.Calc.Angle(start, end), Vector2.Distance(start, end), color);
     }
 
     public static void Line(Vector2 start, Vector2 end, Color color, float thickness)
     {
-        LineAngle(start, Calc.Angle(start, end), Vector2.Distance(start, end), color, thickness);
+        LineAngle(start, Foster.Framework.Calc.Angle(start, end), Vector2.Distance(start, end), color, thickness);
     }
 
     public static void Line(float x1, float y1, float x2, float y2, Color color)
@@ -101,7 +101,7 @@ public static class Draw
         Vector2 lastP = last.Perpendicular();
         for (int i = 1; i <= resolution; i++)
         {
-            Vector2 at = Calc.AngleToVector(i * Foster.Framework.Calc.HalfPI / resolution, radius);
+            Vector2 at = Foster.Framework.Calc.AngleToVector(i * Foster.Framework.Calc.HalfPI / resolution, radius);
             Vector2 atP = at.Perpendicular();
 
             Draw.Line(position + last, position + at, color);
@@ -125,7 +125,7 @@ public static class Draw
         Vector2 lastP = last.Perpendicular();
         for (int i = 1; i <= resolution; i++)
         {
-            Vector2 at = Calc.AngleToVector(i * Foster.Framework.Calc.HalfPI / resolution, radius);
+            Vector2 at = Foster.Framework.Calc.AngleToVector(i * Foster.Framework.Calc.HalfPI / resolution, radius);
             Vector2 atP = at.Perpendicular();
 
             Draw.Line(position + last, position + at, color, thickness);
@@ -221,12 +221,12 @@ public static class Draw
 
     public static void Text(SpriteFont font, string text, Vector2 position, Color color)
     {
-        Draw.Batcher.Text(font, text, Calc.Floor(position), color);
+        Draw.Batcher.Text(font, text, position.Floor(), color);
     }
 
     public static void Text(SpriteFont font, string text, Vector2 position, Color color, Vector2 origin, Vector2 scale, float rotation)
     {
-        Batcher.PushMatrix(position: Calc.Floor(position), origin: origin, scale: scale, rotation: rotation);
+        Batcher.PushMatrix(position: position.Floor(), origin: origin, scale: scale, rotation: rotation);
         Batcher.Text(font, text, Vector2.Zero, color);
         Batcher.PopMatrix();
     }
@@ -237,7 +237,7 @@ public static class Draw
         origin.X *= justify.X;
         origin.Y *= justify.Y;
 
-        Batcher.PushMatrix(position: Calc.Floor(position), origin: origin, scale: Vector2.One, rotation: 0);
+        Batcher.PushMatrix(position: position.Floor(), origin: origin, scale: Vector2.One, rotation: 0);
         Batcher.Text(font, text, Vector2.Zero, color);
         Batcher.PopMatrix();
     }
@@ -248,7 +248,7 @@ public static class Draw
         origin.X *= justify.X;
         origin.Y *= justify.Y;
 
-        Batcher.PushMatrix(position: Calc.Floor(position), origin: origin, scale: new Vector2(scale, scale), rotation: 0);
+        Batcher.PushMatrix(position: position.Floor(), origin: origin, scale: new Vector2(scale, scale), rotation: 0);
         Batcher.Text(font, text, Vector2.Zero, color);
         Batcher.PopMatrix();
     }
@@ -281,12 +281,12 @@ public static class Draw
             for (int j = -1; j < 2; j++)
                 if (i != 0 || j != 0)
                 {
-                    Batcher.PushMatrix(position: Calc.Floor(position) + new Vector2(i, j), origin: origin, scale: new Vector2(scale, scale), rotation: 0);
+                    Batcher.PushMatrix(position: position.Floor() + new Vector2(i, j), origin: origin, scale: new Vector2(scale, scale), rotation: 0);
                     Batcher.Text(font, text, Vector2.Zero, Color.Black);
                     Batcher.PopMatrix();
                 }
 
-        Batcher.PushMatrix(position: Calc.Floor(position), origin: origin, scale: new Vector2(scale, scale), rotation: 0);
+        Batcher.PushMatrix(position: position.Floor(), origin: origin, scale: new Vector2(scale, scale), rotation: 0);
         Batcher.Text(font, text, Vector2.Zero, color);
         Batcher.PopMatrix();
     }
@@ -299,12 +299,12 @@ public static class Draw
             for (int j = -1; j < 2; j++)
                 if (i != 0 || j != 0)
                 {
-                    Batcher.PushMatrix(position: Calc.Floor(position) + new Vector2(i, j), origin: origin, scale: Vector2.One, rotation: 0);
+                    Batcher.PushMatrix(position: position.Floor() + new Vector2(i, j), origin: origin, scale: Vector2.One, rotation: 0);
                     Batcher.Text(font, text, Vector2.Zero, outlineColor);
                     Batcher.PopMatrix();
                 }
 
-        Batcher.PushMatrix(position: Calc.Floor(position), origin: origin, scale: Vector2.One, rotation: 0);
+        Batcher.PushMatrix(position: position.Floor(), origin: origin, scale: Vector2.One, rotation: 0);
         Batcher.Text(font, text, Vector2.Zero, color);
         Batcher.PopMatrix();
     }
@@ -317,12 +317,12 @@ public static class Draw
             for (int j = -1; j < 2; j++)
                 if (i != 0 || j != 0)
                 {
-                    Batcher.PushMatrix(position: Calc.Floor(position) + new Vector2(i, j), origin: origin, scale: new Vector2(scale, scale), rotation: 0);
+                    Batcher.PushMatrix(position: position.Floor() + new Vector2(i, j), origin: origin, scale: new Vector2(scale, scale), rotation: 0);
                     Batcher.Text(font, text, Vector2.Zero, outlineColor);
                     Batcher.PopMatrix();
                 }
 
-        Batcher.PushMatrix(position: Calc.Floor(position), origin: origin, scale: new Vector2(scale, scale), rotation: 0);
+        Batcher.PushMatrix(position: position.Floor(), origin: origin, scale: new Vector2(scale, scale), rotation: 0);
         Batcher.Text(font, text, Vector2.Zero, color);
         Batcher.PopMatrix();
     }
@@ -335,12 +335,12 @@ public static class Draw
             for (int j = -1; j < 2; j++)
                 if (i != 0 || j != 0)
                 {
-                    Batcher.PushMatrix(position: Calc.Floor(position) + new Vector2(i, j), origin: origin, scale: Vector2.One, rotation: 0);
+                    Batcher.PushMatrix(position: position.Floor() + new Vector2(i, j), origin: origin, scale: Vector2.One, rotation: 0);
                     Batcher.Text(font, text, Vector2.Zero, outlineColor);
                     Batcher.PopMatrix();
                 }
 
-        Batcher.PushMatrix(position: Calc.Floor(position), origin: origin, scale: Vector2.One, rotation: 0);
+        Batcher.PushMatrix(position: position.Floor(), origin: origin, scale: Vector2.One, rotation: 0);
         Batcher.Text(font, text, Vector2.Zero, color);
         Batcher.PopMatrix();
     }
@@ -353,12 +353,12 @@ public static class Draw
             for (int j = -1; j < 2; j++)
                 if (i != 0 || j != 0)
                 {
-                    Batcher.PushMatrix(position: Calc.Floor(position) + new Vector2(i, j), origin: origin, scale: new Vector2(scale, scale), rotation: 0);
+                    Batcher.PushMatrix(position: position.Floor() + new Vector2(i, j), origin: origin, scale: new Vector2(scale, scale), rotation: 0);
                     Batcher.Text(font, text, Vector2.Zero, outlineColor);
                     Batcher.PopMatrix();
                 }
 
-        Batcher.PushMatrix(position: Calc.Floor(position), origin: origin, scale: new Vector2(scale, scale), rotation: 0);
+        Batcher.PushMatrix(position: position.Floor(), origin: origin, scale: new Vector2(scale, scale), rotation: 0);
         Batcher.Text(font, text, Vector2.Zero, color);
         Batcher.PopMatrix();
     }
@@ -369,7 +369,7 @@ public static class Draw
 
     public static void SineTextureH(MTexture tex, Vector2 position, Vector2 origin, Vector2 scale, float rotation, Color color, float sineCounter, float amplitude = 2, int sliceSize = 2, float sliceAdd = (Foster.Framework.Calc.PI * 2) / 8)
     {
-        position = Calc.Floor(position);
+        position = position.Floor();
         Rect clip = tex.ClipRect;
         clip.Width = sliceSize;
 
@@ -387,7 +387,7 @@ public static class Draw
 
     public static void SineTextureV(MTexture tex, Vector2 position, Vector2 origin, Vector2 scale, float rotation, Color color, float sineCounter, float amplitude = 2, int sliceSize = 2, float sliceAdd = (Foster.Framework.Calc.PI * 2) / 8)
     {
-        position = Calc.Floor(position);
+        position = position.Floor();
         Rect clip = tex.ClipRect;
         clip.Height = sliceSize;
 
@@ -405,7 +405,7 @@ public static class Draw
 
     public static void TextureBannerV(MTexture tex, Vector2 position, Vector2 origin, Vector2 scale, float rotation, Color color, float sineCounter, float amplitude = 2, int sliceSize = 2, float sliceAdd = (Foster.Framework.Calc.PI * 2) / 8)
     {
-        position = Calc.Floor(position);
+        position = position.Floor();
         Rect clip = tex.ClipRect;
         clip.Height = sliceSize;
 

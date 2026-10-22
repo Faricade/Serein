@@ -115,7 +115,7 @@ public struct Particle
 
         //Scale Out
         if (Type.ScaleOut)
-            Size = StartSize * Ease.CubeOut(ease);
+            Size = StartSize * Ease.Cube.Out(ease);
     }
 
     public void Render()

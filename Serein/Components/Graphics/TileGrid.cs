@@ -98,22 +98,22 @@ public class TileGrid : Component
         //Left
         for (int x = 0; x < left; x++)
             for (int y = 0; y < newHeight; y++)
-                newTiles[x, y] = Tiles[0, Calc.Clamp(y - up, 0, TilesY - 1)];
+                newTiles[x, y] = Tiles[0, Foster.Framework.Calc.Clamp(y - up, 0, TilesY - 1)];
 
         //Right
         for (int x = newWidth - right; x < newWidth; x++)
             for (int y = 0; y < newHeight; y++)
-                newTiles[x, y] = Tiles[TilesX - 1, Calc.Clamp(y - up, 0, TilesY - 1)];
+                newTiles[x, y] = Tiles[TilesX - 1, Foster.Framework.Calc.Clamp(y - up, 0, TilesY - 1)];
 
         //Top
         for (int y = 0; y < up; y++)
             for (int x = 0; x < newWidth; x++)
-                newTiles[x, y] = Tiles[Calc.Clamp(x - left, 0, TilesX - 1), 0];
+                newTiles[x, y] = Tiles[Foster.Framework.Calc.Clamp(x - left, 0, TilesX - 1), 0];
 
         //Bottom
         for (int y = newHeight - down; y < newHeight; y++)
             for (int x = 0; x < newWidth; x++)
-                newTiles[x, y] = Tiles[Calc.Clamp(x - left, 0, TilesX - 1), TilesY - 1];
+                newTiles[x, y] = Tiles[Foster.Framework.Calc.Clamp(x - left, 0, TilesX - 1), TilesY - 1];
 
         Tiles = newTiles;
     }

@@ -554,22 +554,6 @@ public static class Calc
         return new Color(255 - color.R, 255 - color.G, 255 - color.B, color.A);
     }
 
-    public static Color HexToColor(string hex)
-    {
-        if (hex.Length >= 6)
-        {
-            float r = (HexToByte(hex[0]) * 16 + HexToByte(hex[1])) / 255.0f;
-            float g = (HexToByte(hex[2]) * 16 + HexToByte(hex[3])) / 255.0f;
-            float b = (HexToByte(hex[4]) * 16 + HexToByte(hex[5])) / 255.0f;
-            float a = 1;
-            if (hex.Length >= 8)
-                a = (HexToByte(hex[6]) * 16 + HexToByte(hex[7])) / 255.0f;
-            return new Color(r, g, b, a);
-        }
-
-        return Color.White;
-    }
-
     #endregion
 
     #region Time
@@ -695,39 +679,6 @@ public static class Calc
             return 0;
     }
 
-    public static int Clamp(int value, int min, int max)
-    {
-        return Math.Min(Math.Max(value, min), max);
-    }
-
-    public static float Clamp(float value, float min, float max)
-    {
-        return Math.Min(Math.Max(value, min), max);
-    }
-
-    public static float YoYo(float value)
-    {
-        if (value <= .5f)
-            return value * 2;
-        else
-            return 1 - ((value - .5f) * 2);
-    }
-
-    public static float Map(float val, float min, float max, float newMin = 0, float newMax = 1)
-    {
-        return ((val - min) / (max - min)) * (newMax - newMin) + newMin;
-    }
-
-    public static float SineMap(float counter, float newMin, float newMax)
-    {
-        return Calc.Map((float)Math.Sin(counter), 01, 1, newMin, newMax);
-    }
-
-    public static float ClampedMap(float val, float min, float max, float newMin = 0, float newMax = 1)
-    {
-        return Foster.Framework.Calc.Clamp((val - min) / (max - min), 0, 1) * (newMax - newMin) + newMin;
-    }
-
     public static float LerpSnap(float value1, float value2, float amount, float snapThreshold = .1f)
     {
         float ret = Foster.Framework.Calc.Lerp(value1, value2, amount);
@@ -814,16 +765,6 @@ public static class Calc
         return new Vector2((float)Math.Round(vec.X), (float)Math.Round(vec.Y));
     }
 
-    public static float Snap(float value, float increment)
-    {
-        return (float)Math.Round(value / increment) * increment;
-    }
-
-    public static float Snap(float value, float increment, float offset)
-    {
-        return ((float)Math.Round((value - offset) / increment) * increment) + offset;
-    }
-
     public static float WrapAngleDeg(float angleDegrees)
     {
         return (((angleDegrees * Math.Sign(angleDegrees) + 180) % 360) - 180) * Math.Sign(angleDegrees);
@@ -839,47 +780,14 @@ public static class Calc
         return new Vector2((float)Math.Cos(angleRadians) * length, (float)Math.Sin(angleRadians) * length);
     }
 
-    public static float AngleApproach(float val, float target, float maxMove)
-    {
-        var diff = AngleDiff(val, target);
-        if (Math.Abs(diff) < maxMove)
-            return target;
-        return val + Foster.Framework.Calc.Clamp(diff, -maxMove, maxMove);
-    }
-
-    public static float AngleLerp(float startAngle, float endAngle, float percent)
-    {
-        return startAngle + AngleDiff(startAngle, endAngle) * percent;
-    }
-
-    public static float Approach(float val, float target, float maxMove)
-    {
-        return val > target ? Math.Max(val - maxMove, target) : Math.Min(val + maxMove, target);
-    }
-
-    public static float AngleDiff(float radiansA, float radiansB)
-    {
-        float diff = radiansB - radiansA;
-
-        while (diff > Foster.Framework.Calc.PI) { diff -= (Foster.Framework.Calc.PI * 2); }
-        while (diff <= -Foster.Framework.Calc.PI) { diff += (Foster.Framework.Calc.PI * 2); }
-
-        return diff;
-    }
-
     public static float AbsAngleDiff(float radiansA, float radiansB)
     {
-        return Math.Abs(AngleDiff(radiansA, radiansB));
+        return Math.Abs(Foster.Framework.Calc.AngleDiff(radiansA, radiansB));
     }
 
     public static int SignAngleDiff(float radiansA, float radiansB)
     {
-        return Math.Sign(AngleDiff(radiansA, radiansB));
-    }
-
-    public static float Angle(Vector2 from, Vector2 to)
-    {
-        return (float)Math.Atan2(to.Y - from.Y, to.X - from.X);
+        return Math.Sign(Foster.Framework.Calc.AngleDiff(radiansA, radiansB));
     }
 
     public static Color ToggleColors(Color current, Color a, Color b)
@@ -892,7 +800,7 @@ public static class Calc
 
     public static float ShorterAngleDifference(float currentAngle, float angleA, float angleB)
     {
-        if (Math.Abs(Calc.AngleDiff(currentAngle, angleA)) < Math.Abs(Calc.AngleDiff(currentAngle, angleB)))
+        if (Math.Abs(Foster.Framework.Calc.AngleDiff(currentAngle, angleA)) < Math.Abs(Foster.Framework.Calc.AngleDiff(currentAngle, angleB)))
             return angleA;
         else
             return angleB;
@@ -900,7 +808,7 @@ public static class Calc
 
     public static float ShorterAngleDifference(float currentAngle, float angleA, float angleB, float angleC)
     {
-        if (Math.Abs(Calc.AngleDiff(currentAngle, angleA)) < Math.Abs(Calc.AngleDiff(currentAngle, angleB)))
+        if (Math.Abs(Foster.Framework.Calc.AngleDiff(currentAngle, angleA)) < Math.Abs(Foster.Framework.Calc.AngleDiff(currentAngle, angleB)))
             return ShorterAngleDifference(currentAngle, angleA, angleC);
         else
             return ShorterAngleDifference(currentAngle, angleB, angleC);
@@ -987,21 +895,6 @@ public static class Calc
         return new Vector2(Foster.Framework.Calc.Clamp(val.X, minX, maxX), Foster.Framework.Calc.Clamp(val.Y, minY, maxY));
     }
 
-    public static Vector2 Floor(this Vector2 val)
-    {
-        return new Vector2((int)Math.Floor(val.X), (int)Math.Floor(val.Y));
-    }
-
-    public static Vector2 Ceiling(this Vector2 val)
-    {
-        return new Vector2((int)Math.Ceiling(val.X), (int)Math.Ceiling(val.Y));
-    }
-
-    public static Vector2 Abs(this Vector2 val)
-    {
-        return new Vector2(Math.Abs(val.X), Math.Abs(val.Y));
-    }
-
     public static Vector2 Approach(Vector2 val, Vector2 target, float maxMove)
     {
         if (maxMove == 0 || val == target)
@@ -1017,45 +910,6 @@ public static class Calc
             diff = Vector2.Normalize(diff);
             return val + diff * maxMove;
         }
-    }
-
-    public static Vector2 FourWayNormal(this Vector2 vec)
-    {
-        if (vec == Vector2.Zero)
-            return Vector2.Zero;
-
-        float angle = vec.Angle();
-        angle = (float)Math.Floor((angle + Foster.Framework.Calc.HalfPI / 2f) / Foster.Framework.Calc.HalfPI) * Foster.Framework.Calc.HalfPI;
-
-        vec = AngleToVector(angle, 1f);
-        if (Math.Abs(vec.X) < .5f)
-            vec.X = 0;
-        else
-            vec.X = Math.Sign(vec.X);
-
-        if (Math.Abs(vec.Y) < .5f)
-            vec.Y = 0;
-        else
-            vec.Y = Math.Sign(vec.Y);
-
-        return vec;
-    }
-
-    public static Vector2 EightWayNormal(this Vector2 vec)
-    {
-        if (vec == Vector2.Zero)
-            return Vector2.Zero;
-        
-        float angle = vec.Angle();
-        angle = (float)Math.Floor((angle + (Foster.Framework.Calc.HalfPI / 2) / 2f) / (Foster.Framework.Calc.HalfPI / 2)) * (Foster.Framework.Calc.HalfPI / 2);
-
-        vec = AngleToVector(angle, 1f);
-        if (Math.Abs(vec.X) < .5f)
-            vec.X = 0;
-        else if (Math.Abs(vec.Y) < .5f)
-            vec.Y = 0;
-
-        return vec;
     }
 
     public static Vector2 SnappedNormal(this Vector2 vec, float slices)
@@ -1107,11 +961,12 @@ public static class Calc
     public static Vector2 Rotate(this Vector2 vec, float angleRadians)
     {
         return AngleToVector(vec.Angle() + angleRadians, vec.Length());
+        Vector2 a;
     }
 
     public static Vector2 RotateTowards(this Vector2 vec, float targetAngleRadians, float maxMoveRadians)
     {
-        float angle = AngleApproach(vec.Angle(), targetAngleRadians, maxMoveRadians);
+        float angle = Foster.Framework.Calc.AngleApproach(vec.Angle(), targetAngleRadians, maxMoveRadians);
         return AngleToVector(angle, vec.Length());
     }
 
@@ -1136,21 +991,12 @@ public static class Calc
     {
         return new Vector2(vector.X, vector.Z);
     }
-    
 
     public static Vector3 Approach(this Vector3 v, Vector3 target, float amount)
     {
         if (amount > (target - v).Length())
             return target;
-        return v + (target - v).SafeNormalize() * amount;
-    }
-
-    public static Vector3 SafeNormalize(this Vector3 v)
-    {
-        var len = v.Length();
-        if (len > 0)
-            return v / len;
-        return Vector3.Zero;
+        return v + (target - v).Normalized() * amount;
     }
     
     #endregion
@@ -1385,601 +1231,6 @@ public static class Calc
 
     #endregion
 
-    #region Save and Load Data
-
-    public static bool FileExists(string filename)
-    {
-        return File.Exists(filename);
-    }
-
-    public static bool SaveFile<T>(T obj, string filename) where T : new()
-    {
-        Stream stream = new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None);
-
-        try
-        {
-            XmlSerializer serializer = new XmlSerializer(typeof(T));
-            serializer.Serialize(stream, obj);
-            stream.Close();
-            return true;
-        }
-        catch
-        {
-            stream.Close();
-            return false;
-        }
-    }
-
-    public static bool LoadFile<T>(string filename, ref T data) where T : new()
-    {
-        Stream stream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
-
-        try
-        {
-            XmlSerializer serializer = new XmlSerializer(typeof(T));
-            T obj = (T)serializer.Deserialize(stream);
-            stream.Close();
-            data = obj;
-            return true;
-        }
-        catch
-        {
-            stream.Close();
-            return false;
-        }
-    }
-
-    #endregion
-
-    #region XML
-
-    public static XmlDocument LoadContentXML(string filename)
-    {
-        XmlDocument xml = new();
-        var fileStream = new FileStream(filename, FileMode.Open, FileAccess.Read);
-        xml.Load(fileStream);
-        fileStream.Close();
-        return xml;
-    }
-
-    public static XmlDocument LoadXML(string filename)
-    {
-        XmlDocument xml = new XmlDocument();
-        using (var stream = File.OpenRead(filename))
-            xml.Load(stream);
-        return xml;
-    }
-
-    public static bool ContentXMLExists(string filename)
-    {
-        return File.Exists(filename);
-    }
-
-    public static bool XMLExists(string filename)
-    {
-        return File.Exists(filename);
-    }
-
-    #region Attributes
-
-    public static bool HasAttr(this XmlElement xml, string attributeName)
-    {
-        return xml.Attributes[attributeName] != null;
-    }
-
-    public static string Attr(this XmlElement xml, string attributeName)
-    {
-#if DEBUG
-        if (!xml.HasAttr(attributeName))
-            throw new Exception("Element does not contain the attribute \"" + attributeName + "\"");
-#endif
-        return xml.Attributes[attributeName].InnerText;
-    }
-
-    public static string Attr(this XmlElement xml, string attributeName, string defaultValue)
-    {
-        if (!xml.HasAttr(attributeName))
-            return defaultValue;
-        else
-            return xml.Attributes[attributeName].InnerText;
-    }
-
-    public static int AttrInt(this XmlElement xml, string attributeName)
-    {
-#if DEBUG
-        if (!xml.HasAttr(attributeName))
-            throw new Exception("Element does not contain the attribute \"" + attributeName + "\"");
-#endif
-        return Convert.ToInt32(xml.Attributes[attributeName].InnerText);
-    }
-
-    public static int AttrInt(this XmlElement xml, string attributeName, int defaultValue)
-    {
-        if (!xml.HasAttr(attributeName))
-            return defaultValue;
-        else
-            return Convert.ToInt32(xml.Attributes[attributeName].InnerText);
-    }
-
-    public static float AttrFloat(this XmlElement xml, string attributeName)
-    {
-#if DEBUG
-        if (!xml.HasAttr(attributeName))
-            throw new Exception("Element does not contain the attribute \"" + attributeName + "\"");
-#endif
-        return Convert.ToSingle(xml.Attributes[attributeName].InnerText, CultureInfo.InvariantCulture);
-    }
-
-    public static float AttrFloat(this XmlElement xml, string attributeName, float defaultValue)
-    {
-        if (!xml.HasAttr(attributeName))
-            return defaultValue;
-        else
-            return Convert.ToSingle(xml.Attributes[attributeName].InnerText, CultureInfo.InvariantCulture);
-    }
-
-    public static Vector3 AttrVector3(this XmlElement xml, string attributeName)
-    {
-        var attr = xml.Attr(attributeName).Split(',');
-        var x = float.Parse(attr[0].Trim(), CultureInfo.InvariantCulture);
-        var y = float.Parse(attr[1].Trim(), CultureInfo.InvariantCulture);
-        var z = float.Parse(attr[2].Trim(), CultureInfo.InvariantCulture);
-
-        return new Vector3(x, y, z);
-    }
-
-    public static Vector2 AttrVector2(this XmlElement xml, string xAttributeName, string yAttributeName)
-    {
-        return new Vector2(xml.AttrFloat(xAttributeName), xml.AttrFloat(yAttributeName));
-    }
-
-    public static Vector2 AttrVector2(this XmlElement xml, string xAttributeName, string yAttributeName, Vector2 defaultValue)
-    {
-        return new Vector2(xml.AttrFloat(xAttributeName, defaultValue.X), xml.AttrFloat(yAttributeName, defaultValue.Y));
-    }
-
-    public static bool AttrBool(this XmlElement xml, string attributeName)
-    {
-#if DEBUG
-        if (!xml.HasAttr(attributeName))
-            throw new Exception("Element does not contain the attribute \"" + attributeName + "\"");
-#endif
-        return Convert.ToBoolean(xml.Attributes[attributeName].InnerText);
-    }
-
-    public static bool AttrBool(this XmlElement xml, string attributeName, bool defaultValue)
-    {
-        if (!xml.HasAttr(attributeName))
-            return defaultValue;
-        else
-            return AttrBool(xml, attributeName);
-    }
-
-    public static char AttrChar(this XmlElement xml, string attributeName)
-    {
-#if DEBUG
-        if (!xml.HasAttr(attributeName))
-            throw new Exception("Element does not contain the attribute \"" + attributeName + "\"");
-#endif
-        return Convert.ToChar(xml.Attributes[attributeName].InnerText);
-    }
-
-    public static char AttrChar(this XmlElement xml, string attributeName, char defaultValue)
-    {
-        if (!xml.HasAttr(attributeName))
-            return defaultValue;
-        else
-            return AttrChar(xml, attributeName);
-    }
-
-    public static T AttrEnum<T>(this XmlElement xml, string attributeName) where T : struct
-    {
-#if DEBUG
-        if (!xml.HasAttr(attributeName))
-            throw new Exception("Element does not contain the attribute \"" + attributeName + "\"");
-#endif
-        if (Enum.IsDefined(typeof(T), xml.Attributes[attributeName].InnerText))
-            return (T)Enum.Parse(typeof(T), xml.Attributes[attributeName].InnerText);
-        else
-            throw new Exception("The attribute value cannot be converted to the enum type.");
-    }
-
-    public static T AttrEnum<T>(this XmlElement xml, string attributeName, T defaultValue) where T : struct
-    {
-        if (!xml.HasAttr(attributeName))
-            return defaultValue;
-        else
-            return xml.AttrEnum<T>(attributeName);
-    }
-
-    public static Color AttrHexColor(this XmlElement xml, string attributeName)
-    {
-#if DEBUG
-        if (!xml.HasAttr(attributeName))
-            throw new Exception("Element does not contain the attribute \"" + attributeName + "\"");
-#endif
-        return Calc.HexToColor(xml.Attr(attributeName));
-    }
-
-    public static Color AttrHexColor(this XmlElement xml, string attributeName, Color defaultValue)
-    {
-        if (!xml.HasAttr(attributeName))
-            return defaultValue;
-        else
-            return AttrHexColor(xml, attributeName);
-    }
-
-    public static Color AttrHexColor(this XmlElement xml, string attributeName, string defaultValue)
-    {
-        if (!xml.HasAttr(attributeName))
-            return Calc.HexToColor(defaultValue);
-        else
-            return AttrHexColor(xml, attributeName);
-    }
-
-    public static Vector2 Position(this XmlElement xml)
-    {
-        return new Vector2(xml.AttrFloat("x"), xml.AttrFloat("y"));
-    }
-
-    public static Vector2 Position(this XmlElement xml, Vector2 defaultPosition)
-    {
-        return new Vector2(xml.AttrFloat("x", defaultPosition.X), xml.AttrFloat("y", defaultPosition.Y));
-    }
-
-    public static int X(this XmlElement xml)
-    {
-        return xml.AttrInt("x");
-    }
-
-    public static int X(this XmlElement xml, int defaultX)
-    {
-        return xml.AttrInt("x", defaultX);
-    }
-
-    public static int Y(this XmlElement xml)
-    {
-        return xml.AttrInt("y");
-    }
-
-    public static int Y(this XmlElement xml, int defaultY)
-    {
-        return xml.AttrInt("y", defaultY);
-    }
-
-    public static int Width(this XmlElement xml)
-    {
-        return xml.AttrInt("width");
-    }
-
-    public static int Width(this XmlElement xml, int defaultWidth)
-    {
-        return xml.AttrInt("width", defaultWidth);
-    }
-
-    public static int Height(this XmlElement xml)
-    {
-        return xml.AttrInt("height");
-    }
-
-    public static int Height(this XmlElement xml, int defaultHeight)
-    {
-        return xml.AttrInt("height", defaultHeight);
-    }
-
-    public static RectInt Rect(this XmlElement xml)
-    {
-        return new RectInt(xml.X(), xml.Y(), xml.Width(), xml.Height());
-    }
-
-    public static int ID(this XmlElement xml)
-    {
-        return xml.AttrInt("id");
-    }
-
-    #endregion
-
-    #region Inner Text
-
-    public static int InnerInt(this XmlElement xml)
-    {
-        return Convert.ToInt32(xml.InnerText);
-    }
-
-    public static float InnerFloat(this XmlElement xml)
-    {
-        return Convert.ToSingle(xml.InnerText, CultureInfo.InvariantCulture);
-    }
-
-    public static bool InnerBool(this XmlElement xml)
-    {
-        return Convert.ToBoolean(xml.InnerText);
-    }
-
-    public static T InnerEnum<T>(this XmlElement xml) where T : struct
-    {
-        if (Enum.IsDefined(typeof(T), xml.InnerText))
-            return (T)Enum.Parse(typeof(T), xml.InnerText);
-        else
-            throw new Exception("The attribute value cannot be converted to the enum type.");
-    }
-
-    public static Color InnerHexColor(this XmlElement xml)
-    {
-        return Calc.HexToColor(xml.InnerText);
-    }
-
-    #endregion
-
-    #region Child Inner Text
-
-    public static bool HasChild(this XmlElement xml, string childName)
-    {
-        return xml[childName] != null;
-    }
-
-    public static string ChildText(this XmlElement xml, string childName)
-    {
-#if DEBUG
-        if (!xml.HasChild(childName))
-            throw new Exception("Cannot find child xml tag with name '" + childName + "'.");
-#endif
-        return xml[childName].InnerText;
-    }
-
-    public static string ChildText(this XmlElement xml, string childName, string defaultValue)
-    {
-        if (xml.HasChild(childName))
-            return xml[childName].InnerText;
-        else
-            return defaultValue;
-    }
-
-    public static int ChildInt(this XmlElement xml, string childName)
-    {
-#if DEBUG
-        if (!xml.HasChild(childName))
-            throw new Exception("Cannot find child xml tag with name '" + childName + "'.");
-#endif
-        return xml[childName].InnerInt();
-    }
-
-    public static int ChildInt(this XmlElement xml, string childName, int defaultValue)
-    {
-        if (xml.HasChild(childName))
-            return xml[childName].InnerInt();
-        else
-            return defaultValue;
-    }
-
-    public static float ChildFloat(this XmlElement xml, string childName)
-    {
-#if DEBUG
-        if (!xml.HasChild(childName))
-            throw new Exception("Cannot find child xml tag with name '" + childName + "'.");
-#endif
-        return xml[childName].InnerFloat();
-    }
-
-    public static float ChildFloat(this XmlElement xml, string childName, float defaultValue)
-    {
-        if (xml.HasChild(childName))
-            return xml[childName].InnerFloat();
-        else
-            return defaultValue;
-    }
-
-    public static bool ChildBool(this XmlElement xml, string childName)
-    {
-#if DEBUG
-        if (!xml.HasChild(childName))
-            throw new Exception("Cannot find child xml tag with name '" + childName + "'.");
-#endif
-        return xml[childName].InnerBool();
-    }
-
-    public static bool ChildBool(this XmlElement xml, string childName, bool defaultValue)
-    {
-        if (xml.HasChild(childName))
-            return xml[childName].InnerBool();
-        else
-            return defaultValue;
-    }
-
-    public static T ChildEnum<T>(this XmlElement xml, string childName) where T : struct
-    {
-#if DEBUG
-        if (!xml.HasChild(childName))
-            throw new Exception("Cannot find child xml tag with name '" + childName + "'.");
-#endif
-        if (Enum.IsDefined(typeof(T), xml[childName].InnerText))
-            return (T)Enum.Parse(typeof(T), xml[childName].InnerText);
-        else
-            throw new Exception("The attribute value cannot be converted to the enum type.");
-    }
-
-    public static T ChildEnum<T>(this XmlElement xml, string childName, T defaultValue) where T : struct
-    {
-        if (xml.HasChild(childName))
-        {
-            if (Enum.IsDefined(typeof(T), xml[childName].InnerText))
-                return (T)Enum.Parse(typeof(T), xml[childName].InnerText);
-            else
-                throw new Exception("The attribute value cannot be converted to the enum type.");
-        }
-        else
-            return defaultValue;
-    }
-
-    public static Color ChildHexColor(this XmlElement xml, string childName)
-    {
-#if DEBUG
-        if (!xml.HasChild(childName))
-            throw new Exception("Cannot find child xml tag with name '" + childName + "'.");
-#endif
-        return Calc.HexToColor(xml[childName].InnerText);
-    }
-
-    public static Color ChildHexColor(this XmlElement xml, string childName, Color defaultValue)
-    {
-        if (xml.HasChild(childName))
-            return Calc.HexToColor(xml[childName].InnerText);
-        else
-            return defaultValue;
-    }
-
-    public static Color ChildHexColor(this XmlElement xml, string childName, string defaultValue)
-    {
-        if (xml.HasChild(childName))
-            return Calc.HexToColor(xml[childName].InnerText);
-        else
-            return Calc.HexToColor(defaultValue);
-    }
-
-    public static Vector2 ChildPosition(this XmlElement xml, string childName)
-    {
-#if DEBUG
-        if (!xml.HasChild(childName))
-            throw new Exception("Cannot find child xml tag with name '" + childName + "'.");
-#endif
-        return xml[childName].Position();
-    }
-
-    public static Vector2 ChildPosition(this XmlElement xml, string childName, Vector2 defaultValue)
-    {
-        if (xml.HasChild(childName))
-            return xml[childName].Position(defaultValue);
-        else
-            return defaultValue;
-    }
-
-    #endregion
-
-    #region Ogmo Nodes
-
-    public static Vector2 FirstNode(this XmlElement xml)
-    {
-        if (xml["node"] == null)
-            return Vector2.Zero;
-        else
-            return new Vector2((int)xml["node"].AttrFloat("x"), (int)xml["node"].AttrFloat("y"));
-    }
-
-    public static Vector2? FirstNodeNullable(this XmlElement xml)
-    {
-        if (xml["node"] == null)
-            return null;
-        else
-            return new Vector2((int)xml["node"].AttrFloat("x"), (int)xml["node"].AttrFloat("y"));
-    }
-
-    public static Vector2? FirstNodeNullable(this XmlElement xml, Vector2 offset)
-    {
-        if (xml["node"] == null)
-            return null;
-        else
-            return new Vector2((int)xml["node"].AttrFloat("x"), (int)xml["node"].AttrFloat("y")) + offset;
-    }
-
-    public static Vector2[] Nodes(this XmlElement xml, bool includePosition = false)
-    {
-        XmlNodeList nodes = xml.GetElementsByTagName("node");
-        if (nodes == null)
-            return includePosition ? new Vector2[] { xml.Position() } : new Vector2[0];
-
-        Vector2[] ret;
-        if (includePosition)
-        {
-            ret = new Vector2[nodes.Count + 1];
-            ret[0] = xml.Position();
-            for (int i = 0; i < nodes.Count; i++)
-                ret[i + 1] = new Vector2(Convert.ToInt32(nodes[i].Attributes["x"].InnerText), Convert.ToInt32(nodes[i].Attributes["y"].InnerText));
-        }
-        else
-        {
-            ret = new Vector2[nodes.Count];
-            for (int i = 0; i < nodes.Count; i++)
-                ret[i] = new Vector2(Convert.ToInt32(nodes[i].Attributes["x"].InnerText), Convert.ToInt32(nodes[i].Attributes["y"].InnerText));
-        }
-
-        return ret;
-    }
-
-    public static Vector2[] Nodes(this XmlElement xml, Vector2 offset, bool includePosition = false)
-    {
-        var nodes = Calc.Nodes(xml, includePosition);
-
-        for (int i = 0; i < nodes.Length; i++)
-            nodes[i] += offset;
-
-        return nodes;
-    }
-
-    public static Vector2 GetNode(this XmlElement xml, int nodeNum)
-    {
-        return xml.Nodes()[nodeNum];
-    }
-
-    public static Vector2? GetNodeNullable(this XmlElement xml, int nodeNum)
-    {
-        if (xml.Nodes().Length > nodeNum)
-            return xml.Nodes()[nodeNum];
-        else
-            return null;
-    }
-
-    #endregion
-
-    #region Add Stuff
-
-    public static void SetAttr(this XmlElement xml, string attributeName, Object setTo)
-    {
-        XmlAttribute attr;
-
-        if (xml.HasAttr(attributeName))
-            attr = xml.Attributes[attributeName];
-        else
-        {
-            attr = xml.OwnerDocument.CreateAttribute(attributeName);
-            xml.Attributes.Append(attr);
-        }
-
-        attr.Value = setTo.ToString();
-    }
-
-    public static void SetChild(this XmlElement xml, string childName, Object setTo)
-    {
-        XmlElement ele;
-
-        if (xml.HasChild(childName))
-            ele = xml[childName];
-        else
-        {
-            ele = xml.OwnerDocument.CreateElement(null, childName, xml.NamespaceURI);
-            xml.AppendChild(ele);
-        }
-
-        ele.InnerText = setTo.ToString();
-    }
-
-    public static XmlElement CreateChild(this XmlDocument doc, string childName)
-    {
-        XmlElement ele = doc.CreateElement(null, childName, doc.NamespaceURI);
-        doc.AppendChild(ele);
-        return ele;
-    }
-
-    public static XmlElement CreateChild(this XmlElement xml, string childName)
-    {
-        XmlElement ele = xml.OwnerDocument.CreateElement(null, childName, xml.NamespaceURI);
-        xml.AppendChild(ele);
-        return ele;
-    }
-
-    #endregion
-
-    #endregion
-
     #region Sorting
 
     public static int SortLeftToRight(Entity a, Entity b)
@@ -2093,11 +1344,6 @@ public static class Calc
     }
 
     #endregion
-
-    public static T At<T>(this T[,] arr, Pnt at)
-    {
-        return arr[at.X, at.Y];
-    }
 
     public static string ConvertPath(string path)
     {

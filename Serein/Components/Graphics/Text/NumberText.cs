@@ -46,7 +46,7 @@ public class NumberText : GraphicsComponent
         drawString = prefix + value.ToString();
 
         if (centered)
-            Origin = Calc.Floor(font.SizeOf(drawString) / 2);
+            Origin = (font.SizeOf(drawString) / 2).Floor();
     }
 
     public override void Render()

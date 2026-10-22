@@ -41,7 +41,7 @@ public class Atlas
         {
             case AtlasDataFormat.TexturePacker_Sparrow:
                 {
-                    XmlDocument xml = Calc.LoadContentXML(path);
+                    XmlDocument xml = XmlExtensions.LoadContentXML(path);
                     XmlElement at = xml["TextureAtlas"];
 
                     var texturePath = at.Attr("imagePath", "");
@@ -68,7 +68,7 @@ public class Atlas
                 break;
             case AtlasDataFormat.CrunchXml:
                 {
-                    XmlDocument xml = Calc.LoadContentXML(path);
+                    XmlDocument xml = XmlExtensions.LoadContentXML(path);
                     XmlElement at = xml["atlas"];
 
                     foreach (XmlElement tex in at)

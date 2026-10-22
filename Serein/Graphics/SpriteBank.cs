@@ -38,7 +38,7 @@ public class SpriteBank
     }
 
     public SpriteBank(Atlas atlas, string xmlPath)
-        : this(atlas, Calc.LoadContentXML(xmlPath))
+        : this(atlas, XmlExtensions.LoadContentXML(xmlPath))
     {
 
     }

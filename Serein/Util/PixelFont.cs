@@ -186,7 +186,7 @@ public class PixelFontSize
             var measure = Measure(character);
             var justified = new Vector2(measure.X * justify.X, measure.Y * justify.Y);
             var pos = position + (new Vector2(c.XOffset, c.YOffset) - justified) * scale;
-            c.Texture.Draw(Calc.Floor(pos), Vector2.Zero, color, scale);
+            c.Texture.Draw(pos.Floor(), Vector2.Zero, color, scale);
         }
     }
 
@@ -293,7 +293,7 @@ public class PixelFont
     
     public PixelFontSize AddFontSize(string path, Atlas atlas = null, bool outline = false)
     {
-        var data = Calc.LoadXML(path)["font"];
+        var data = XmlExtensions.LoadXML(path)["font"];
         return AddFontSize(path, data, atlas, outline);
     }
 
