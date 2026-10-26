@@ -148,7 +148,7 @@ public class Hitbox : Collider
         return grid.Collide(Bounds);
     }
 
-    public override bool Collide(Circle circle)
+    public override bool Collide(CircleCollider circle)
     {
         return Serein.Collide.RectToCircle(AbsoluteLeft, AbsoluteTop, Width, Height, circle.AbsolutePosition, circle.Radius);
     }

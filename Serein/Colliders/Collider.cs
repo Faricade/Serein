@@ -51,9 +51,9 @@ public abstract class Collider
         {
             return Collide(collider as ColliderList);
         }
-        else if (collider is Circle)
+        else if (collider is CircleCollider)
         {
-            return Collide(collider as Circle);
+            return Collide(collider as CircleCollider);
         }
         else
             throw new Exception("Collisions against the collider type are not implemented!");
@@ -64,7 +64,7 @@ public abstract class Collider
     public abstract bool Collide(Vector2 from, Vector2 to);
     public abstract bool Collide(Hitbox hitbox);
     public abstract bool Collide(Grid grid);
-    public abstract bool Collide(Circle circle);
+    public abstract bool Collide(CircleCollider circle);
     public abstract bool Collide(ColliderList list);
     public abstract Collider Clone();
     public abstract void Render(Camera camera, Color color);

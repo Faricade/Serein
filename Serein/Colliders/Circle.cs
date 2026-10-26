@@ -3,11 +3,11 @@ using System;
 
 namespace Serein;
 
-public class Circle : Collider
+public class CircleCollider : Collider
 {
     public float Radius;
 
-    public Circle(float radius, float x = 0, float y = 0)
+    public CircleCollider(float radius, float x = 0, float y = 0)
     {
         Radius = radius;
         Position.X = x;
@@ -52,7 +52,7 @@ public class Circle : Collider
 
     public override Collider Clone()
     {
-        return new Circle(Radius, Position.X, Position.Y);
+        return new CircleCollider(Radius, Position.X, Position.Y);
     }
 
     public override void Render(Camera camera, Color color)
@@ -79,7 +79,7 @@ public class Circle : Collider
         return Serein.Collide.CircleToLine(AbsolutePosition, Radius, from, to);
     }
 
-    public override bool Collide(Circle circle)
+    public override bool Collide(CircleCollider circle)
     {
         return Vector2.DistanceSquared(AbsolutePosition, circle.AbsolutePosition) < (Radius + circle.Radius) * (Radius + circle.Radius);
     }

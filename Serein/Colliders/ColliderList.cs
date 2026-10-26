@@ -245,7 +245,7 @@ public class ColliderList : Collider
         return false;
     }
 
-    public override bool Collide(Circle circle)
+    public override bool Collide(CircleCollider circle)
     {
         foreach (var c in Colliders)
             if (c.Collide(circle))

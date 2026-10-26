@@ -461,7 +461,7 @@ public class Grid : Collider
         throw new NotImplementedException();
     }
 
-    public override bool Collide(Circle circle)
+    public override bool Collide(CircleCollider circle)
     {
         return false;
     }

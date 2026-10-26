@@ -18,7 +18,7 @@ public static class Calc
     public static T StringToEnum<T>(string str) where T : struct
     {
         if (Enum.IsDefined(typeof(T), str))
-            return (T)Enum.Parse(typeof(T), str);
+            return Enum.Parse<T>(str);
         else
             throw new Exception("The string cannot be converted to the enum type.");
     }
