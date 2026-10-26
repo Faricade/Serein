@@ -1,16 +1,8 @@
-﻿using Foster.Framework;
-
-using System;
-using System.Collections.Generic;
-using System.Collections;
+﻿using System.Collections;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Xml;
-using System.Xml.Serialization;
 
 namespace Serein;
 
@@ -598,13 +590,10 @@ public static class Calc
     public const float DownLeft = (Foster.Framework.Calc.HalfPI / 2) + Foster.Framework.Calc.HalfPI;
     public const float DegToRad = Foster.Framework.Calc.PI / 180f;
     public const float RadToDeg = 180f / Foster.Framework.Calc.PI;
-    public const float DtR = DegToRad;
-    public const float RtD = RadToDeg;
     public const float Circle = (Foster.Framework.Calc.PI * 2);
     public const float HalfCircle = Foster.Framework.Calc.PI;
     public const float QuarterCircle = Foster.Framework.Calc.HalfPI;
     public const float EighthCircle = (Foster.Framework.Calc.HalfPI / 2);
-    private const string Hex = "0123456789ABCDEF";
 
     public static int Digits(this int num)
     {
@@ -622,7 +611,7 @@ public static class Calc
 
     public static byte HexToByte(char c)
     {
-        return (byte)Hex.IndexOf(char.ToUpper(c));
+        return (byte)"0123456789ABCDEF".IndexOf(char.ToUpper(c));
     }
 
     public static float Percent(float num, float zeroAt, float oneAt)
@@ -885,11 +874,6 @@ public static class Calc
         return new Vector2(-vector.Y, vector.X);
     }
 
-    public static float Angle(this Vector2 vector)
-    {
-        return (float)Math.Atan2(vector.Y, vector.X);
-    }
-
     public static Vector2 Clamp(this Vector2 val, float minX, float minY, float maxX, float maxY)
     {
         return new Vector2(Foster.Framework.Calc.Clamp(val.X, minX, maxX), Foster.Framework.Calc.Clamp(val.Y, minY, maxY));
@@ -961,7 +945,6 @@ public static class Calc
     public static Vector2 Rotate(this Vector2 vec, float angleRadians)
     {
         return AngleToVector(vec.Angle() + angleRadians, vec.Length());
-        Vector2 a;
     }
 
     public static Vector2 RotateTowards(this Vector2 vec, float targetAngleRadians, float maxMoveRadians)
@@ -1414,11 +1397,6 @@ public static class Calc
 
 public static class QuaternionExt
 {
-    public static Quaternion Conjugated(this Quaternion q)
-    {
-        return Quaternion.Conjugate(q);
-    }
-
     public static Quaternion LookAt(this Quaternion q, Vector3 from, Vector3 to, Vector3 up)
     {
         return Quaternion.CreateFromRotationMatrix(Matrix4x4.CreateLookAt(from, to, up));
@@ -1431,16 +1409,16 @@ public static class QuaternionExt
 
     public static Vector3 Forward(this Quaternion q)
     {
-        return Vector3.Transform(-Vector3.UnitZ, q.Conjugated());
+        return Vector3.Transform(-Vector3.UnitZ, Quaternion.Conjugate(q));
     }
 
     public static Vector3 Left(this Quaternion q)
     {
-        return Vector3.Transform(-Vector3.UnitX, q.Conjugated());
+        return Vector3.Transform(-Vector3.UnitX, Quaternion.Conjugate(q));
     }
 
     public static Vector3 Up(this Quaternion q)
     {
-        return Vector3.Transform(Vector3.UnitY, q.Conjugated());
+        return Vector3.Transform(Vector3.UnitY, Quaternion.Conjugate(q));
     }
 }
